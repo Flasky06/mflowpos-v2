@@ -1,0 +1,332 @@
+import React, { useState, useEffect } from 'react';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../../store/authStore';
+import { apiClient } from '../../api/client';
+import { PaywallModal } from '../common/PaywallModal';
+import {
+  Menu,
+  X,
+  LogOut,
+  ChevronDown,
+  ChevronUp,
+  Store,
+  User,
+  Bell,
+  PackageCheck,
+} from 'lucide-react';
+
+export const AppLayout: React.FC = () => {
+  const { user, activeShopId, setActiveShopId, logout } = useAuthStore();
+  const navigate = useNavigate();
+
+  const [shops, setShops] = useState<any[]>([]);
+  const [pendingPOs, setPendingPOs] = useState<any[]>([]);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Exclusive Accordion State (Only one group open at a time)
+  const [openGroupTitle, setOpenGroupTitle] = useState<string | null>('Dashboard');
+
+  const fetchLayoutData = async () => {
+    try {
+      const [shopRes, poRes] = await Promise.all([
+        apiClient.get('/business/shops'),
+        apiClient.get('/purchase-orders').catch(() => apiClient.get('/purchases/orders')),
+      ]);
+
+      const shopList = shopRes.data?.data || [];
+      setShops(shopList);
+
+      if (!activeShopId && shopList.length > 0) {
+        setActiveShopId(shopList[0].id);
+      }
+
+      const allOrders = poRes.data?.data || [];
+      const pendingList = allOrders.filter((po: any) => !po.status || po.status === 'PENDING');
+      setPendingPOs(pendingList);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchLayoutData();
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  const activeShop = shops.find((s) => s.id === activeShopId);
+  const shopType = activeShop?.shopType || user?.shop?.shopType || 'BOTH';
+
+  const isProductsAllowed = shopType === 'PRODUCTS_ONLY' || shopType === 'BOTH';
+  const isServicesAllowed = shopType === 'SERVICES_ONLY' || shopType === 'BOTH';
+
+  // Grouped Navigation Tree Structure
+  const menuGroups = [
+    {
+      title: 'Dashboard',
+      isCollapsible: false,
+      items: [{ to: '/dashboard', label: 'Point of Sale Desk', show: true }],
+    },
+    {
+      title: 'Sales',
+      isCollapsible: true,
+      items: [
+        { to: '/sales/products', label: 'Products Sales History', show: isProductsAllowed },
+        { to: '/sales/services', label: 'Services Sales History', show: isServicesAllowed },
+        { to: '/sales', label: 'All Transactions Log', show: true },
+      ],
+    },
+    {
+      title: 'Catalog',
+      isCollapsible: true,
+      items: [
+        { to: '/products', label: 'Products Inventory', show: isProductsAllowed },
+        { to: '/services', label: 'Services & Job Cards', show: isServicesAllowed },
+      ],
+    },
+    {
+      title: 'Stock Operations',
+      isCollapsible: true,
+      items: [
+        { to: '/transfers', label: 'Stock Taking & Adjustments', show: isProductsAllowed },
+        { to: '/returns', label: 'Customer Stock Returns', show: isProductsAllowed },
+      ],
+    },
+    {
+      title: 'Partners & Outflows',
+      isCollapsible: true,
+      items: [
+        { to: '/customers', label: 'Customer Directory', show: true },
+        { to: '/suppliers', label: 'Suppliers & POs', show: isProductsAllowed },
+        { to: '/expenses', label: 'Expense Tracker', show: true },
+        { to: '/quotations', label: 'Estimates & Quotations', show: true },
+      ],
+    },
+    {
+      title: 'Financial Reports',
+      isCollapsible: true,
+      items: [
+        { to: '/finance/reports/profit-and-loss', label: 'Statement of Profit & Loss', show: true },
+        { to: '/finance/reports/general-ledger', label: 'General Ledger', show: true },
+        { to: '/finance/reports/balance-sheet', label: 'Statement of Balance Sheet', show: true },
+      ],
+    },
+    {
+      title: 'Settings',
+      isCollapsible: true,
+      items: [
+        { to: '/settings/branches', label: 'Branch Locations', show: user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' },
+        { to: '/settings/staff', label: 'Staff Permissions', show: user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' },
+        { to: '/settings/audit-trail', label: 'System Audit Trail', show: true },
+        { to: '/profile', label: 'Shop Preferences', show: true },
+      ],
+    },
+  ];
+
+  const toggleGroup = (title: string) => {
+    setOpenGroupTitle((prev) => (prev === title ? null : title));
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-100 flex flex-col font-sans text-slate-900 antialiased selection:bg-indigo-500 selection:text-white">
+      {/* Subscription Paywall Listener */}
+      <PaywallModal />
+
+      {/* MOBILE TOP HEADER */}
+      <header className="lg:hidden sticky top-0 z-40 bg-slate-900 text-white border-b border-slate-800 px-4 py-3 flex items-center justify-between shadow-md">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="p-2 text-slate-300 hover:text-white rounded-lg hover:bg-slate-800 focus:outline-none"
+          >
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+
+          <span className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
+            mFlow POS
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {pendingPOs.length > 0 && (
+            <button
+              onClick={() => navigate('/suppliers')}
+              className="p-1.5 bg-amber-500 text-white rounded-lg relative"
+              title="Pending Purchase Orders"
+            >
+              <Bell className="w-4 h-4 animate-bounce" />
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-600 text-[10px] font-extrabold text-white rounded-full flex items-center justify-center">
+                {pendingPOs.length}
+              </span>
+            </button>
+          )}
+
+          {shops.length > 0 && (
+            <select
+              value={activeShopId || ''}
+              onChange={(e) => setActiveShopId(e.target.value)}
+              className="bg-slate-800 border border-slate-700 text-white text-xs font-semibold rounded-lg py-1.5 px-2.5 focus:outline-none"
+            >
+              {shops.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
+      </header>
+
+      {/* MOBILE BACKDROP OVERLAY */}
+      {isMobileMenuOpen && (
+        <div
+          onClick={() => setIsMobileMenuOpen(false)}
+          className="lg:hidden fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-xs"
+        />
+      )}
+
+      {/* MAIN CONTAINER */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* RESPONSIVE SIDEBAR DRAWER */}
+        <aside
+          className={`fixed lg:static inset-y-0 left-0 z-50 w-72 bg-slate-900 text-slate-300 flex flex-col border-r border-slate-800 transform transition-transform duration-300 ease-in-out ${
+            isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          }`}
+        >
+          {/* DESKTOP BRAND LOGO HEADER */}
+          <div className="p-6 border-b border-slate-800 hidden lg:flex items-center justify-between">
+            <div>
+              <h1 className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
+                mFlow POS v2
+              </h1>
+              <p className="text-[11px] font-medium text-slate-500 mt-0.5">Smart Retail & Inventory</p>
+            </div>
+          </div>
+
+          {/* DESKTOP ACTIVE BRANCH SELECTOR */}
+          <div className="p-4 border-b border-slate-800 hidden lg:block">
+            <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-500 block mb-1.5">
+              Active Branch Location
+            </label>
+            <div className="relative">
+              <select
+                value={activeShopId || ''}
+                onChange={(e) => setActiveShopId(e.target.value)}
+                className="w-full bg-slate-800/90 hover:bg-slate-800 border border-slate-700 text-white text-xs font-bold rounded-xl py-2 px-3 pl-8 appearance-none focus:outline-none focus:border-indigo-500 transition-colors"
+              >
+                {shops.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name} ({s.shopType})
+                  </option>
+                ))}
+              </select>
+              <Store className="w-4 h-4 text-indigo-400 absolute left-2.5 top-2.5 pointer-events-none" />
+            </div>
+          </div>
+
+          {/* ACCORDION SIDEBAR MENU ITEMS */}
+          <nav className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
+            {menuGroups.map((group) => {
+              const isOpen = !group.isCollapsible || openGroupTitle === group.title;
+              const visibleItems = group.items.filter((item) => item.show);
+
+              if (visibleItems.length === 0) return null;
+
+              return (
+                <div key={group.title} className="space-y-1">
+                  {group.isCollapsible ? (
+                    <button
+                      onClick={() => toggleGroup(group.title)}
+                      className="w-full flex items-center justify-between px-3 py-2 text-xs font-extrabold uppercase tracking-wider text-slate-400 hover:text-slate-200 transition-colors rounded-lg"
+                    >
+                      <span>{group.title}</span>
+                      {isOpen ? (
+                        <ChevronUp className="w-3.5 h-3.5 text-slate-500" />
+                      ) : (
+                        <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+                      )}
+                    </button>
+                  ) : (
+                    <div className="px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                      {group.title}
+                    </div>
+                  )}
+
+                  {isOpen && (
+                    <div className="space-y-1 pl-1">
+                      {visibleItems.map((item) => (
+                        <NavLink
+                          key={item.to}
+                          to={item.to}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className={({ isActive }) =>
+                            `block px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                              isActive
+                                ? 'bg-indigo-600 text-white font-bold shadow-sm shadow-indigo-600/30'
+                                : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60'
+                            }`
+                          }
+                        >
+                          {item.label}
+                        </NavLink>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </nav>
+
+          {/* USER FOOTER BAR */}
+          <div className="p-4 border-t border-slate-800 bg-slate-950/40 flex items-center justify-between">
+            <div className="flex items-center gap-3 overflow-hidden">
+              <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                <User className="w-4 h-4" />
+              </div>
+              <div className="truncate">
+                <p className="text-xs font-bold text-slate-200 truncate">{user?.fullName || 'Active User'}</p>
+                <p className="text-[10px] font-mono text-slate-500 uppercase">{user?.role?.replace('_', ' ')}</p>
+              </div>
+            </div>
+
+            <button
+              onClick={handleLogout}
+              title="Logout"
+              className="p-2 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          </div>
+        </aside>
+
+        {/* MAIN CONTENT AREA */}
+        <main className="flex-1 flex flex-col min-w-0 bg-slate-100 overflow-y-auto">
+          {/* PENDING PURCHASE ORDERS TOP NOTIFICATION BANNER */}
+          {pendingPOs.length > 0 && (
+            <div className="bg-amber-500 text-white px-4 py-2 flex items-center justify-between text-xs font-bold shadow-xs">
+              <div className="flex items-center gap-2">
+                <PackageCheck className="w-4 h-4 animate-bounce" />
+                <span>
+                  Pending Stock Delivery Alert: You have {pendingPOs.length} purchase order(s) waiting to be received into inventory stock.
+                </span>
+              </div>
+              <button
+                onClick={() => navigate('/suppliers')}
+                className="px-3 py-1 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg text-[11px] transition-all"
+              >
+                Receive Stock Deliveries
+              </button>
+            </div>
+          )}
+
+          <div className="flex-1">
+            <Outlet />
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+};

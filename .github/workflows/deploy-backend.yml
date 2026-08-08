@@ -1,0 +1,43 @@
+name: Deploy Backend to Hetzner VPS
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'mflow-v2-backend/**'
+      - '.github/workflows/deploy-backend.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Type Check & Lint
+        run: |
+          cd mflow-v2-backend
+          npm ci
+          npx tsc --noEmit
+
+      - name: Deploy to Hetzner VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HETZNER_HOST }}
+          username: ${{ secrets.HETZNER_USER }}
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          script: |
+            cd /var/www/mflow-v2-backend
+            git pull origin main
+            npm install
+            npx prisma generate
+            npx prisma migrate deploy
+            npm run build
+            pm2 reload mflow-backend || pm2 start dist/server.js --name mflow-backend
+            pm2 save
