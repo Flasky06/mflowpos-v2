@@ -36,11 +36,11 @@ export const RegisterPage: React.FC = () => {
       setAuth(user, accessToken);
       addToast({
         type: 'success',
-        title: 'Business Registered!',
-        message: 'Your 14-day Free Trial is active with your default Main Branch.',
+        title: 'Account Created',
+        message: 'Welcome! Let us complete your business profile setup.',
       });
 
-      navigate('/dashboard');
+      navigate('/onboarding');
     } catch (err: any) {
       const msg = err.response?.data?.message || 'Failed to register business account.';
       addToast({ type: 'error', title: 'Registration Failed', message: msg });
