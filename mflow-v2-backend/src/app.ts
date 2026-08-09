@@ -10,15 +10,36 @@ import { ApiResponse } from './utils/response.util';
 
 const app: Application = express();
 
-// Security Middlewares
-app.use(helmet());
+// Security & CORS Configuration
+const allowedOrigins = [
+  'https://mflowpos.com',
+  'https://www.mflowpos.com',
+  'https://admin.mflowpos.com',
+  'https://mflowpos-v2.pages.dev',
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:3000',
+  'http://localhost:8080',
+];
+
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  })
+);
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Echo requesting origin to support credentials: true
-      callback(null, origin || true);
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin) || origin.endsWith('.pages.dev')) {
+        return callback(null, true);
+      }
+      return callback(null, true);
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   })
 );
 
