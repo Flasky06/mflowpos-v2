@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8080/api/v1';
+const envUrl = (import.meta as any).env?.VITE_API_URL || (import.meta as any).env?.VITE_API_BASE_URL;
+const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const API_BASE_URL = envUrl || (isLocalhost ? 'http://localhost:8080/api/v1' : 'https://api.mflowpos.com/api/v1');
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
