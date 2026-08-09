@@ -5,6 +5,7 @@ import { ToastContainer } from './components/common/ToastContainer';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 
 // Pages
+import { LandingPage } from './pages/landing/LandingPage';
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
 import { AppLayout } from './components/layout/AppLayout';
@@ -52,7 +53,8 @@ export const App: React.FC = () => {
       <BrowserRouter>
         <ToastContainer />
         <Routes>
-          {/* Public Auth Routes */}
+          {/* Public Landing & Auth Routes */}
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
 
@@ -101,7 +103,7 @@ export const App: React.FC = () => {
           </Route>
 
           {/* Fallback Catch-All Redirect */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </ErrorBoundary>
