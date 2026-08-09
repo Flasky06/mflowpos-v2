@@ -15,7 +15,7 @@ interface AdminAuthState {
   logout: () => void;
 }
 
-export const useAdminAuthStore = create<AdminAuthState>((set) => {
+export const useAdminAuthStore = create<AdminAuthState>((set: any) => {
   const initialUser = sessionStorage.getItem('mflow_admin_user')
     ? JSON.parse(sessionStorage.getItem('mflow_admin_user')!)
     : null;
@@ -26,7 +26,7 @@ export const useAdminAuthStore = create<AdminAuthState>((set) => {
     token: initialToken,
     isAuthenticated: !!initialToken && !!initialUser,
 
-    setAuth: (user, token) => {
+    setAuth: (user: AdminUser, token: string) => {
       sessionStorage.setItem('mflow_admin_user', JSON.stringify(user));
       sessionStorage.setItem('mflow_admin_access_token', token);
       set({ user, token, isAuthenticated: true });
