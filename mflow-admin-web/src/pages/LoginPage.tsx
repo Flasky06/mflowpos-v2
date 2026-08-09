@@ -6,7 +6,7 @@ import { ShieldCheck, Eye, EyeOff, Lock, Mail } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const setAuth = useAdminAuthStore((state) => state.setAuth);
+  const setAuth = useAdminAuthStore((state: any) => state.setAuth);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
