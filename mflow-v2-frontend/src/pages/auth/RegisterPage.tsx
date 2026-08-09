@@ -12,7 +12,6 @@ export const RegisterPage: React.FC = () => {
     email: '',
     password: '',
     phone: '',
-    currency: 'KES',
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -29,7 +28,15 @@ export const RegisterPage: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const res = await apiClient.post('/auth/register', formData);
+      const payload = {
+        businessName: formData.businessName,
+        fullName: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+        phoneNumber: formData.phone,
+      };
+
+      const res = await apiClient.post('/auth/register', payload);
       const { user, tokens } = res.data.data;
       const accessToken = tokens?.accessToken || res.data.data?.accessToken;
 
@@ -53,11 +60,9 @@ export const RegisterPage: React.FC = () => {
     <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
       <div className="max-w-xl w-full bg-white p-8 rounded-3xl shadow-xl relative border border-slate-200">
         <div className="text-center mb-8">
-          <div className="w-14 h-14 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-2xl flex items-center justify-center mx-auto mb-4 font-black text-white text-xl shadow-md">
-            mF
-          </div>
-          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Register Business Account</h2>
-          <p className="text-sm text-slate-500 mt-1">Start your 14-day free trial with multi-branch capabilities</p>
+          <h1 className="text-2xl font-black text-indigo-600 tracking-tight mb-2">mflowpos.com</h1>
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Register Business Account</h2>
+          <p className="text-xs text-slate-500 mt-1">Start your 14-day free trial with multi-branch capabilities</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -136,44 +141,21 @@ export const RegisterPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  type="password"
-                  name="password"
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="••••••••"
-                  className="w-full bg-slate-50 border border-slate-300 rounded-xl py-3 px-4 pl-11 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-600 focus:bg-white text-sm"
-                />
-                <Lock className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5" />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
-                Base Currency
-              </label>
-              <select
-                name="currency"
-                value={formData.currency}
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+              Password
+            </label>
+            <div className="relative">
+              <input
+                type="password"
+                name="password"
+                required
+                value={formData.password}
                 onChange={handleChange}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl py-3 px-4 text-slate-900 focus:outline-none focus:border-indigo-600 focus:bg-white text-sm font-medium"
-              >
-                <option value="KES">KES (KSh)</option>
-                <option value="USD">USD ($)</option>
-                <option value="EUR">EUR (€)</option>
-                <option value="GBP">GBP (£)</option>
-                <option value="UGX">UGX (USh)</option>
-                <option value="TZS">TZS (TSh)</option>
-                <option value="NGN">NGN (₦)</option>
-                <option value="GHS">GHS (GH₵)</option>
-              </select>
+                placeholder="••••••••"
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl py-3 px-4 pl-11 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-600 focus:bg-white text-sm"
+              />
+              <Lock className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5" />
             </div>
           </div>
 

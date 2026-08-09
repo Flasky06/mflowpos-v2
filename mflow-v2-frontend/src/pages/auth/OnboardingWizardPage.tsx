@@ -150,11 +150,8 @@ export const OnboardingWizardPage: React.FC = () => {
         <div className="p-6 sm:p-8 space-y-6">
           {/* Header */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-2xl bg-indigo-600 flex items-center justify-center font-black text-white text-base shadow-md shadow-indigo-600/30">
-                mF
-              </div>
-              <span className="font-extrabold text-slate-900 tracking-tight text-lg">mFlow POS</span>
+            <div className="flex items-center gap-2 text-indigo-600 font-black tracking-tight text-xl">
+              mflowpos.com
             </div>
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wide bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
               Step {currentStep} of {totalSteps}

@@ -11,6 +11,8 @@ export const registerSchema = z.object({
   fullName: z.string().min(2, 'Full name must be at least 2 characters long'),
   businessName: z.string().min(2, 'Business name must be at least 2 characters long'),
   phoneNumber: z.string().optional(),
+  phone: z.string().optional(),
+  currency: z.string().optional(),
 });
 
 export const loginSchema = z.object({

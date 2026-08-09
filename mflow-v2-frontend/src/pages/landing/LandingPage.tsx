@@ -25,10 +25,7 @@ export const LandingPage: React.FC = () => {
       {/* Navigation Header */}
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-indigo-600 flex items-center justify-center font-black text-white text-lg shadow-md shadow-indigo-600/30">
-            mF
-          </div>
-          <span className="text-xl font-extrabold tracking-tight text-slate-900">mFlow POS</span>
+          <span className="text-xl font-black tracking-tight text-slate-900">mflowpos.com</span>
         </div>
 
         <div className="hidden md:flex items-center gap-8 text-xs font-bold text-slate-600">
@@ -270,10 +267,7 @@ export const LandingPage: React.FC = () => {
       <footer className="bg-white border-t border-slate-200 py-10 text-center text-xs text-slate-500 font-medium">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-white text-xs">
-              mF
-            </div>
-            <span className="font-bold text-slate-900 text-sm">mFlow POS</span>
+            <span className="font-extrabold text-slate-900 text-sm">mflowpos.com</span>
           </div>
           <p>© 2026 mFlow POS. All rights reserved. Built for high-volume retail operations.</p>
           <div className="flex items-center gap-4 text-slate-600">

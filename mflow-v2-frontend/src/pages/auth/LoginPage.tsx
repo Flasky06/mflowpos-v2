@@ -49,11 +49,9 @@ export const LoginPage: React.FC = () => {
     <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white p-8 rounded-3xl shadow-xl relative border border-slate-200">
         <div className="text-center mb-8">
-          <div className="w-14 h-14 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-2xl flex items-center justify-center mx-auto mb-4 font-black text-white text-xl shadow-md">
-            mF
-          </div>
-          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Sign in to mFlow POS</h2>
-          <p className="text-sm text-slate-500 mt-1">Enter your credentials to access your shop portal</p>
+          <h1 className="text-2xl font-black text-indigo-600 tracking-tight mb-2">mflowpos.com</h1>
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Sign in to Shop Portal</h2>
+          <p className="text-xs text-slate-500 mt-1">Enter your credentials to access your shop portal</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">

@@ -145,8 +145,8 @@ export const AppLayout: React.FC = () => {
             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
 
-          <span className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
-            mFlow POS
+          <span className="font-black text-lg tracking-tight text-white">
+            mflowpos.com
           </span>
         </div>
 
@@ -199,10 +199,10 @@ export const AppLayout: React.FC = () => {
           {/* DESKTOP BRAND LOGO HEADER */}
           <div className="p-6 border-b border-slate-800 hidden lg:flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
-                mFlow POS v2
+              <h1 className="text-xl font-black tracking-tight text-white">
+                mflowpos.com
               </h1>
-              <p className="text-[11px] font-medium text-slate-500 mt-0.5">Smart Retail & Inventory</p>
+              <p className="text-[11px] font-medium text-slate-400 mt-0.5">Smart Retail & Multi-Branch POS</p>
             </div>
           </div>
 

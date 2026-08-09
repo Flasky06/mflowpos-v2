@@ -23,6 +23,8 @@ export class AuthService {
     const hashedPassword = await PasswordUtil.hash(dto.password);
     const verificationCode = PasswordUtil.generate6DigitCode();
 
+    const phone = dto.phoneNumber || (dto as any).phone;
+
     // Execute atomic registration transaction
     const result = await prisma.$transaction(async (tx) => {
       // 1. Create Business
@@ -30,7 +32,7 @@ export class AuthService {
         data: {
           name: dto.businessName,
           email: dto.email.toLowerCase(),
-          phone: dto.phoneNumber,
+          phone,
         },
       });
 
@@ -39,7 +41,7 @@ export class AuthService {
         data: {
           name: `${dto.businessName} - Main Branch`,
           businessId: business.id,
-          phone: dto.phoneNumber,
+          phone,
         },
       });
 
