@@ -49,35 +49,38 @@ async function main() {
 
   // 2. Seed Default Super Admin
   const adminEmail = 'superadmin@mflowpos.com';
-  const existingSuperAdmin = await prisma.user.findUnique({
+  const superAdminPasswordHash = await bcrypt.hash('Admin@123456', 10);
+  
+  await prisma.user.upsert({
     where: { email: adminEmail },
+    update: {
+      password: superAdminPasswordHash,
+      role: Role.SUPER_ADMIN,
+      verified: true,
+      active: true,
+    },
+    create: {
+      email: adminEmail,
+      password: superAdminPasswordHash,
+      fullName: 'Platform Super Admin',
+      role: Role.SUPER_ADMIN,
+      verified: true,
+      active: true,
+    },
   });
-
-  if (!existingSuperAdmin) {
-    const hashedPassword = await bcrypt.hash('Admin@123456', 12);
-    await prisma.user.create({
-      data: {
-        email: adminEmail,
-        password: hashedPassword,
-        fullName: 'Platform Super Admin',
-        role: Role.SUPER_ADMIN,
-        verified: true,
-        active: true,
-      },
-    });
-    console.log('Default Super Admin created (superadmin@mflowpos.com / Admin@123456).');
-  }
+  console.log('Super Admin user upserted (superadmin@mflowpos.com / Admin@123456).');
 
   // 3. Seed Sample Demo Business Tenant
   const demoEmail = 'admin@apexretail.com';
+  const cashierEmail = 'cashier@apexretail.com';
+  const demoPasswordHash = await bcrypt.hash('Password123!', 10);
+  const growthPlan = await prisma.subscriptionPlan.findUnique({ where: { code: 'GROWTH' } });
+
   const existingDemo = await prisma.user.findUnique({
     where: { email: demoEmail },
   });
 
   if (!existingDemo) {
-    const hashedPassword = await bcrypt.hash('Password123!', 12);
-    const growthPlan = await prisma.subscriptionPlan.findUnique({ where: { code: 'GROWTH' } });
-
     await prisma.$transaction(async (tx) => {
       const business = await tx.business.create({
         data: {
@@ -114,7 +117,7 @@ async function main() {
         },
       });
 
-      const secondShop = await tx.shop.create({
+      await tx.shop.create({
         data: {
           name: 'Westlands Retail Outlet',
           location: 'Westlands Road, Nairobi',
@@ -128,7 +131,7 @@ async function main() {
       await tx.user.create({
         data: {
           email: demoEmail,
-          password: hashedPassword,
+          password: demoPasswordHash,
           fullName: 'Alexander Wright',
           role: Role.ADMIN,
           businessId: business.id,
@@ -141,8 +144,8 @@ async function main() {
       // Cashier User
       await tx.user.create({
         data: {
-          email: 'cashier@apexretail.com',
-          password: hashedPassword,
+          email: cashierEmail,
+          password: demoPasswordHash,
           fullName: 'Sarah Jenkins',
           role: Role.SALES_REP,
           customPermissions: ['CAN_CANCEL_SALE', 'CAN_ADJUST_STOCK'],
@@ -207,10 +210,18 @@ async function main() {
         });
       }
     });
-
     console.log('Demo business, shops, users & products seeded successfully.');
   } else {
-    console.log('Demo accounts already exist in database.');
+    // Update passwords for existing demo accounts to ensure known values
+    await prisma.user.update({
+      where: { email: demoEmail },
+      data: { password: demoPasswordHash, active: true },
+    });
+    await prisma.user.updateMany({
+      where: { email: cashierEmail },
+      data: { password: demoPasswordHash, active: true },
+    });
+    console.log('Demo account passwords updated to Password123!');
   }
 }
 
