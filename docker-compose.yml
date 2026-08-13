@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  # 1. PostgreSQL Database Service
+  postgres:
+    image: postgres:16-alpine
+    container_name: mflow-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: mflowpos
+      POSTGRES_USER: bony
+      POSTGRES_PASSWORD: password123
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U bony -d mflowpos']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Node.js Express API Backend Service
+  backend:
+    build:
+      context: ./mflow-v2-backend
+      dockerfile: Dockerfile
+    container_name: mflow-backend
+    restart: always
+    ports:
+      - '8080:8080'
+    environment:
+      PORT: 8080
+      NODE_ENV: production
+      DATABASE_URL: 'postgresql://bony:password123@postgres:5432/mflowpos?schema=public'
+      JWT_SECRET: 'super-secret-jwt-token-key-mflow-v2-2026'
+      JWT_REFRESH_SECRET: 'super-secret-refresh-jwt-key-mflow-v2-2026'
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # 3. Main POS Web Frontend Service (Cashier App)
+  frontend-pos:
+    build:
+      context: ./mflow-v2-frontend
+      dockerfile: Dockerfile
+    container_name: mflow-frontend-pos
+    restart: always
+    ports:
+      - '3000:80'
+    depends_on:
+      - backend
+
+  # 4. SuperAdmin Web Portal Service
+  frontend-admin:
+    build:
+      context: ./mflow-admin-web
+      dockerfile: Dockerfile
+    container_name: mflow-frontend-admin
+    restart: always
+    ports:
+      - '3001:80'
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
