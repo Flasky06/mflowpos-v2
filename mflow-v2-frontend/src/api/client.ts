@@ -1,7 +1,15 @@
 import axios from 'axios';
 
-// Production API Base URL (Hetzner VPS + Cloudflare Tunnel)
-const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || (import.meta as any).env?.VITE_API_URL || 'https://api.mflowpos.com/api/v1';
+// Safely resolve Production API Base URL (Hetzner VPS + Cloudflare Tunnel)
+const getApiBaseUrl = () => {
+  const envVal = (import.meta as any).env?.VITE_API_BASE_URL || (import.meta as any).env?.VITE_API_URL;
+  if (envVal && typeof envVal === 'string' && (envVal.startsWith('http://') || envVal.startsWith('https://'))) {
+    return envVal;
+  }
+  return 'https://api.mflowpos.com/api/v1';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
