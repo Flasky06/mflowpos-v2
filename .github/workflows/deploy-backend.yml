@@ -33,7 +33,8 @@ jobs:
           username: ${{ secrets.HETZNER_USER }}
           key: ${{ secrets.HETZNER_SSH_KEY }}
           script: |
-            git clone https://github.com/Flasky06/mflowpos-v2.git /tmp/mflow-ci-repo || (cd /tmp/mflow-ci-repo && git pull origin main)
+            rm -rf /tmp/mflow-ci-repo
+            git clone https://github.com/Flasky06/mflowpos-v2.git /tmp/mflow-ci-repo
             cp -r /tmp/mflow-ci-repo/mflow-v2-backend/* /var/www/mflow-v2-backend/
             rm -rf /tmp/mflow-ci-repo
             cd /var/www/mflow-v2-backend
