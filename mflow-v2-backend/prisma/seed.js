@@ -200,12 +200,12 @@ async function main() {
           },
         });
 
-        await tx.stockLevel.create({
+        await tx.productStock.create({
           data: {
             productId: product.id,
             shopId: mainShop.id,
             quantity: prodData.mainQty,
-            reorderLevel: 10,
+            minStockLevel: 5,
           },
         });
       }
