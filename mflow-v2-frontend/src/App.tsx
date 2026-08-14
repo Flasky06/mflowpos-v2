@@ -8,7 +8,7 @@ import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { LandingPage } from './pages/landing/LandingPage';
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
-import { OnboardingWizardPage } from './pages/auth/OnboardingWizardPage';
+import { VerifyEmailPage } from './pages/auth/VerifyEmailPage';
 import { AppLayout } from './components/layout/AppLayout';
 import { DashboardPage } from './pages/dashboard/DashboardPage';
 import { POSTerminalPage } from './pages/pos/POSTerminalPage';
@@ -58,14 +58,7 @@ export const App: React.FC = () => {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route
-            path="/onboarding"
-            element={
-              <ProtectedRoute>
-                <OnboardingWizardPage />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/verify-email" element={<VerifyEmailPage />} />
 
           {/* Protected Application Routes */}
           <Route

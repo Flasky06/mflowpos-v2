@@ -61,6 +61,20 @@ app.get('/health', (req: Request, res: Response) => {
   return ApiResponse.success(res, { status: 'UP', timestamp: new Date().toISOString() }, 'API Service Health Normal');
 });
 
+// Root API Engine Live Endpoint
+app.get('/', (req: Request, res: Response) => {
+  return ApiResponse.success(
+    res,
+    {
+      version: '2.0.0',
+      status: 'ONLINE',
+      docs: 'https://api.mflowpos.com/api-docs',
+      health: 'https://api.mflowpos.com/health',
+    },
+    'mFlow POS v2 API Engine Live'
+  );
+});
+
 // Mount Versioned API Routes (/api/v1)
 app.use('/api/v1', authLimiter, apiV1Routes);
 

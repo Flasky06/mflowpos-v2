@@ -36,18 +36,16 @@ export const RegisterPage: React.FC = () => {
         phoneNumber: formData.phone,
       };
 
-      const res = await apiClient.post('/auth/register', payload);
-      const { user, tokens } = res.data.data;
-      const accessToken = tokens?.accessToken || res.data.data?.accessToken;
+      await apiClient.post('/auth/register', payload);
 
-      setAuth(user, accessToken);
+      sessionStorage.setItem('mflow_pending_verify_email', formData.email);
       addToast({
-        type: 'success',
-        title: 'Account Created',
-        message: 'Welcome! Let us complete your business profile setup.',
+        type: 'info',
+        title: 'Confirmation Code Sent',
+        message: `A 6-digit confirmation code was sent to ${formData.email}`,
       });
 
-      navigate('/onboarding');
+      navigate('/verify-email', { state: { email: formData.email } });
     } catch (err: any) {
       const msg = err.response?.data?.message || 'Failed to register business account.';
       addToast({ type: 'error', title: 'Registration Failed', message: msg });

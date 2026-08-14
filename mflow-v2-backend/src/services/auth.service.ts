@@ -185,15 +185,40 @@ export class AuthService {
       throw new Error('Invalid or expired verification code');
     }
 
-    await prisma.user.update({
+    const updatedUser = await prisma.user.update({
       where: { id: user.id },
       data: {
         verified: true,
         verificationCode: null,
       },
+      include: {
+        business: {
+          include: {
+            subscription: {
+              include: { plan: true },
+            },
+          },
+        },
+        shop: true,
+      },
     });
 
-    return { message: 'Email verified successfully' };
+    const tokenPayload = {
+      userId: updatedUser.id,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      businessId: updatedUser.businessId,
+      shopId: updatedUser.shopId,
+    };
+    const accessToken = TokenUtil.generateAccessToken(tokenPayload);
+    const refreshToken = TokenUtil.generateRefreshToken(tokenPayload);
+
+    const { password, verificationCode: _, ...userWithoutSecrets } = updatedUser;
+
+    return {
+      user: userWithoutSecrets,
+      tokens: { accessToken, refreshToken },
+    };
   }
 
   static async resendVerificationCode(email: string) {
