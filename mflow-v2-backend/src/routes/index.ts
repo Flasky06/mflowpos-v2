@@ -15,6 +15,7 @@ import reportRoutes from './report.routes';
 import subscriptionRoutes from './subscription.routes';
 import superAdminAuthRoutes from './superadmin_auth.routes';
 import superAdminRoutes from './superadmin.routes';
+import webhookRoutes from './webhook.routes';
 import { ApiResponse } from '../utils/response.util';
 
 const router = Router();
@@ -50,6 +51,7 @@ router.use('/transfers', transferRoutes);
 router.use('/stock-returns', stockReturnRoutes);
 router.use('/reports', reportRoutes);
 router.use('/subscriptions', subscriptionRoutes);
+router.use('/webhooks', webhookRoutes);
 
 // Completely Decoupled SuperAdmin Control Desk Routes
 router.use('/superadmin/auth', superAdminAuthRoutes);
