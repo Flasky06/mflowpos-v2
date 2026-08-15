@@ -35,6 +35,7 @@ services:
       DATABASE_URL: 'postgresql://bony:password123@postgres:5432/mflowpos?schema=public'
       JWT_SECRET: 'super-secret-jwt-token-key-mflow-v2-2026'
       JWT_REFRESH_SECRET: 'super-secret-refresh-jwt-key-mflow-v2-2026'
+      OPENWA_BASE_URL: 'http://openwa:2785'
     depends_on:
       postgres:
         condition: service_healthy
@@ -63,5 +64,16 @@ services:
     depends_on:
       - backend
 
+  # 5. OpenWA WhatsApp Gateway Service (100% Free Self-Hosted Gateway)
+  openwa:
+    image: rmyndharis/openwa:latest
+    container_name: mflow-openwa
+    restart: always
+    ports:
+      - '2785:2785'
+    volumes:
+      - openwa_data:/app/data
+
 volumes:
   postgres_data:
+  openwa_data:

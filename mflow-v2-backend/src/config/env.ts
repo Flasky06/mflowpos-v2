@@ -15,4 +15,7 @@ export const ENV = {
   FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
   ULTRAMSG_INSTANCE_ID: process.env.ULTRAMSG_INSTANCE_ID || '',
   ULTRAMSG_TOKEN: process.env.ULTRAMSG_TOKEN || '',
+  OPENWA_BASE_URL: process.env.OPENWA_BASE_URL || '',
+  OPENWA_API_KEY: process.env.OPENWA_API_KEY || '',
+  OPENWA_SESSION_ID: process.env.OPENWA_SESSION_ID || '',
 };
