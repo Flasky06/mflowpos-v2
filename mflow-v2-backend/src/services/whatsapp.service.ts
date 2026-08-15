@@ -1,3 +1,4 @@
+import { OpenWAClient } from '@rmyndharis/openwa';
 import { ENV } from '../config/env';
 
 export class WhatsAppService {
@@ -17,35 +18,31 @@ export class WhatsAppService {
   }
 
   /**
-   * Send 6-Digit OTP Verification Code via OpenWA Gateway or UltraMsg API
+   * Send 6-Digit OTP Verification Code via OpenWA SDK or UltraMsg API
    */
   static async sendVerificationCode(phone: string, code: string, fullName: string) {
     const digitsOnly = this.getDigitsOnly(phone);
     const message = `Welcome to mFlow POS, ${fullName}!\n\nYour 6-digit confirmation code is: *${code}*\n\nValid for 10 minutes. Do not share this code.`;
 
-    // 1. Dispatch via OpenWA Docker Gateway if configured
+    // 1. Dispatch via official @rmyndharis/openwa SDK if configured
     if (ENV.OPENWA_BASE_URL && ENV.OPENWA_API_KEY && ENV.OPENWA_SESSION_ID) {
       const chatId = `${digitsOnly}@c.us`;
-      const url = `${ENV.OPENWA_BASE_URL.replace(/\/+$/, '')}/api/sessions/${ENV.OPENWA_SESSION_ID}/messages/send-text`;
 
       try {
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-API-Key': ENV.OPENWA_API_KEY,
-          },
-          body: JSON.stringify({
-            chatId,
-            text: message,
-          }),
+        const client = new OpenWAClient({
+          baseUrl: ENV.OPENWA_BASE_URL.replace(/\/+$/, ''),
+          apiKey: ENV.OPENWA_API_KEY,
         });
 
-        const resData: any = await response.json();
-        console.log(`[WhatsApp OpenWA] OTP sent to ${chatId}. Message ID:`, resData?.messageId || resData);
+        const result = await client.messages.sendText(ENV.OPENWA_SESSION_ID, {
+          chatId,
+          text: message,
+        });
+
+        console.log(`[WhatsApp OpenWA SDK] OTP sent to ${chatId}. Message ID:`, result.messageId);
         return;
       } catch (err: any) {
-        console.error(`[WhatsApp OpenWA] Failed to send to ${chatId}:`, err.message || err);
+        console.error(`[WhatsApp OpenWA SDK] Failed to send to ${chatId}:`, err.message || err);
       }
     }
 
