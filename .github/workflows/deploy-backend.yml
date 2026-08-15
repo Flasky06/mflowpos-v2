@@ -36,12 +36,36 @@ jobs:
           username: ${{ secrets.HETZNER_USER }}
           key: ${{ secrets.HETZNER_SSH_KEY }}
           port: 22
+          envs: DATABASE_URL,JWT_ACCESS_SECRET,JWT_REFRESH_SECRET,RESEND_API_KEY,FROM_EMAIL,FROM_NAME,FRONTEND_URL,OPENWA_BASE_URL,OPENWA_API_KEY,OPENWA_SESSION_ID
           script: |
             set -e
 
             echo "==> Pulling latest code..."
             cd /var/www/mflow-v2
             git pull origin main
+
+            echo "==> Writing .env from GitHub Secrets..."
+            cat > /var/www/mflow-v2/mflow-v2-backend/.env <<EOF
+            PORT=8080
+            NODE_ENV=production
+
+            DATABASE_URL=$DATABASE_URL
+
+            JWT_ACCESS_SECRET=$JWT_ACCESS_SECRET
+            JWT_REFRESH_SECRET=$JWT_REFRESH_SECRET
+            JWT_ACCESS_EXPIRATION=15m
+            JWT_REFRESH_EXPIRATION=7d
+
+            RESEND_API_KEY=$RESEND_API_KEY
+            FROM_EMAIL=$FROM_EMAIL
+            FROM_NAME=$FROM_NAME
+
+            FRONTEND_URL=$FRONTEND_URL
+
+            OPENWA_BASE_URL=$OPENWA_BASE_URL
+            OPENWA_API_KEY=$OPENWA_API_KEY
+            OPENWA_SESSION_ID=$OPENWA_SESSION_ID
+            EOF
 
             echo "==> Installing dependencies..."
             cd mflow-v2-backend
@@ -64,3 +88,15 @@ jobs:
             pm2 save
 
             echo "==> Done! API is live."
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_ACCESS_SECRET: ${{ secrets.JWT_ACCESS_SECRET }}
+          JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+          FROM_NAME: ${{ secrets.FROM_NAME }}
+          FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+          OPENWA_BASE_URL: ${{ secrets.OPENWA_BASE_URL }}
+          OPENWA_API_KEY: ${{ secrets.OPENWA_API_KEY }}
+          OPENWA_SESSION_ID: ${{ secrets.OPENWA_SESSION_ID }}
+
