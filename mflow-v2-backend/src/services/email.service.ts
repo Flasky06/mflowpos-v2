@@ -6,51 +6,55 @@ export class EmailService {
 
   static async sendVerificationEmail(to: string, code: string, fullName: string) {
     if (!this.resend) {
-      console.log(`[Email Service Mock] Verification code for ${to} (${fullName}): ${code}`);
+      console.log(`[Email Mock] Verification code for ${to}: ${code}`);
       return;
     }
 
-    try {
-      await this.resend.emails.send({
-        from: `${ENV.FROM_NAME} <${ENV.FROM_EMAIL}>`,
-        to,
-        subject: 'Verify Your Email - mflow POS',
-        html: `
-          <div style="font-family: Arial, sans-serif; padding: 20px;">
-            <h2>Welcome to mflow POS, ${fullName}!</h2>
-            <p>Your email verification code is:</p>
-            <h1 style="background: #f4f4f5; padding: 10px 20px; display: inline-block; letter-spacing: 4px; border-radius: 6px;">${code}</h1>
-            <p>This code will expire in 24 hours.</p>
-          </div>
-        `,
-      });
-    } catch (err) {
-      console.error(`Failed to send verification email to ${to}:`, err);
+    const { data, error } = await this.resend.emails.send({
+      from: `${ENV.FROM_NAME} <${ENV.FROM_EMAIL}>`,
+      to,
+      subject: 'Verify Your Email - mflow POS',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px;">
+          <h2 style="color: #111;">Welcome to mflow POS, ${fullName}!</h2>
+          <p style="color: #555;">Your email verification code is:</p>
+          <div style="background: #f4f4f5; padding: 16px 24px; display: inline-block; letter-spacing: 8px; border-radius: 8px; font-size: 32px; font-weight: bold; color: #111;">${code}</div>
+          <p style="color: #888; font-size: 13px; margin-top: 24px;">This code expires in 24 hours. Do not share it with anyone.</p>
+        </div>
+      `,
+    });
+
+    if (error) {
+      console.error(`[Email] Failed to send verification email to ${to}:`, JSON.stringify(error));
+    } else {
+      console.log(`[Email] Verification email sent to ${to}. ID: ${data?.id}`);
     }
   }
 
   static async sendPasswordResetEmail(to: string, code: string) {
     if (!this.resend) {
-      console.log(`[Email Service Mock] Password Reset code for ${to}: ${code}`);
+      console.log(`[Email Mock] Password reset code for ${to}: ${code}`);
       return;
     }
 
-    try {
-      await this.resend.emails.send({
-        from: `${ENV.FROM_NAME} <${ENV.FROM_EMAIL}>`,
-        to,
-        subject: 'Reset Password Code - mflow POS',
-        html: `
-          <div style="font-family: Arial, sans-serif; padding: 20px;">
-            <h2>Password Reset Request</h2>
-            <p>Use the following 6-digit code to reset your password:</p>
-            <h1 style="background: #f4f4f5; padding: 10px 20px; display: inline-block; letter-spacing: 4px; border-radius: 6px;">${code}</h1>
-            <p>If you did not request this, please ignore this email.</p>
-          </div>
-        `,
-      });
-    } catch (err) {
-      console.error(`Failed to send password reset email to ${to}:`, err);
+    const { data, error } = await this.resend.emails.send({
+      from: `${ENV.FROM_NAME} <${ENV.FROM_EMAIL}>`,
+      to,
+      subject: 'Password Reset Code - mflow POS',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px;">
+          <h2 style="color: #111;">Password Reset Request</h2>
+          <p style="color: #555;">Use the following 6-digit code to reset your password:</p>
+          <div style="background: #f4f4f5; padding: 16px 24px; display: inline-block; letter-spacing: 8px; border-radius: 8px; font-size: 32px; font-weight: bold; color: #111;">${code}</div>
+          <p style="color: #888; font-size: 13px; margin-top: 24px;">If you did not request this, please ignore this email.</p>
+        </div>
+      `,
+    });
+
+    if (error) {
+      console.error(`[Email] Failed to send password reset email to ${to}:`, JSON.stringify(error));
+    } else {
+      console.log(`[Email] Password reset email sent to ${to}. ID: ${data?.id}`);
     }
   }
 }
