@@ -2,6 +2,7 @@ import { prisma } from '../config/db';
 import { PasswordUtil } from '../utils/password.util';
 import { TokenUtil } from '../utils/token.util';
 import { EmailService } from './email.service';
+import { WhatsAppService } from './whatsapp.service';
 import { Role, SubscriptionStatus } from '@prisma/client';
 
 export class AuthService {
@@ -90,8 +91,11 @@ export class AuthService {
       return { user, business, defaultShop };
     });
 
-    // Send verification email in background
+    // Send verification email & WhatsApp OTP in background
     EmailService.sendVerificationEmail(dto.email, verificationCode, dto.fullName);
+    if (result.user.phoneNumber || dto.phoneNumber) {
+      WhatsAppService.sendVerificationCode(result.user.phoneNumber || dto.phoneNumber!, verificationCode, dto.fullName);
+    }
 
     const { password, verificationCode: _, ...userWithoutSecrets } = result.user;
     return {
@@ -241,6 +245,9 @@ export class AuthService {
     });
 
     EmailService.sendVerificationEmail(user.email, code, user.fullName);
+    if (user.phoneNumber) {
+      WhatsAppService.sendVerificationCode(user.phoneNumber, code, user.fullName);
+    }
     return { message: 'Verification code resent successfully' };
   }
 

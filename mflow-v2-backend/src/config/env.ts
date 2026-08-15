@@ -13,4 +13,6 @@ export const ENV = {
   FROM_EMAIL: process.env.FROM_EMAIL || 'noreply@mflowpos.com',
   FROM_NAME: process.env.FROM_NAME || 'mflow pos',
   FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
+  ULTRAMSG_INSTANCE_ID: process.env.ULTRAMSG_INSTANCE_ID || '',
+  ULTRAMSG_TOKEN: process.env.ULTRAMSG_TOKEN || '',
 };
