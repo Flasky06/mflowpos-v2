@@ -11,6 +11,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -19,28 +20,47 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: mflow-v2-backend/package-lock.json
 
-      - name: Type Check & Lint
+      - name: Type Check
         run: |
           cd mflow-v2-backend
           npm ci
           npx tsc --noEmit
 
-      - name: Deploy to Hetzner VPS via SSH
+      - name: Deploy to Hetzner via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HETZNER_HOST }}
           username: ${{ secrets.HETZNER_USER }}
           key: ${{ secrets.HETZNER_SSH_KEY }}
+          port: 22
           script: |
-            rm -rf /tmp/mflow-ci-repo
-            git clone https://github.com/Flasky06/mflowpos-v2.git /tmp/mflow-ci-repo
-            cp -r /tmp/mflow-ci-repo/mflow-v2-backend/* /var/www/mflow-v2-backend/
-            rm -rf /tmp/mflow-ci-repo
-            cd /var/www/mflow-v2-backend
-            npm install
+            set -e
+
+            echo "==> Pulling latest code..."
+            cd /var/www/mflow-v2
+            git pull origin main
+
+            echo "==> Installing dependencies..."
+            cd mflow-v2-backend
+            npm ci --omit=dev
+
+            echo "==> Generating Prisma client..."
             npx prisma generate
+
+            echo "==> Applying DB schema..."
             npx prisma db push --accept-data-loss
-            node prisma/seed.js
+
+            echo "==> Seeding database..."
+            node prisma/seed.js || true
+
+            echo "==> Building TypeScript..."
             npm run build
-            pm2 restart mflow-backend
+
+            echo "==> Restarting PM2 process..."
+            pm2 restart mflow-backend --update-env || pm2 start dist/server.js --name mflow-backend
+            pm2 save
+
+            echo "==> Done! API is live."
