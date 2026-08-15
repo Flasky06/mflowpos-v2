@@ -36,7 +36,7 @@ jobs:
           username: ${{ secrets.HETZNER_USER }}
           key: ${{ secrets.HETZNER_SSH_KEY }}
           port: 22
-          envs: DATABASE_URL,JWT_ACCESS_SECRET,JWT_REFRESH_SECRET,RESEND_API_KEY,FROM_EMAIL,FROM_NAME,FRONTEND_URL,OPENWA_BASE_URL,OPENWA_API_KEY,OPENWA_SESSION_ID
+          envs: DATABASE_URL,JWT_ACCESS_SECRET,JWT_REFRESH_SECRET,RESEND_API_KEY,FROM_EMAIL,FROM_NAME,FRONTEND_URL,OPENWA_BASE_URL,OPENWA_API_KEY,OPENWA_SESSION_ID,HETZNER_HOST,HETZNER_USER
           script: |
             set -e
 
@@ -89,14 +89,16 @@ jobs:
 
             echo "==> Done! API is live."
         env:
+          # Sensitive — stored as GitHub Secrets
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           JWT_ACCESS_SECRET: ${{ secrets.JWT_ACCESS_SECRET }}
           JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-          FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
-          FROM_NAME: ${{ secrets.FROM_NAME }}
-          FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
-          OPENWA_BASE_URL: ${{ secrets.OPENWA_BASE_URL }}
           OPENWA_API_KEY: ${{ secrets.OPENWA_API_KEY }}
-          OPENWA_SESSION_ID: ${{ secrets.OPENWA_SESSION_ID }}
+          # Non-sensitive — stored as GitHub Variables
+          FROM_EMAIL: ${{ vars.FROM_EMAIL }}
+          FROM_NAME: ${{ vars.FROM_NAME }}
+          FRONTEND_URL: ${{ vars.FRONTEND_URL }}
+          OPENWA_BASE_URL: ${{ vars.OPENWA_BASE_URL }}
+          OPENWA_SESSION_ID: ${{ vars.OPENWA_SESSION_ID }}
 
