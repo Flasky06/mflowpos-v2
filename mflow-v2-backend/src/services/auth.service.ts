@@ -105,20 +105,43 @@ export class AuthService {
     };
   }
 
-  static async login(email: string, passwordStr: string) {
-    const user = await prisma.user.findUnique({
-      where: { email: email.toLowerCase() },
-      include: {
-        business: {
+  static async login(identifier: string, passwordStr: string) {
+    const cleanId = identifier.trim().toLowerCase();
+    const isEmail = cleanId.includes('@');
+
+    const user = isEmail
+      ? await prisma.user.findUnique({
+          where: { email: cleanId },
           include: {
-            subscription: {
-              include: { plan: true },
+            business: {
+              include: {
+                subscription: {
+                  include: { plan: true },
+                },
+              },
             },
+            shop: true,
           },
-        },
-        shop: true,
-      },
-    });
+        })
+      : await prisma.user.findFirst({
+          where: {
+            OR: [
+              { phoneNumber: cleanId },
+              { phoneNumber: '+' + cleanId.replace(/[^0-9]/g, '') },
+              { phoneNumber: '0' + cleanId.replace(/[^0-9]/g, '').slice(-9) },
+            ],
+          },
+          include: {
+            business: {
+              include: {
+                subscription: {
+                  include: { plan: true },
+                },
+              },
+            },
+            shop: true,
+          },
+        });
 
     if (!user) {
       throw new Error('Invalid email or password');
