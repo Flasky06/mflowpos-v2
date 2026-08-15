@@ -10,6 +10,9 @@ import { ApiResponse } from './utils/response.util';
 
 const app: Application = express();
 
+// Trust Nginx reverse proxy — required for rate limiting and IP detection
+app.set('trust proxy', 1);
+
 // Security & CORS Configuration
 const allowedOrigins = [
   'https://mflowpos.com',
