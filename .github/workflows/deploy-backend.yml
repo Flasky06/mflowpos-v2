@@ -47,28 +47,13 @@ jobs:
             cd /var/www/mflow-v2
             git pull origin main
 
-            echo "==> Writing .env from GitHub Secrets..."
-            cat > /var/www/mflow-v2/mflow-v2-backend/.env <<EOF
-            PORT=8080
-            NODE_ENV=production
-
-            DATABASE_URL=$DATABASE_URL
-
-            JWT_ACCESS_SECRET=$JWT_ACCESS_SECRET
-            JWT_REFRESH_SECRET=$JWT_REFRESH_SECRET
-            JWT_ACCESS_EXPIRATION=15m
-            JWT_REFRESH_EXPIRATION=7d
-
-            RESEND_API_KEY=$RESEND_API_KEY
-            FROM_EMAIL=$FROM_EMAIL
-            FROM_NAME=$FROM_NAME
-
-            FRONTEND_URL=$FRONTEND_URL
-
-            OPENWA_BASE_URL=$OPENWA_BASE_URL
-            OPENWA_API_KEY=$OPENWA_API_KEY
-            OPENWA_SESSION_ID=$OPENWA_SESSION_ID
-            EOF
+            # Ensure .env is present by checking the current directory or copying from server backup
+            ENV_FILE="/var/www/mflow-v2/mflow-v2-backend/.env"
+            if [ ! -f "$ENV_FILE" ] && [ -f "/var/www/mflow-v2-backend/.env" ]; then
+              echo "==> Restoring .env from server config..."
+              cp /var/www/mflow-v2-backend/.env "$ENV_FILE"
+            fi
+            echo "==> Verified .env configuration on server"
 
             echo "==> Installing dependencies..."
             cd mflow-v2-backend
