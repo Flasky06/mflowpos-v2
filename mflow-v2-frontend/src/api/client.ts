@@ -36,6 +36,30 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // Handle 401 Unauthorized (Expired Access Token -> Auto Refresh)
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      const refreshToken = sessionStorage.getItem('mflow_refresh_token');
+
+      if (refreshToken) {
+        try {
+          const res = await axios.post(`${API_BASE_URL}/auth/refresh-token`, { refreshToken });
+          const newAccessToken = res.data?.data?.accessToken;
+          if (newAccessToken) {
+            sessionStorage.setItem('mflow_access_token', newAccessToken);
+            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+            return apiClient(originalRequest);
+          }
+        } catch (refreshErr) {
+          sessionStorage.removeItem('mflow_access_token');
+          sessionStorage.removeItem('mflow_refresh_token');
+          sessionStorage.removeItem('mflow_user');
+          window.location.href = '/login';
+          return Promise.reject(refreshErr);
+        }
+      }
+    }
+
     // Handle 402 Payment Required (Paywall Expired)
     if (error.response?.status === 402) {
       window.dispatchEvent(
