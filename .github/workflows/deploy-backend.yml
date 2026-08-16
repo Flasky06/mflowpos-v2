@@ -47,13 +47,8 @@ jobs:
             cd /var/www/mflow-v2
             git pull origin main
 
-            # Always copy the working server .env to guarantee DATABASE_URL is valid
-            ENV_FILE="/var/www/mflow-v2/mflow-v2-backend/.env"
-            if [ -f "/var/www/mflow-v2-backend/.env" ]; then
-              echo "==> Syncing verified .env from server config..."
-              cp -f /var/www/mflow-v2-backend/.env "$ENV_FILE"
-            fi
-            echo "==> Verified .env configuration on server"
+            echo "==> Verified .env configuration:"
+            head -n 6 /var/www/mflow-v2/mflow-v2-backend/.env
 
             echo "==> Installing dependencies..."
             cd mflow-v2-backend
