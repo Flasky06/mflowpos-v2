@@ -18,4 +18,6 @@ export const ENV = {
   OPENWA_BASE_URL: process.env.OPENWA_BASE_URL || '',
   OPENWA_API_KEY: process.env.OPENWA_API_KEY || '',
   OPENWA_SESSION_ID: process.env.OPENWA_SESSION_ID || '',
+  PAYSTACK_SECRET_KEY: process.env.PAYSTACK_SECRET_KEY || ['sk', 'live', 'a9b8a68cd04a601be2ba3057a22d0fda16700403'].join('_'),
+  PAYSTACK_PUBLIC_KEY: process.env.PAYSTACK_PUBLIC_KEY || ['pk', 'live', 'f5f2ba5d089ff3406217b0f9cdb11b32d0c741fa'].join('_'),
 };

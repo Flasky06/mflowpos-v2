@@ -124,6 +124,69 @@ export const ProfilePage: React.FC = () => {
         </div>
       </div>
 
+      {/* Subscription & Paystack Billing Card */}
+      <div className="glass-panel p-6 rounded-2xl border border-slate-200 bg-white shadow-xs space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+          <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+            <Shield className="w-4 h-4 text-indigo-600" />
+            Business Subscription & Billing
+          </h3>
+          <span className="text-xs font-black uppercase tracking-wider bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200">
+            {(user?.business as any)?.subscription?.status || 'Active Plan'}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+          <div>
+            <label className="text-xs font-semibold text-slate-500 uppercase block mb-1">Current Plan</label>
+            <p className="font-bold text-slate-900 bg-slate-50 p-3 rounded-xl border border-slate-200">
+              mflow POS Standard
+            </p>
+          </div>
+
+          <div>
+            <label className="text-xs font-semibold text-slate-500 uppercase block mb-1">Pricing Rate</label>
+            <p className="font-bold text-indigo-600 bg-indigo-50 p-3 rounded-xl border border-indigo-200">
+              KSh 1,000 / month
+            </p>
+          </div>
+
+          <div>
+            <label className="text-xs font-semibold text-slate-500 uppercase block mb-1">Branches & Staff Limit</label>
+            <p className="font-bold text-slate-900 bg-slate-50 p-3 rounded-xl border border-slate-200">
+              Unlimited
+            </p>
+          </div>
+        </div>
+
+        <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+          <div className="text-xs text-slate-600">
+            <p className="font-bold text-slate-900">Renew or extend your business subscription</p>
+            <p className="text-[11px] text-slate-500">Instant activation with automated M-PESA STK push or Card</p>
+          </div>
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                const res = await apiClient.post('/subscriptions/paystack/initialize', {});
+                if (res.data?.data?.authorizationUrl) {
+                  window.location.href = res.data.data.authorizationUrl;
+                }
+              } catch (err: any) {
+                addToast({
+                  type: 'error',
+                  title: 'Payment Error',
+                  message: err.response?.data?.message || 'Unable to connect to Paystack',
+                });
+              }
+            }}
+            className="py-2.5 px-5 bg-indigo-600 hover:bg-indigo-700 active:scale-98 text-white font-bold rounded-xl text-xs transition-all shadow-md shadow-indigo-600/20 cursor-pointer shrink-0"
+          >
+            Renew via Paystack (KSh 1,000)
+          </button>
+        </div>
+      </div>
+
       {/* Operation Mode Selection Form */}
       <div className="glass-panel p-6 rounded-2xl border border-slate-200 bg-white shadow-xs">
         <h3 className="text-base font-bold text-slate-900 border-b border-slate-200 pb-3 flex items-center gap-2 mb-4">
