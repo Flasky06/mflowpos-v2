@@ -60,18 +60,18 @@ export class AuthService {
         },
       });
 
-      // 4. Attach 14-Day Free Trial Subscription
-      let trialPlan = await tx.subscriptionPlan.findUnique({
-        where: { code: 'FREE_TRIAL' },
+      // 4. Attach 14-Day Free Trial Subscription for Single Standard Plan (KES 1,000 / mo)
+      let standardPlan = await tx.subscriptionPlan.findUnique({
+        where: { code: 'STANDARD' },
       });
 
-      if (!trialPlan) {
-        trialPlan = await tx.subscriptionPlan.create({
+      if (!standardPlan) {
+        standardPlan = await tx.subscriptionPlan.create({
           data: {
-            name: 'Free Trial',
-            code: 'FREE_TRIAL',
-            price: 0,
-            maxShops: 1,
+            name: 'mflow POS',
+            code: 'STANDARD',
+            price: 1000.0,
+            maxShops: 999,
           },
         });
       }
@@ -82,7 +82,7 @@ export class AuthService {
       await tx.businessSubscription.create({
         data: {
           businessId: business.id,
-          planId: trialPlan.id,
+          planId: standardPlan.id,
           status: SubscriptionStatus.TRIALING,
           endDate: trialEndDate,
         },

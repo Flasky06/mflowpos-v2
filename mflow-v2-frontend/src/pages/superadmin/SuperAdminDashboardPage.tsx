@@ -30,7 +30,7 @@ export const SuperAdminDashboardPage: React.FC = () => {
   const [isExtendTrialModalOpen, setIsExtendTrialModalOpen] = useState(false);
 
   const [cashPaymentForm, setCashPaymentForm] = useState({
-    planCode: 'STARTER',
+    planCode: 'STANDARD',
     amount: '',
     paymentMethod: 'CASH',
     transactionRef: '',
@@ -437,9 +437,7 @@ export const SuperAdminDashboardPage: React.FC = () => {
                   onChange={(e) => setCashPaymentForm({ ...cashPaymentForm, planCode: e.target.value })}
                   className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-xl py-2 px-3 focus:outline-none focus:border-indigo-600 font-medium"
                 >
-                  <option value="STARTER">STARTER (KSh 1,000/mo - 1 Shop)</option>
-                  <option value="GROWTH">GROWTH (KSh 2,000/mo - 3 Shops)</option>
-                  <option value="ENTERPRISE">ENTERPRISE (KSh 3,500/mo - 5 Shops)</option>
+                  <option value="STANDARD">STANDARD (KSh 1,000/mo - Unlimited Shops)</option>
                 </select>
               </div>
 

@@ -259,17 +259,15 @@ export const OnboardingWizardPage: React.FC = () => {
                   ]}
                 />
 
-                <SelectField
-                  label="Subscription Plan Tier *"
-                  required
-                  value={preferredPlan}
-                  onChange={(e) => setPreferredPlan(e.target.value)}
-                  options={[
-                    { value: 'STARTER', label: 'Starter Plan (KSh 1,000 / mo - 1 Branch)' },
-                    { value: 'GROWTH', label: 'Growth Plan (KSh 2,000 / mo - 3 Branches)' },
-                    { value: 'ENTERPRISE', label: 'Enterprise Plan (KSh 3,500 / mo - 5+ Branches)' },
-                  ]}
-                />
+                <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-bold text-slate-900">mflow POS Standard Plan</p>
+                      <p className="text-[11px] text-slate-500 font-medium">All features included · Unlimited shops & cashiers</p>
+                    </div>
+                    <span className="text-sm font-black text-indigo-600">KSh 1,000 <span className="text-[10px] font-bold text-slate-400">/ mo</span></span>
+                  </div>
+                </div>
               </div>
 
               <div className="p-3.5 bg-indigo-50 border border-indigo-200 rounded-2xl flex items-start gap-3">

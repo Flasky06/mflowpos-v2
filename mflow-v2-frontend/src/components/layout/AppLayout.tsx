@@ -206,26 +206,7 @@ export const AppLayout: React.FC = () => {
             </div>
           </div>
 
-          {/* DESKTOP ACTIVE BRANCH SELECTOR */}
-          <div className="p-4 border-b border-slate-800 hidden lg:block">
-            <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-500 block mb-1.5">
-              Active Branch Location
-            </label>
-            <div className="relative">
-              <select
-                value={activeShopId || ''}
-                onChange={(e) => setActiveShopId(e.target.value)}
-                className="w-full bg-slate-800/90 hover:bg-slate-800 border border-slate-700 text-white text-xs font-bold rounded-xl py-2 px-3 pl-8 appearance-none focus:outline-none focus:border-indigo-500 transition-colors"
-              >
-                {shops.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name} ({s.shopType})
-                  </option>
-                ))}
-              </select>
-              <Store className="w-4 h-4 text-indigo-400 absolute left-2.5 top-2.5 pointer-events-none" />
-            </div>
-          </div>
+
 
           {/* ACCORDION SIDEBAR MENU ITEMS */}
           <nav className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">

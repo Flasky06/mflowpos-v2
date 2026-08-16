@@ -179,83 +179,38 @@ export const LandingPage: React.FC = () => {
           <p className="text-slate-600 text-sm font-medium">No hidden transaction fees. Start your 14-day free trial today.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-14">
-          {/* Starter Plan */}
-          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xs flex flex-col justify-between space-y-6">
-            <div className="space-y-4">
-              <span className="text-xs font-bold uppercase text-slate-500 tracking-wide">Single Shop</span>
-              <h4 className="text-2xl font-extrabold text-slate-900">Starter Plan</h4>
-              <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-black text-slate-900">KSh 1,000</span>
-                <span className="text-xs text-slate-500 font-bold">/ month</span>
+        <div className="max-w-2xl mx-auto mt-14">
+          {/* All-in-One Flat Plan */}
+          <div className="bg-white p-8 sm:p-10 rounded-3xl border-2 border-indigo-600 shadow-xl shadow-indigo-600/10 flex flex-col justify-between space-y-8 relative">
+            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-indigo-600 text-white px-4 py-1 rounded-full text-[11px] font-black uppercase tracking-widest shadow-sm">
+              All Features Included
+            </div>
+
+            <div className="space-y-4 text-center">
+              <span className="text-xs font-bold uppercase text-indigo-600 tracking-wide">Simple Flat Subscription</span>
+              <h4 className="text-3xl font-extrabold text-slate-900">mflow POS Standard</h4>
+              <div className="flex items-baseline justify-center gap-1.5 pt-2">
+                <span className="text-5xl font-black text-slate-900">KSh 1,000</span>
+                <span className="text-sm text-slate-500 font-bold">/ month per business</span>
               </div>
-              <p className="text-xs text-slate-600 font-medium">Ideal for single retail shops, boutiques, and pharmacies.</p>
+              <p className="text-xs text-slate-600 font-medium max-w-md mx-auto">
+                No branch limits. No hidden fees. Full access to all point of sale, inventory, and accounting features.
+              </p>
 
-              <ul className="space-y-3 pt-4 border-t border-slate-200 text-xs text-slate-700 font-medium">
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> 1 Branch Shop Location</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> Staff & Cashier Accounts</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> Full POS Checkout & Thermal Receipts</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> Customer Credit Ledger</li>
-              </ul>
-            </div>
-            <Link to="/register">
-              <Button variant="outline" fullWidth className="border-slate-300 text-slate-800 hover:bg-slate-100">
-                Start 14-Day Free Trial
-              </Button>
-            </Link>
-          </div>
-
-          {/* Growth Plan (Featured) */}
-          <div className="bg-white p-8 rounded-3xl border-2 border-indigo-600 shadow-xl shadow-indigo-600/10 flex flex-col justify-between space-y-6 relative">
-            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-indigo-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm">
-              Most Popular
-            </div>
-
-            <div className="space-y-4">
-              <span className="text-xs font-bold uppercase text-indigo-600 tracking-wide">Multi-Branch</span>
-              <h4 className="text-2xl font-extrabold text-slate-900">Growth Plan</h4>
-              <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-black text-slate-900">KSh 2,000</span>
-                <span className="text-xs text-slate-500 font-bold">/ month</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-6 border-t border-slate-200 text-xs text-slate-800 font-semibold text-left">
+                <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" /> Unlimited Branch Shop Locations</div>
+                <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" /> Unlimited Staff & Cashier Accounts</div>
+                <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" /> Thermal Receipts & Barcode Scanner</div>
+                <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" /> Multi-Branch Stock & Transfers</div>
+                <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" /> Customer Credit & Ledger Tracking</div>
+                <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" /> Supplier Purchase Orders & Deliveries</div>
+                <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" /> Profit & Loss Financial Reports</div>
+                <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" /> Complete Audit Trail & Activity Logs</div>
               </div>
-              <p className="text-xs text-slate-600 font-medium">Perfect for growing retail businesses with up to 3 branch locations.</p>
-
-              <ul className="space-y-3 pt-4 border-t border-slate-200 text-xs text-slate-800 font-semibold">
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> Up to 3 Branch Shop Locations</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> Staff & Manager Accounts</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> Inter-Shop Inventory Transfers</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> Supplier Purchase Orders & Deliveries</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> Profit & Loss Financial Reports</li>
-              </ul>
             </div>
-            <Link to="/register">
-              <Button variant="primary" fullWidth size="md">
-                Start 14-Day Free Trial
-              </Button>
-            </Link>
-          </div>
 
-          {/* Enterprise Plan */}
-          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xs flex flex-col justify-between space-y-6">
-            <div className="space-y-4">
-              <span className="text-xs font-bold uppercase text-slate-500 tracking-wide">Large Chain</span>
-              <h4 className="text-2xl font-extrabold text-slate-900">Enterprise Plan</h4>
-              <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-black text-slate-900">KSh 3,500</span>
-                <span className="text-xs text-slate-500 font-bold">/ month</span>
-              </div>
-              <p className="text-xs text-slate-600 font-medium">Designed for retail chains and franchises requiring multi-branch control.</p>
-
-              <ul className="space-y-3 pt-4 border-t border-slate-200 text-xs text-slate-700 font-medium">
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> Up to 5+ Branch Shop Locations</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> Unlimited Staff Accounts</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> Custom Permission Overrides</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> Full Security Audit Trail & Activity Logs</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> Priority Support</li>
-              </ul>
-            </div>
-            <Link to="/register">
-              <Button variant="outline" fullWidth className="border-slate-300 text-slate-800 hover:bg-slate-100">
+            <Link to="/register" className="block">
+              <Button variant="primary" fullWidth size="lg" className="py-3.5 text-sm font-bold shadow-md shadow-indigo-600/20">
                 Start 14-Day Free Trial
               </Button>
             </Link>

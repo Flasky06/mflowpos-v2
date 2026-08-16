@@ -6,46 +6,21 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Starting database seeding...');
 
-  // 1. Seed Subscription Plans with KSh Pricing
-  const plans = [
-    {
-      name: 'Free Trial',
-      code: 'FREE_TRIAL',
-      price: 0,
-      billingPeriod: BillingPeriod.MONTHLY,
-      maxShops: 1,
-    },
-    {
-      name: 'Starter Plan',
-      code: 'STARTER',
-      price: 1000.0,
-      billingPeriod: BillingPeriod.MONTHLY,
-      maxShops: 1,
-    },
-    {
-      name: 'Growth Plan',
-      code: 'GROWTH',
-      price: 2000.0,
-      billingPeriod: BillingPeriod.MONTHLY,
-      maxShops: 3,
-    },
-    {
-      name: 'Enterprise Plan',
-      code: 'ENTERPRISE',
-      price: 3500.0,
-      billingPeriod: BillingPeriod.MONTHLY,
-      maxShops: 5,
-    },
-  ];
+  // 1. Seed Single Standard Plan — KES 1,000/month, unlimited shops
+  const standardPlan = {
+    name: 'mflow POS',
+    code: 'STANDARD',
+    price: 1000.0,
+    billingPeriod: BillingPeriod.MONTHLY,
+    maxShops: 999, // effectively unlimited
+  };
 
-  for (const plan of plans) {
-    await prisma.subscriptionPlan.upsert({
-      where: { code: plan.code },
-      update: plan,
-      create: plan,
-    });
-  }
-  console.log('Subscription plans seeded successfully with KSh pricing.');
+  await prisma.subscriptionPlan.upsert({
+    where: { code: standardPlan.code },
+    update: standardPlan,
+    create: standardPlan,
+  });
+  console.log('Standard plan seeded: mflow POS — KES 1,000/month (unlimited shops).');
 
   // 2. Seed Default Super Admin
   const adminEmail = 'superadmin@mflowpos.com';
@@ -74,7 +49,7 @@ async function main() {
   const demoEmail = 'admin@apexretail.com';
   const cashierEmail = 'cashier@apexretail.com';
   const demoPasswordHash = await bcrypt.hash('Password123!', 10);
-  const growthPlan = await prisma.subscriptionPlan.findUnique({ where: { code: 'GROWTH' } });
+  const stdPlan = await prisma.subscriptionPlan.findUnique({ where: { code: 'STANDARD' } });
 
   const existingDemo = await prisma.user.findUnique({
     where: { email: demoEmail },
@@ -95,11 +70,11 @@ async function main() {
       const endDate = new Date();
       endDate.setDate(endDate.getDate() + 30);
 
-      if (growthPlan) {
+      if (stdPlan) {
         await tx.businessSubscription.create({
           data: {
             businessId: business.id,
-            planId: growthPlan.id,
+            planId: stdPlan.id,
             status: SubscriptionStatus.ACTIVE,
             startDate: new Date(),
             endDate,

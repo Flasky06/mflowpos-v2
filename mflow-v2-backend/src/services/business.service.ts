@@ -43,23 +43,8 @@ export class BusinessService {
     data: { name: string; location?: string; phone?: string; shopType?: ShopType },
     userId?: string
   ) {
-    // Enforce Plan Shop Limit
-    const subscription = await prisma.businessSubscription.findUnique({
-      where: { businessId },
-      include: { plan: true },
-    });
+    // No shop limit — all businesses on STANDARD plan have unlimited shops
 
-    if (subscription) {
-      const currentShopCount = await prisma.shop.count({
-        where: { businessId, deletedAt: null },
-      });
-
-      if (currentShopCount >= subscription.plan.maxShops) {
-        throw new Error(
-          `Shop creation limit reached for your active plan '${subscription.plan.name}'. Maximum allowed shops: ${subscription.plan.maxShops}. Please upgrade your subscription plan.`
-        );
-      }
-    }
 
     return prisma.shop.create({
       data: {
