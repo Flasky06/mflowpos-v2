@@ -55,7 +55,17 @@ jobs:
             npm ci
             npm run build
 
-            echo "==> Reloading Nginx & PM2..."
+            echo "==> Syncing build assets to web roots..."
+            mkdir -p /var/www/html /var/www/mflow-v2/dist /var/www/mflow-v2/mflow-v2-backend/dist/public
+            cp -r dist/* /var/www/html/ || true
+            cp -r dist/* /var/www/mflow-v2/dist/ || true
+            cp -r dist/* /var/www/mflow-v2/mflow-v2-backend/dist/public/ || true
+
+            echo "==> Restarting backend process with static assets..."
+            cd /var/www/mflow-v2/mflow-v2-backend
+            pm2 restart mflow-backend --update-env || pm2 start dist/server.js --name mflow-backend
+
+            echo "==> Reloading Nginx..."
             systemctl reload nginx || true
 
             echo "==> Done! Both Frontend & Backend are fully live."

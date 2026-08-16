@@ -85,14 +85,25 @@ import path from 'path';
 import fs from 'fs';
 
 // Serve compiled frontend SPA static assets if present
-const frontendDist = path.resolve(__dirname, '../../mflow-v2-frontend/dist');
-if (fs.existsSync(frontendDist)) {
-  app.use(express.static(frontendDist));
+const candidatePaths = [
+  path.resolve(__dirname, '../../mflow-v2-frontend/dist'),
+  path.resolve(__dirname, 'public'),
+  path.resolve(__dirname, '../public'),
+  path.resolve(__dirname, '../../dist'),
+  '/var/www/mflow-v2/mflow-v2-frontend/dist',
+  '/var/www/html',
+];
+
+const resolvedFrontendDist = candidatePaths.find((p) => fs.existsSync(path.join(p, 'index.html')));
+
+if (resolvedFrontendDist) {
+  app.use(express.static(resolvedFrontendDist));
+  app.use('/assets', express.static(path.join(resolvedFrontendDist, 'assets')));
   app.get('*', (req: Request, res: Response, next: any) => {
     if (req.path.startsWith('/api') || req.path.startsWith('/health') || req.path.startsWith('/api-docs')) {
       return next();
     }
-    const indexPath = path.join(frontendDist, 'index.html');
+    const indexPath = path.join(resolvedFrontendDist, 'index.html');
     if (fs.existsSync(indexPath)) {
       return res.sendFile(indexPath);
     }
