@@ -16,6 +16,7 @@ import { SalesHistoryPage } from './pages/sales/SalesHistoryPage';
 import { ProductsSalesHistoryPage } from './pages/sales/ProductsSalesHistoryPage';
 import { ServicesSalesHistoryPage } from './pages/sales/ServicesSalesHistoryPage';
 import { ProductsPage } from './pages/catalog/ProductsPage';
+import { CategoriesPage } from './pages/catalog/CategoriesPage';
 import { ServicesPage } from './pages/catalog/ServicesPage';
 import { TransfersPage } from './pages/inventory/TransfersPage';
 import { ReturnsPage } from './pages/inventory/ReturnsPage';
@@ -75,6 +76,7 @@ export const App: React.FC = () => {
             <Route path="/sales/services" element={<ServicesSalesHistoryPage />} />
 
             <Route path="/products" element={<ProductsPage />} />
+            <Route path="/categories" element={<CategoriesPage />} />
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/transfers" element={<TransfersPage />} />
             <Route path="/returns" element={<ReturnsPage />} />

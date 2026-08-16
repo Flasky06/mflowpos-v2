@@ -139,4 +139,30 @@ export class ProductController {
       return ApiResponse.error(res, err.message, 400);
     }
   }
+
+  static async updateCategory(req: AuthenticatedRequest, res: Response) {
+    try {
+      const businessId = req.user?.businessId;
+      const { id } = req.params;
+      if (!businessId) return ApiResponse.error(res, 'Business ID required', 400);
+
+      const category = await ProductService.updateCategory(id, businessId, req.body.name, req.user?.userId);
+      return ApiResponse.success(res, category, 'Category updated successfully');
+    } catch (err: any) {
+      return ApiResponse.error(res, err.message, 400);
+    }
+  }
+
+  static async deleteCategory(req: AuthenticatedRequest, res: Response) {
+    try {
+      const businessId = req.user?.businessId;
+      const { id } = req.params;
+      if (!businessId) return ApiResponse.error(res, 'Business ID required', 400);
+
+      await ProductService.deleteCategory(id, businessId);
+      return ApiResponse.success(res, null, 'Category deleted successfully');
+    } catch (err: any) {
+      return ApiResponse.error(res, err.message, 400);
+    }
+  }
 }

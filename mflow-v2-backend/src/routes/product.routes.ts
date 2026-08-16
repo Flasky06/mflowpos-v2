@@ -23,6 +23,19 @@ router.post(
   validateBody(z.object({ name: z.string().min(1) })),
   ProductController.createCategory
 );
+router.put(
+  '/categories/:id',
+  checkSubscriptionPaywall,
+  authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN),
+  validateBody(z.object({ name: z.string().min(1) })),
+  ProductController.updateCategory
+);
+router.delete(
+  '/categories/:id',
+  checkSubscriptionPaywall,
+  authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN),
+  ProductController.deleteCategory
+);
 
 // Products
 router.get('/', ProductController.getProducts);

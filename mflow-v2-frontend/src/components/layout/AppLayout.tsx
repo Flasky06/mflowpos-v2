@@ -84,6 +84,7 @@ export const AppLayout: React.FC = () => {
       isCollapsible: true,
       items: [
         { to: '/products', label: 'Products Inventory', show: isProductsAllowed },
+        { to: '/categories', label: 'Product Categories', show: isProductsAllowed },
         { to: '/services', label: 'Services & Job Cards', show: isServicesAllowed },
       ],
     },

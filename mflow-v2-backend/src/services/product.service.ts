@@ -257,4 +257,42 @@ export class ProductService {
       },
     });
   }
+
+  static async updateCategory(categoryId: string, businessId: string, name: string, userId?: string) {
+    const category = await prisma.productCategory.findFirst({
+      where: { id: categoryId, businessId },
+    });
+
+    if (!category) {
+      throw new Error('Category not found');
+    }
+
+    return prisma.productCategory.update({
+      where: { id: categoryId },
+      data: {
+        name,
+        updatedBy: userId,
+      },
+    });
+  }
+
+  static async deleteCategory(categoryId: string, businessId: string) {
+    const category = await prisma.productCategory.findFirst({
+      where: { id: categoryId, businessId },
+    });
+
+    if (!category) {
+      throw new Error('Category not found');
+    }
+
+    // Set product categoryId to null for associated products before deleting category
+    await prisma.product.updateMany({
+      where: { categoryId, businessId },
+      data: { categoryId: null },
+    });
+
+    return prisma.productCategory.delete({
+      where: { id: categoryId },
+    });
+  }
 }

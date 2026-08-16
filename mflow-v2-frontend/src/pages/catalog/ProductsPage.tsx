@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { apiClient } from '../../api/client';
 import { useAuthStore } from '../../store/authStore';
 import { useToastStore } from '../../store/toastStore';
-import { Plus, Search, Edit, Trash2, X } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, X, FolderTree, Layers } from 'lucide-react';
 
 export const ProductsPage: React.FC = () => {
   const { activeShopId, hasPermission } = useAuthStore();
@@ -11,11 +12,17 @@ export const ProductsPage: React.FC = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [searchParams] = useSearchParams();
+  const [selectedCategory, setSelectedCategory] = useState<string>(searchParams.get('category') || '');
 
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [isStockModalOpen, setIsStockModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+
+  // Quick Category creation inside product modal
+  const [isAddingQuickCategory, setIsAddingQuickCategory] = useState(false);
+  const [quickCategoryName, setQuickCategoryName] = useState('');
+  const [isQuickCategoryLoading, setIsQuickCategoryLoading] = useState(false);
 
   const [productForm, setProductForm] = useState({
     name: '',
@@ -47,8 +54,43 @@ export const ProductsPage: React.FC = () => {
   };
 
   useEffect(() => {
+    const catFromUrl = searchParams.get('category');
+    if (catFromUrl) {
+      setSelectedCategory(catFromUrl);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
     fetchData();
   }, [activeShopId]);
+
+  const handleQuickAddCategory = async (e: React.MouseEvent | React.FormEvent) => {
+    e.preventDefault();
+    if (!quickCategoryName.trim()) return;
+
+    setIsQuickCategoryLoading(true);
+    try {
+      const res = await apiClient.post('/products/categories', { name: quickCategoryName.trim() });
+      const newCat = res.data.data;
+      setCategories((prev) => [...prev, newCat]);
+      setProductForm((prev) => ({ ...prev, categoryId: newCat.id }));
+      setQuickCategoryName('');
+      setIsAddingQuickCategory(false);
+      addToast({
+        type: 'success',
+        title: 'Category Created',
+        message: `'${newCat.name}' created and selected`,
+      });
+    } catch (err: any) {
+      addToast({
+        type: 'error',
+        title: 'Category Error',
+        message: err.response?.data?.message || 'Failed to add category',
+      });
+    } finally {
+      setIsQuickCategoryLoading(false);
+    }
+  };
 
   const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -127,21 +169,54 @@ export const ProductsPage: React.FC = () => {
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Master Product Catalog</h1>
-          <p className="text-sm text-slate-500">Manage business products, categories, and branch stock levels</p>
+          <div className="flex items-center gap-2 text-xs font-bold text-indigo-600 uppercase tracking-widest mb-1">
+            <Layers className="w-4 h-4" /> Catalog Management
+          </div>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Products Inventory</h1>
+          <p className="text-sm text-slate-500">Manage business products, stock levels, barcodes, and categories</p>
         </div>
 
-        <button
-          onClick={() => {
-            setSelectedProduct(null);
-            setProductForm({ name: '', costPrice: '', sellingPrice: '', sku: '', barcode: '', unit: 'pcs', categoryId: '' });
-            setIsProductModalOpen(true);
-          }}
-          className="py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-2"
+        <div className="flex items-center gap-3">
+          <Link
+            to="/categories"
+            className="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition-all flex items-center gap-2 border border-slate-200"
+          >
+            <FolderTree className="w-4 h-4 text-slate-500" />
+            Manage Categories
+          </Link>
+          <button
+            onClick={() => {
+              setSelectedProduct(null);
+              setProductForm({ name: '', costPrice: '', sellingPrice: '', sku: '', barcode: '', unit: 'pcs', categoryId: selectedCategory || '' });
+              setIsAddingQuickCategory(false);
+              setQuickCategoryName('');
+              setIsProductModalOpen(true);
+            }}
+            className="py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 active:scale-98 text-white font-semibold rounded-xl text-sm transition-all shadow-md shadow-indigo-600/20 flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            Add Product
+          </button>
+        </div>
+      </div>
+
+      {/* Navigation Pill Tabs */}
+      <div className="flex gap-2 p-1 bg-slate-200/70 rounded-2xl max-w-md">
+        <div className="flex-1 py-2 px-4 text-center rounded-xl text-xs font-black bg-white text-indigo-600 shadow-xs">
+          Products Catalog
+        </div>
+        <Link
+          to="/categories"
+          className="flex-1 py-2 px-4 text-center rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition-all"
         >
-          <Plus className="w-4 h-4" />
-          Add Product
-        </button>
+          Categories Manager
+        </Link>
+        <Link
+          to="/services"
+          className="flex-1 py-2 px-4 text-center rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition-all"
+        >
+          Services
+        </Link>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
@@ -342,19 +417,69 @@ export const ProductsPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1">Category</label>
-                <select
-                  value={productForm.categoryId}
-                  onChange={(e) => setProductForm({ ...productForm, categoryId: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-xl py-2 px-3 focus:outline-none focus:border-indigo-600 font-medium"
-                >
-                  <option value="">Select Category</option>
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs font-bold text-slate-700">Category</label>
+                  {!isAddingQuickCategory ? (
+                    <button
+                      type="button"
+                      onClick={() => setIsAddingQuickCategory(true)}
+                      className="text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 hover:underline cursor-pointer"
+                    >
+                      <Plus className="w-3.5 h-3.5" /> New Category
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsAddingQuickCategory(false);
+                        setQuickCategoryName('');
+                      }}
+                      className="text-xs font-bold text-slate-400 hover:text-slate-600 cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
+
+                {isAddingQuickCategory ? (
+                  <div className="flex items-center gap-2 p-2 bg-indigo-50/80 border border-indigo-200 rounded-2xl animate-in fade-in zoom-in-95 duration-100">
+                    <input
+                      type="text"
+                      autoFocus
+                      placeholder="Enter new category name..."
+                      value={quickCategoryName}
+                      onChange={(e) => setQuickCategoryName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleQuickAddCategory(e);
+                        }
+                      }}
+                      className="flex-1 bg-white border border-indigo-300 rounded-xl py-2 px-3 text-xs text-slate-900 font-medium focus:outline-none focus:border-indigo-600 shadow-2xs"
+                    />
+                    <button
+                      type="button"
+                      disabled={isQuickCategoryLoading || !quickCategoryName.trim()}
+                      onClick={handleQuickAddCategory}
+                      className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs transition-colors disabled:opacity-50 shadow-xs shrink-0 cursor-pointer"
+                    >
+                      {isQuickCategoryLoading ? 'Saving...' : 'Add & Select'}
+                    </button>
+                  </div>
+                ) : (
+                  <select
+                    value={productForm.categoryId}
+                    onChange={(e) => setProductForm({ ...productForm, categoryId: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-xl py-2.5 px-3 focus:outline-none focus:border-indigo-600 font-medium"
+                  >
+                    <option value="">Select Category (Optional)</option>
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               <button

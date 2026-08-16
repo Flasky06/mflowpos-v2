@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { apiClient } from '../../api/client';
 import { useToastStore } from '../../store/toastStore';
-import { Plus, Search, Edit, Trash2, X } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, X, Scissors } from 'lucide-react';
 
 export const ServicesPage: React.FC = () => {
   const addToast = useToastStore((state) => state.addToast);
@@ -90,6 +91,9 @@ export const ServicesPage: React.FC = () => {
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
+          <div className="flex items-center gap-2 text-xs font-bold text-violet-600 uppercase tracking-widest mb-1">
+            <Scissors className="w-4 h-4" /> Catalog Management
+          </div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Services Catalog</h1>
           <p className="text-sm text-slate-500">Non-inventory services (Laundry, Tailoring, Repairs, Consultations)</p>
         </div>
@@ -105,6 +109,25 @@ export const ServicesPage: React.FC = () => {
           <Plus className="w-4 h-4" />
           Add Service
         </button>
+      </div>
+
+      {/* Navigation Pill Tabs */}
+      <div className="flex gap-2 p-1 bg-slate-200/70 rounded-2xl max-w-md">
+        <Link
+          to="/products"
+          className="flex-1 py-2 px-4 text-center rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition-all"
+        >
+          Products Catalog
+        </Link>
+        <Link
+          to="/categories"
+          className="flex-1 py-2 px-4 text-center rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition-all"
+        >
+          Categories Manager
+        </Link>
+        <div className="flex-1 py-2 px-4 text-center rounded-xl text-xs font-black bg-white text-violet-600 shadow-xs">
+          Services
+        </div>
       </div>
 
       <div className="relative max-w-md">
