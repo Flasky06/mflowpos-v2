@@ -66,9 +66,12 @@ export const AppLayout: React.FC = () => {
   // Grouped Navigation Tree Structure
   const menuGroups = [
     {
-      title: 'Dashboard',
+      title: 'Dashboard & Profile',
       isCollapsible: false,
-      items: [{ to: '/dashboard', label: 'Point of Sale Desk', show: true }],
+      items: [
+        { to: '/dashboard', label: 'Point of Sale Desk', show: true },
+        { to: '/profile', label: 'Profile & Subscription Billing', show: true },
+      ],
     },
     {
       title: 'Sales',
