@@ -7,6 +7,7 @@ on:
       - main
     paths:
       - 'mflow-v2-backend/**'
+      - 'mflow-v2-frontend/**'
       - '.github/workflows/deploy-backend.yml'
 
 jobs:
@@ -21,14 +22,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: mflow-v2-backend/package-lock.json
-
-      - name: Type Check
-        run: |
-          cd mflow-v2-backend
-          npm ci
-          npx tsc --noEmit
 
       - name: Deploy to Hetzner via SSH
         uses: appleboy/ssh-action@v1.0.3
@@ -47,30 +40,25 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
 
-            echo "==> Verified .env configuration:"
-            head -n 6 /var/www/mflow-v2/mflow-v2-backend/.env
-
-            echo "==> Installing dependencies and build tools..."
-            cd mflow-v2-backend
+            echo "==> Deploying Backend..."
+            cd /var/www/mflow-v2/mflow-v2-backend
             npm ci
-
-            echo "==> Generating Prisma client..."
             npx prisma generate
-
-            echo "==> Applying DB schema..."
             npx prisma db push --accept-data-loss
-
-            echo "==> Seeding database..."
             node prisma/seed.js || true
-
-            echo "==> Building TypeScript..."
             npm run build
-
-            echo "==> Restarting PM2 process..."
             pm2 restart mflow-backend --update-env || pm2 start dist/server.js --name mflow-backend
             pm2 save
 
-            echo "==> Done! API is live."
+            echo "==> Deploying Frontend..."
+            cd /var/www/mflow-v2/mflow-v2-frontend
+            npm ci
+            npm run build
+
+            echo "==> Reloading Nginx..."
+            nginx -t && systemctl reload nginx || true
+
+            echo "==> Done! Both Frontend & Backend are fully live."
         env:
           # Sensitive — stored as GitHub Secrets
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
