@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Link, Outlet, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { apiClient } from '../../api/client';
 import { PaywallModal } from '../common/PaywallModal';
@@ -122,7 +122,7 @@ export const AppLayout: React.FC = () => {
         { to: '/settings/branches', label: 'Branch Locations', show: user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' },
         { to: '/settings/staff', label: 'Staff Permissions', show: user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' },
         { to: '/settings/audit-trail', label: 'System Audit Trail', show: true },
-        { to: '/profile', label: 'Shop Preferences', show: true },
+        { to: '/profile', label: 'Profile & Subscription Billing', show: true },
       ],
     },
   ];
@@ -178,6 +178,14 @@ export const AppLayout: React.FC = () => {
               ))}
             </select>
           )}
+
+          <Link
+            to="/profile"
+            className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shrink-0 hover:ring-2 hover:ring-indigo-400 transition-all"
+            title="Profile & Subscription"
+          >
+            <User className="w-4 h-4" />
+          </Link>
         </div>
       </header>
 
@@ -263,21 +271,29 @@ export const AppLayout: React.FC = () => {
           </nav>
 
           {/* USER FOOTER BAR */}
-          <div className="p-4 border-t border-slate-800 bg-slate-950/40 flex items-center justify-between">
-            <div className="flex items-center gap-3 overflow-hidden">
-              <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
+          <div className="p-3.5 border-t border-slate-800 bg-slate-950/40 flex items-center justify-between gap-2">
+            <Link
+              to="/profile"
+              className="flex items-center gap-3 overflow-hidden flex-1 p-1.5 -ml-1 rounded-xl hover:bg-slate-800/80 transition-colors group cursor-pointer"
+              title="View Profile & Subscription Billing"
+            >
+              <div className="w-8 h-8 rounded-full bg-indigo-600 group-hover:bg-indigo-500 text-white flex items-center justify-center font-bold text-xs shrink-0 transition-colors">
                 <User className="w-4 h-4" />
               </div>
-              <div className="truncate">
-                <p className="text-xs font-bold text-slate-200 truncate">{user?.fullName || 'Active User'}</p>
-                <p className="text-[10px] font-mono text-slate-500 uppercase">{user?.role?.replace('_', ' ')}</p>
+              <div className="truncate min-w-0">
+                <p className="text-xs font-bold text-slate-200 group-hover:text-white truncate transition-colors">
+                  {user?.fullName || 'Active User'}
+                </p>
+                <p className="text-[10px] font-mono text-slate-500 group-hover:text-indigo-400 uppercase transition-colors">
+                  {user?.role?.replace('_', ' ')} · Settings
+                </p>
               </div>
-            </div>
+            </Link>
 
             <button
               onClick={handleLogout}
               title="Logout"
-              className="p-2 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors"
+              className="p-2 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer shrink-0"
             >
               <LogOut className="w-4 h-4" />
             </button>
