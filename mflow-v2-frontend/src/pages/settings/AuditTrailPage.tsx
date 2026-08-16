@@ -21,47 +21,70 @@ export const AuditTrailPage: React.FC = () => {
     setIsLoading(true);
     try {
       const shopQuery = activeShopId ? `?shopId=${activeShopId}` : '';
-      const [salesRes, expRes] = await Promise.all([
+      const [salesResult, expResult, stockResult] = await Promise.allSettled([
         apiClient.get(`/sales${shopQuery}`),
         apiClient.get(`/expenses${shopQuery}`),
+        apiClient.get(`/transfers`),
       ]);
 
-      const salesArr = salesRes.data?.data?.sales || salesRes.data?.data || [];
-      const expArr = expRes.data?.data?.expenses || expRes.data?.data || [];
+      const salesArr = salesResult.status === 'fulfilled' ? (salesResult.value.data?.data?.sales || salesResult.value.data?.data || []) : [];
+      const expArr = expResult.status === 'fulfilled' ? (expResult.value.data?.data?.expenses || expResult.value.data?.data || []) : [];
+      const transfersArr = stockResult.status === 'fulfilled' ? (stockResult.value.data?.data || []) : [];
 
       const logs: any[] = [];
 
       // Map Sales Activity
-      salesArr.forEach((s: any) => {
-        logs.push({
-          id: `sale-${s.id}`,
-          timestamp: s.createdAt,
-          userName: s.user?.fullName || 'Cashier',
-          action: s.status === 'CANCELLED' ? 'SALE_VOIDED' : 'SALE_COMPLETED',
-          reference: `Receipt #${s.receiptNumber}`,
-          details: `Total Amount: KSh ${Number(s.totalAmount).toLocaleString()} (${s.customer?.name || 'Walk-in'})`,
-          statusColor: s.status === 'CANCELLED' ? 'rose' : 'emerald',
+      if (Array.isArray(salesArr)) {
+        salesArr.forEach((s: any) => {
+          if (!s) return;
+          logs.push({
+            id: `sale-${s.id}`,
+            timestamp: s.createdAt,
+            userName: s.user?.fullName || 'Cashier',
+            action: s.status === 'CANCELLED' ? 'SALE_VOIDED' : 'SALE_COMPLETED',
+            reference: `Receipt #${s.receiptNumber || s.id?.slice(0, 8)}`,
+            details: `Total Amount: KSh ${Number(s.totalAmount || 0).toLocaleString()} (${s.customer?.name || 'Walk-in'})`,
+            statusColor: s.status === 'CANCELLED' ? 'rose' : 'emerald',
+          });
         });
-      });
+      }
 
       // Map Expenses Activity
-      expArr.forEach((e: any) => {
-        logs.push({
-          id: `exp-${e.id}`,
-          timestamp: e.createdAt || e.expenseDate,
-          userName: e.user?.fullName || 'Staff',
-          action: 'EXPENSE_RECORDED',
-          reference: `Expense #${e.id.substring(0, 8)}`,
-          details: `Amount: KSh ${Number(e.amount).toLocaleString()} (${e.description || e.category || 'General'})`,
-          statusColor: 'amber',
+      if (Array.isArray(expArr)) {
+        expArr.forEach((e: any) => {
+          if (!e) return;
+          logs.push({
+            id: `exp-${e.id}`,
+            timestamp: e.createdAt || e.expenseDate || new Date().toISOString(),
+            userName: e.user?.fullName || 'Staff',
+            action: 'EXPENSE_RECORDED',
+            reference: `Expense #${e.id?.substring(0, 8) || 'EXP'}`,
+            details: `Amount: KSh ${Number(e.amount || 0).toLocaleString()} (${e.description || e.category?.name || 'General'})`,
+            statusColor: 'amber',
+          });
         });
-      });
+      }
+
+      // Map Stock Transfer Activity
+      if (Array.isArray(transfersArr)) {
+        transfersArr.forEach((t: any) => {
+          if (!t) return;
+          logs.push({
+            id: `transfer-${t.id}`,
+            timestamp: t.createdAt || new Date().toISOString(),
+            userName: t.createdBy || 'Store Admin',
+            action: 'STOCK_TRANSFER',
+            reference: `Transfer #${t.id?.substring(0, 8)}`,
+            details: `${t.fromShop?.name || 'Source'} ➔ ${t.toShop?.name || 'Destination'} (${t.status || 'COMPLETED'})`,
+            statusColor: 'indigo',
+          });
+        });
+      }
 
       logs.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
       setAuditLogs(logs);
     } catch (err) {
-      console.error(err);
-      addToast({ type: 'error', title: 'Error', message: 'Failed to load system audit trail' });
+      console.error('Audit trail load error:', err);
     } finally {
       setIsLoading(false);
     }
