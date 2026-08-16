@@ -146,25 +146,6 @@ export const CategoriesPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Navigation Pill Tabs */}
-      <div className="flex gap-2 p-1 bg-slate-200/70 rounded-2xl max-w-md">
-        <Link
-          to="/products"
-          className="flex-1 py-2 px-4 text-center rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition-all"
-        >
-          Products Catalog
-        </Link>
-        <div className="flex-1 py-2 px-4 text-center rounded-xl text-xs font-black bg-white text-indigo-600 shadow-xs">
-          Categories Manager
-        </div>
-        <Link
-          to="/services"
-          className="flex-1 py-2 px-4 text-center rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition-all"
-        >
-          Services
-        </Link>
-      </div>
-
       {/* Search Bar */}
       <div className="relative max-w-md">
         <input
