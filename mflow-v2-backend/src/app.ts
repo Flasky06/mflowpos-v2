@@ -81,7 +81,26 @@ app.get('/', (req: Request, res: Response) => {
 // Mount Versioned API Routes (/api/v1)
 app.use('/api/v1', authLimiter, apiV1Routes);
 
-// 404 Route Handler
+import path from 'path';
+import fs from 'fs';
+
+// Serve compiled frontend SPA static assets if present
+const frontendDist = path.resolve(__dirname, '../../mflow-v2-frontend/dist');
+if (fs.existsSync(frontendDist)) {
+  app.use(express.static(frontendDist));
+  app.get('*', (req: Request, res: Response, next: any) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/health') || req.path.startsWith('/api-docs')) {
+      return next();
+    }
+    const indexPath = path.join(frontendDist, 'index.html');
+    if (fs.existsSync(indexPath)) {
+      return res.sendFile(indexPath);
+    }
+    return next();
+  });
+}
+
+// 404 Route Handler for unmatched API endpoints
 app.use((req: Request, res: Response) => {
   return ApiResponse.error(res, `Cannot ${req.method} ${req.originalUrl}`, 404);
 });
