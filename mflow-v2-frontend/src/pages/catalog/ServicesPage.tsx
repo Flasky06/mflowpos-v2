@@ -139,8 +139,8 @@ export const ServicesPage: React.FC = () => {
     try {
       const payload = {
         name: serviceForm.name,
-        description: serviceForm.description || undefined,
         price: parseFloat(serviceForm.price),
+        description: serviceForm.description || undefined,
         costPrice: serviceForm.costPrice ? parseFloat(serviceForm.costPrice) : undefined,
         code: serviceForm.code || undefined,
         unit: serviceForm.unit,

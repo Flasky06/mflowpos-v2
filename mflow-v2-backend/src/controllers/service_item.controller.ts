@@ -6,11 +6,12 @@ import { AuthenticatedRequest } from '../middlewares/auth.middleware';
 
 export const createServiceSchema = z.object({
   name: z.string().min(1, 'Service name is required'),
-  sellingPrice: z.number().positive('Price must be positive'),
+  price: z.number().positive('Price must be positive'),
   costPrice: z.number().optional(),
+  description: z.string().optional(),
   categoryId: z.string().optional(),
   shopId: z.string().optional(),
-  sku: z.string().optional(),
+  code: z.string().optional(),
   unit: z.string().optional(),
 });
 
