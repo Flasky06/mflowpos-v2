@@ -12,6 +12,27 @@ const router = Router();
 
 router.use(authenticateJWT);
 
+// Service Categories Routes (must precede /:id)
+router.get('/categories', ServiceItemController.getCategories);
+router.post(
+  '/categories',
+  checkSubscriptionPaywall,
+  authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN),
+  ServiceItemController.createCategory
+);
+router.put(
+  '/categories/:id',
+  checkSubscriptionPaywall,
+  authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN),
+  ServiceItemController.updateCategory
+);
+router.delete(
+  '/categories/:id',
+  checkSubscriptionPaywall,
+  authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN),
+  ServiceItemController.deleteCategory
+);
+
 router.get('/', ServiceItemController.getServices);
 router.get('/:id', ServiceItemController.getServiceById);
 

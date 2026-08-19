@@ -86,6 +86,7 @@ export const AppLayout: React.FC = () => {
         { to: '/products', label: 'Products Inventory', show: isProductsAllowed },
         { to: '/categories', label: 'Product Categories', show: isProductsAllowed },
         { to: '/services', label: 'Services & Job Cards', show: isServicesAllowed },
+        { to: '/service-categories', label: 'Service Categories', show: isServicesAllowed },
       ],
     },
     {

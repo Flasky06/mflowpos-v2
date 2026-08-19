@@ -1,18 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { apiClient } from '../../api/client';
 import { useToastStore } from '../../store/toastStore';
-import { Plus, Search, Edit, Trash2, X, Scissors } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, X, Scissors, FolderTree, Check } from 'lucide-react';
 
 export const ServicesPage: React.FC = () => {
   const addToast = useToastStore((state) => state.addToast);
+  const [searchParams] = useSearchParams();
+  const categoryFilterParam = searchParams.get('category');
 
   const [services, setServices] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>(categoryFilterParam || 'ALL');
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<any>(null);
+
+  const [isAddingQuickCategory, setIsAddingQuickCategory] = useState(false);
+  const [quickCategoryName, setQuickCategoryName] = useState('');
+  const [isSavingQuickCategory, setIsSavingQuickCategory] = useState(false);
 
   const [serviceForm, setServiceForm] = useState({
     name: '',
@@ -40,6 +47,50 @@ export const ServicesPage: React.FC = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (categoryFilterParam) {
+      setSelectedCategoryFilter(categoryFilterParam);
+    }
+  }, [categoryFilterParam]);
+
+  const handleQuickCreateCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!quickCategoryName.trim()) return;
+
+    setIsSavingQuickCategory(true);
+    try {
+      const res = await apiClient.post('/services/categories', { name: quickCategoryName.trim() });
+      const newCategory = res.data?.data;
+
+      addToast({
+        type: 'success',
+        title: 'Category Created',
+        message: `'${quickCategoryName.trim()}' added and selected`,
+      });
+
+      // Refresh categories list
+      const catRes = await apiClient.get('/services/categories');
+      const updatedCategories = catRes.data.data || [];
+      setCategories(updatedCategories);
+
+      // Auto-select the newly created category
+      if (newCategory?.id) {
+        setServiceForm((prev) => ({ ...prev, categoryId: newCategory.id }));
+      }
+
+      setQuickCategoryName('');
+      setIsAddingQuickCategory(false);
+    } catch (err: any) {
+      addToast({
+        type: 'error',
+        title: 'Category Error',
+        message: err.response?.data?.message || 'Failed to create category',
+      });
+    } finally {
+      setIsSavingQuickCategory(false);
+    }
+  };
 
   const handleSaveService = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,11 +132,14 @@ export const ServicesPage: React.FC = () => {
     }
   };
 
-  const filteredServices = services.filter(
-    (s) =>
+  const filteredServices = services.filter((s) => {
+    const matchesSearch =
       s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      s.code?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+      s.code?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      selectedCategoryFilter === 'ALL' || s.categoryId === selectedCategoryFilter;
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
@@ -98,30 +152,62 @@ export const ServicesPage: React.FC = () => {
           <p className="text-sm text-slate-500">Non-inventory services (Laundry, Tailoring, Repairs, Consultations)</p>
         </div>
 
-        <button
-          onClick={() => {
-            setSelectedService(null);
-            setServiceForm({ name: '', description: '', price: '', costPrice: '', code: '', unit: 'service', categoryId: '' });
-            setIsModalOpen(true);
-          }}
-          className="py-2.5 px-4 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-2"
-        >
-          <Plus className="w-4 h-4" />
-          Add Service
-        </button>
+        <div className="flex items-center gap-3">
+          <Link
+            to="/service-categories"
+            className="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition-all flex items-center gap-2 border border-slate-200"
+          >
+            <FolderTree className="w-4 h-4 text-slate-500" />
+            Manage Categories
+          </Link>
+          <button
+            onClick={() => {
+              setSelectedService(null);
+              setServiceForm({
+                name: '',
+                description: '',
+                price: '',
+                costPrice: '',
+                code: '',
+                unit: 'service',
+                categoryId: selectedCategoryFilter !== 'ALL' ? selectedCategoryFilter : '',
+              });
+              setIsAddingQuickCategory(false);
+              setQuickCategoryName('');
+              setIsModalOpen(true);
+            }}
+            className="py-2.5 px-4 bg-violet-600 hover:bg-violet-700 active:scale-98 text-white font-semibold rounded-xl text-sm transition-all shadow-md shadow-violet-600/20 flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            Add Service
+          </button>
+        </div>
       </div>
 
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1 max-w-md">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search service name or service code..."
+            className="w-full bg-white border border-slate-300 rounded-xl py-2.5 px-4 pl-10 text-slate-900 text-sm focus:outline-none focus:border-violet-600 shadow-xs"
+          />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+        </div>
 
-
-      <div className="relative max-w-md">
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search service name or service code..."
-          className="w-full bg-white border border-slate-300 rounded-xl py-2.5 px-4 pl-10 text-slate-900 text-sm focus:outline-none focus:border-violet-600 shadow-xs"
-        />
-        <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+        <select
+          value={selectedCategoryFilter}
+          onChange={(e) => setSelectedCategoryFilter(e.target.value)}
+          className="bg-white border border-slate-300 text-slate-700 text-sm font-semibold rounded-xl px-4 py-2.5 focus:outline-none focus:border-violet-600 shadow-xs"
+        >
+          <option value="ALL">All Categories</option>
+          {categories.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name} ({c._count?.services || 0})
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="glass-panel p-6 rounded-2xl border border-slate-200 overflow-x-auto">
@@ -170,17 +256,19 @@ export const ServicesPage: React.FC = () => {
                           unit: s.unit || 'service',
                           categoryId: s.categoryId || '',
                         });
+                        setIsAddingQuickCategory(false);
+                        setQuickCategoryName('');
                         setIsModalOpen(true);
                       }}
-                      className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg border border-slate-200"
+                      className="p-1.5 text-slate-400 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-colors cursor-pointer"
                     >
-                      <Edit className="w-3.5 h-3.5" />
+                      <Edit className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDeleteService(s.id)}
-                      className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg border border-rose-200"
+                      className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </td>
                 </tr>
@@ -192,10 +280,10 @@ export const ServicesPage: React.FC = () => {
 
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
-          <div className="max-w-md w-full bg-white p-6 rounded-2xl border border-slate-200 shadow-xl relative">
+          <div className="max-w-md w-full bg-white p-6 rounded-2xl border border-slate-200 shadow-xl relative animate-in fade-in zoom-in-95 duration-150">
             <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -205,7 +293,7 @@ export const ServicesPage: React.FC = () => {
 
             <form onSubmit={handleSaveService} className="space-y-3">
               <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1">Service Title</label>
+                <label className="text-xs font-semibold text-slate-700 block mb-1">Service Title *</label>
                 <input
                   type="text"
                   required
@@ -218,7 +306,7 @@ export const ServicesPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">Service Price (KSh)</label>
+                  <label className="text-xs font-semibold text-slate-700 block mb-1">Service Price (KSh) *</label>
                   <input
                     type="number"
                     step="0.01"
@@ -242,24 +330,78 @@ export const ServicesPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1">Category</label>
-                <select
-                  value={serviceForm.categoryId}
-                  onChange={(e) => setServiceForm({ ...serviceForm, categoryId: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-xl py-2 px-3 focus:outline-none focus:border-violet-600 font-medium"
-                >
-                  <option value="">Select Category</option>
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs font-semibold text-slate-700">Service Category</label>
+                  {!isAddingQuickCategory ? (
+                    <button
+                      type="button"
+                      onClick={() => setIsAddingQuickCategory(true)}
+                      className="text-xs font-bold text-violet-600 hover:text-violet-700 flex items-center gap-1 cursor-pointer"
+                    >
+                      <Plus className="w-3.5 h-3.5" /> New Category
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsAddingQuickCategory(false);
+                        setQuickCategoryName('');
+                      }}
+                      className="text-xs font-semibold text-slate-500 hover:text-slate-700 cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
+
+                {isAddingQuickCategory ? (
+                  <div className="p-3 bg-violet-50/70 border border-violet-200 rounded-2xl space-y-2 mb-2">
+                    <p className="text-[11px] font-bold text-violet-900">Quick-Add Service Category</p>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        autoFocus
+                        value={quickCategoryName}
+                        onChange={(e) => setQuickCategoryName(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleQuickCreateCategory(e);
+                          }
+                        }}
+                        placeholder="e.g. Laundry, Repairs"
+                        className="flex-1 bg-white border border-violet-300 text-slate-900 text-xs rounded-xl px-3 py-2 focus:outline-none focus:border-violet-600"
+                      />
+                      <button
+                        type="button"
+                        disabled={isSavingQuickCategory || !quickCategoryName.trim()}
+                        onClick={handleQuickCreateCategory}
+                        className="py-2 px-3 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl text-xs flex items-center gap-1 disabled:opacity-50 cursor-pointer shadow-xs"
+                      >
+                        <Check className="w-3.5 h-3.5" />
+                        {isSavingQuickCategory ? 'Saving...' : 'Add & Select'}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <select
+                    value={serviceForm.categoryId}
+                    onChange={(e) => setServiceForm({ ...serviceForm, categoryId: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-xl py-2 px-3 focus:outline-none focus:border-violet-600 font-medium"
+                  >
+                    <option value="">Select Category (Optional)</option>
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               <button
                 type="submit"
-                className="w-full py-3 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl text-sm transition-colors mt-4 shadow-md"
+                className="w-full py-3 bg-violet-600 hover:bg-violet-700 active:scale-98 text-white font-bold rounded-xl text-sm transition-all mt-4 shadow-md cursor-pointer"
               >
                 Save Service Item
               </button>

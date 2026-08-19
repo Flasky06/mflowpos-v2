@@ -129,6 +129,7 @@ export class ServiceItemService {
     return prisma.serviceCategory.findMany({
       where: { businessId },
       include: { _count: { select: { services: true } } },
+      orderBy: { name: 'asc' },
     });
   }
 
@@ -140,6 +141,44 @@ export class ServiceItemService {
         createdBy: userId,
         updatedBy: userId,
       },
+    });
+  }
+
+  static async updateCategory(categoryId: string, businessId: string, name: string, userId?: string) {
+    const category = await prisma.serviceCategory.findFirst({
+      where: { id: categoryId, businessId },
+    });
+
+    if (!category) {
+      throw new Error('Service category not found');
+    }
+
+    return prisma.serviceCategory.update({
+      where: { id: categoryId },
+      data: {
+        name,
+        updatedBy: userId,
+      },
+    });
+  }
+
+  static async deleteCategory(categoryId: string, businessId: string) {
+    const category = await prisma.serviceCategory.findFirst({
+      where: { id: categoryId, businessId },
+    });
+
+    if (!category) {
+      throw new Error('Service category not found');
+    }
+
+    // Set categoryId to null for associated services before deleting
+    await prisma.service.updateMany({
+      where: { categoryId, businessId },
+      data: { categoryId: null },
+    });
+
+    return prisma.serviceCategory.delete({
+      where: { id: categoryId },
     });
   }
 }

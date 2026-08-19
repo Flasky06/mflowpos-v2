@@ -83,4 +83,59 @@ export class ServiceItemController {
       return ApiResponse.error(res, err.message, 400);
     }
   }
+
+  // Service Categories Handlers
+  static async getCategories(req: AuthenticatedRequest, res: Response) {
+    try {
+      const businessId = req.user?.businessId;
+      if (!businessId) return ApiResponse.error(res, 'Business ID required', 400);
+
+      const categories = await ServiceItemService.getCategories(businessId);
+      return ApiResponse.success(res, categories, 'Service categories retrieved');
+    } catch (err: any) {
+      return ApiResponse.error(res, err.message, 400);
+    }
+  }
+
+  static async createCategory(req: AuthenticatedRequest, res: Response) {
+    try {
+      const businessId = req.user?.businessId;
+      const { name } = req.body;
+      if (!businessId) return ApiResponse.error(res, 'Business ID required', 400);
+      if (!name) return ApiResponse.error(res, 'Category name is required', 400);
+
+      const category = await ServiceItemService.createCategory(businessId, name, req.user?.userId);
+      return ApiResponse.success(res, category, 'Service category created', 201);
+    } catch (err: any) {
+      return ApiResponse.error(res, err.message, 400);
+    }
+  }
+
+  static async updateCategory(req: AuthenticatedRequest, res: Response) {
+    try {
+      const businessId = req.user?.businessId;
+      const { id } = req.params;
+      const { name } = req.body;
+      if (!businessId) return ApiResponse.error(res, 'Business ID required', 400);
+      if (!name) return ApiResponse.error(res, 'Category name is required', 400);
+
+      const category = await ServiceItemService.updateCategory(id, businessId, name, req.user?.userId);
+      return ApiResponse.success(res, category, 'Service category updated');
+    } catch (err: any) {
+      return ApiResponse.error(res, err.message, 400);
+    }
+  }
+
+  static async deleteCategory(req: AuthenticatedRequest, res: Response) {
+    try {
+      const businessId = req.user?.businessId;
+      const { id } = req.params;
+      if (!businessId) return ApiResponse.error(res, 'Business ID required', 400);
+
+      await ServiceItemService.deleteCategory(id, businessId);
+      return ApiResponse.success(res, null, 'Service category deleted');
+    } catch (err: any) {
+      return ApiResponse.error(res, err.message, 400);
+    }
+  }
 }
