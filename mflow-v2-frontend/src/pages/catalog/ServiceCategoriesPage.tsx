@@ -35,6 +35,16 @@ export const ServiceCategoriesPage: React.FC = () => {
 
   useEffect(() => {
     fetchCategories();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.altKey && (e.key === 'c' || e.key === 'C')) {
+        e.preventDefault();
+        handleOpenCreateModal();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   const handleOpenCreateModal = () => {
@@ -139,9 +149,13 @@ export const ServiceCategoriesPage: React.FC = () => {
           <button
             onClick={handleOpenCreateModal}
             className="py-2.5 px-4 bg-violet-600 hover:bg-violet-700 active:scale-98 text-white font-semibold rounded-xl text-sm transition-all shadow-md shadow-violet-600/20 flex items-center gap-2 cursor-pointer"
+            title="Shortcut: Alt+C"
           >
             <Plus className="w-4 h-4" />
             Add Category
+            <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-bold bg-violet-800 text-white border border-violet-500 rounded-md">
+              Alt+C
+            </kbd>
           </button>
         </div>
       </div>

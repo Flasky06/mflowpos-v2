@@ -17,6 +17,10 @@ export const ServicesPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<any>(null);
 
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [isSubmittingCategory, setIsSubmittingCategory] = useState(false);
+
   const [isAddingQuickCategory, setIsAddingQuickCategory] = useState(false);
   const [quickCategoryName, setQuickCategoryName] = useState('');
   const [isSavingQuickCategory, setIsSavingQuickCategory] = useState(false);
@@ -46,7 +50,45 @@ export const ServicesPage: React.FC = () => {
 
   useEffect(() => {
     fetchData();
+
+    // Keyboard shortcut Alt+C to quick-add category
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.altKey && (e.key === 'c' || e.key === 'C')) {
+        e.preventDefault();
+        setNewCategoryName('');
+        setIsCategoryModalOpen(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
+
+  const handleCreateCategoryModalSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCategoryName.trim()) return;
+
+    setIsSubmittingCategory(true);
+    try {
+      await apiClient.post('/services/categories', { name: newCategoryName.trim() });
+      addToast({
+        type: 'success',
+        title: 'Category Created',
+        message: `'${newCategoryName.trim()}' added to service categories`,
+      });
+      setNewCategoryName('');
+      setIsCategoryModalOpen(false);
+      fetchData();
+    } catch (err: any) {
+      addToast({
+        type: 'error',
+        title: 'Save Failed',
+        message: err.response?.data?.message || 'Failed to create category',
+      });
+    } finally {
+      setIsSubmittingCategory(false);
+    }
+  };
 
   useEffect(() => {
     if (categoryFilterParam) {
@@ -152,7 +194,7 @@ export const ServicesPage: React.FC = () => {
           <p className="text-sm text-slate-500">Non-inventory services (Laundry, Tailoring, Repairs, Consultations)</p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
           <Link
             to="/service-categories"
             className="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition-all flex items-center gap-2 border border-slate-200"
@@ -160,6 +202,20 @@ export const ServicesPage: React.FC = () => {
             <FolderTree className="w-4 h-4 text-slate-500" />
             Manage Categories
           </Link>
+          <button
+            onClick={() => {
+              setNewCategoryName('');
+              setIsCategoryModalOpen(true);
+            }}
+            className="py-2.5 px-4 bg-violet-50 hover:bg-violet-100 text-violet-700 font-semibold rounded-xl text-sm transition-all flex items-center gap-2 border border-violet-200 cursor-pointer"
+            title="Shortcut: Alt+C"
+          >
+            <Plus className="w-4 h-4" />
+            Add Category
+            <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-bold bg-white text-violet-800 border border-violet-300 rounded-md">
+              Alt+C
+            </kbd>
+          </button>
           <button
             onClick={() => {
               setSelectedService(null);
@@ -405,6 +461,64 @@ export const ServicesPage: React.FC = () => {
               >
                 Save Service Item
               </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Fast Create Category Modal (Header / Alt+C Shortcut) */}
+      {isCategoryModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
+          <div className="max-w-md w-full bg-white p-6 rounded-3xl border border-slate-200 shadow-2xl relative animate-in fade-in zoom-in-95 duration-150">
+            <button
+              onClick={() => setIsCategoryModalOpen(false)}
+              className="absolute top-5 right-5 text-slate-400 hover:text-slate-700 cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center font-bold">
+                <FolderTree className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">New Service Category</h3>
+                <p className="text-xs text-slate-500">Quickly add a category to organize services</p>
+              </div>
+            </div>
+
+            <form onSubmit={handleCreateCategoryModalSubmit} className="space-y-4">
+              <div>
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1.5">
+                  Category Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  autoFocus
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  placeholder="e.g. Laundry & Dry Cleaning, Electronics Repair"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-4 text-slate-900 text-sm focus:outline-none focus:border-violet-600 focus:bg-white transition-all font-semibold"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setIsCategoryModalOpen(false)}
+                  className="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmittingCategory || !newCategoryName.trim()}
+                  className="py-2.5 px-5 bg-violet-600 hover:bg-violet-700 active:scale-98 text-white font-bold rounded-xl text-xs transition-all shadow-md shadow-violet-600/20 disabled:opacity-50 cursor-pointer"
+                >
+                  {isSubmittingCategory ? 'Creating...' : 'Create Category'}
+                </button>
+              </div>
             </form>
           </div>
         </div>
