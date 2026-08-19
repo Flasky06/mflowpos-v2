@@ -13,6 +13,7 @@ export const createSupplierSchema = z.object({
 });
 
 export const createPurchaseOrderSchema = z.object({
+  shopId: z.string().optional(),
   supplierId: z.string().min(1, 'Supplier ID is required'),
   items: z.array(
     z.object({
@@ -107,11 +108,11 @@ export class PurchaseController {
   static async createPurchaseOrder(req: AuthenticatedRequest, res: Response) {
     try {
       const businessId = req.user?.businessId;
-      const shopId = req.user?.shopId;
+      const shopId = req.body.shopId || req.user?.shopId;
       const userId = req.user?.userId;
 
       if (!businessId || !shopId || !userId) {
-        return ApiResponse.error(res, 'User context missing', 400);
+        return ApiResponse.error(res, 'Branch/Shop context missing (ensure an active branch is selected)', 400);
       }
 
       const order = await PurchaseService.createPurchaseOrder(businessId, shopId, userId, req.body);

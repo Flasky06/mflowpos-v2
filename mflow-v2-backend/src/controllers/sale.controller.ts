@@ -6,6 +6,7 @@ import { AuthenticatedRequest } from '../middlewares/auth.middleware';
 import { ServiceOrderStatus } from '@prisma/client';
 
 export const createSaleSchema = z.object({
+  shopId: z.string().optional(),
   items: z
     .array(
       z.object({
@@ -36,11 +37,11 @@ export class SaleController {
   static async createSale(req: AuthenticatedRequest, res: Response) {
     try {
       const businessId = req.user?.businessId;
-      const shopId = req.user?.shopId;
+      const shopId = req.body.shopId || req.user?.shopId;
       const userId = req.user?.userId;
 
       if (!businessId || !shopId || !userId) {
-        return ApiResponse.error(res, 'Missing user, shop, or business context', 400);
+        return ApiResponse.error(res, 'Missing user, shop, or business context (ensure an active branch is selected)', 400);
       }
 
       const result = await SaleService.createSale(businessId, shopId, userId, req.body);

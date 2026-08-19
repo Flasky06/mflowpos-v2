@@ -155,6 +155,7 @@ export const POSWorkspace: React.FC = () => {
     setIsCheckoutLoading(true);
     try {
       const payload = {
+        shopId: activeShopId,
         items: cart.map((i) => {
           const effectiveUnitPrice = Math.max(0, i.unitPrice - (i.discount || 0));
           return {

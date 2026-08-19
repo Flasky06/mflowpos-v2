@@ -5,6 +5,7 @@ import { ApiResponse } from '../utils/response.util';
 import { AuthenticatedRequest } from '../middlewares/auth.middleware';
 
 export const createQuotationSchema = z.object({
+  shopId: z.string().optional(),
   items: z.array(
     z.object({
       productId: z.string().min(1, 'Product ID is required'),
@@ -30,11 +31,11 @@ export class QuotationController {
   static async createQuotation(req: AuthenticatedRequest, res: Response) {
     try {
       const businessId = req.user?.businessId;
-      const shopId = req.user?.shopId;
+      const shopId = req.body.shopId || req.user?.shopId;
       const userId = req.user?.userId;
 
       if (!businessId || !shopId || !userId) {
-        return ApiResponse.error(res, 'User context missing', 400);
+        return ApiResponse.error(res, 'Branch/Shop context missing (ensure an active branch is selected)', 400);
       }
 
       const quotation = await QuotationService.createQuotation(businessId, shopId, userId, req.body);
