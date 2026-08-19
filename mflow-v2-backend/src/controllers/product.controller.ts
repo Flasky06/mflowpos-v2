@@ -19,6 +19,7 @@ export const createProductSchema = z.object({
 });
 
 export const adjustStockSchema = z.object({
+  shopId: z.string().optional(),
   changeQty: z.number().int(),
   reason: z.string().min(1, 'Reason is required'),
   notes: z.string().optional(),
@@ -89,10 +90,14 @@ export class ProductController {
       const { id } = req.params;
       if (!businessId) return ApiResponse.error(res, 'Business ID required', 400);
 
+      const targetShopId = req.body.shopId || req.user?.shopId;
+      if (!targetShopId) return ApiResponse.error(res, 'Branch (Shop ID) required for stock adjustment', 400);
+
       const updated = await ProductService.adjustStock(
         id,
+        targetShopId,
         businessId,
-        req.body.changeQty,
+        Number(req.body.changeQty),
         req.body.reason,
         req.body.notes,
         req.user?.userId
