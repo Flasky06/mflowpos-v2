@@ -113,7 +113,7 @@ model Business {
   email          String?
   phone          String?
   address        String?
-  currency       String    @default("USD")
+  currency       String    @default("KES")
   active         Boolean   @default(true) // Business Tenant Suspension Flag
 
   users          User[]
