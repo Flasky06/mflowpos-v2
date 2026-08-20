@@ -4,13 +4,11 @@ import { useAuthStore } from '../../store/authStore';
 import { useToastStore } from '../../store/toastStore';
 import {
   Scale,
-  Building2,
   Wallet,
   Coins,
   ShieldCheck,
   Printer,
-  ArrowUpRight,
-  HelpCircle,
+  TrendingUp,
 } from 'lucide-react';
 
 export const BalanceSheetPage: React.FC = () => {
@@ -55,6 +53,7 @@ export const BalanceSheetPage: React.FC = () => {
   const totalLiabilitiesVal = Number(summaryData?.totalExpenses || 0);
   const totalEquityVal = Math.max(0, totalAssetsVal - totalLiabilitiesVal);
 
+  const totalLiabilitiesAndEquity = totalLiabilitiesVal + totalEquityVal;
   const currentRatio = totalLiabilitiesVal > 0 ? (totalAssetsVal / totalLiabilitiesVal).toFixed(2) : '10.0+';
 
   return (
@@ -62,8 +61,10 @@ export const BalanceSheetPage: React.FC = () => {
       {/* Action Toolbar */}
       <div className="flex justify-between items-center pb-4 border-b border-slate-200 print:hidden">
         <div>
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">Accounting Statement</span>
-          <h2 className="text-xl font-extrabold text-slate-900">Financial Position & Solvency</h2>
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">GAAP & IFRS Accounting Statement</span>
+          <h2 className="text-xl font-extrabold text-slate-900 flex items-center gap-2">
+            <Scale className="w-5 h-5 text-indigo-600" /> Statement of Balance Sheet
+          </h2>
         </div>
         <button
           onClick={() => window.print()}
@@ -73,7 +74,7 @@ export const BalanceSheetPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Top 3 KPI Cards */}
+      {/* Top 3 KPI Executive Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Assets */}
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
@@ -113,97 +114,117 @@ export const BalanceSheetPage: React.FC = () => {
           </div>
           <div>
             <span className="text-2xl font-black block">KSh {totalEquityVal.toLocaleString()}</span>
-            <span className="text-xs font-bold text-emerald-200 block mt-0.5">Current Solvency Ratio: {currentRatio}x</span>
+            <span className="text-xs font-bold text-emerald-200 block mt-0.5">Solvency Ratio: {currentRatio}x</span>
           </div>
         </div>
       </div>
 
-      {/* Detailed Balance Sheet Table */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-6 space-y-6">
-        <div className="border-b border-slate-200 pb-4 flex justify-between items-center">
+      {/* Two-Column Side-by-Side Account Format Balance Sheet */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* LEFT COLUMN: ASSETS TABLE */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-6 flex flex-col justify-between space-y-4">
           <div>
-            <h2 className="text-lg font-bold text-slate-900">Statement of Balance Sheet</h2>
-            <p className="text-xs text-slate-500">As of {new Date().toLocaleDateString()} • All amounts in KSh</p>
+            <div className="pb-3 border-b border-slate-200 flex justify-between items-center">
+              <h3 className="text-base font-extrabold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                <Wallet className="w-4 h-4 text-indigo-600" /> Assets
+              </h3>
+              <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-100">
+                Debits
+              </span>
+            </div>
+
+            <table className="w-full text-left text-xs text-slate-700 mt-4">
+              <tbody className="divide-y divide-slate-200">
+                <tr className="hover:bg-slate-50">
+                  <td className="py-3 px-2 font-semibold text-slate-800">
+                    Liquid Cash Reserves & Bank Balance
+                  </td>
+                  <td className="py-3 px-2 text-right font-bold text-emerald-700">
+                    KSh {cashReserves.toLocaleString()}
+                  </td>
+                </tr>
+                <tr className="hover:bg-slate-50">
+                  <td className="py-3 px-2 font-semibold text-slate-800">
+                    Inventory Valuation (Products Retail Value)
+                  </td>
+                  <td className="py-3 px-2 text-right font-bold text-indigo-600">
+                    KSh {inventoryValuation.toLocaleString()}
+                  </td>
+                </tr>
+                <tr className="hover:bg-slate-50">
+                  <td className="py-3 px-2 font-semibold text-slate-800">
+                    Accounts Receivable (Customer Credit Balances)
+                  </td>
+                  <td className="py-3 px-2 text-right font-bold text-amber-700">
+                    KSh {customerReceivables.toLocaleString()}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <span className="text-xs font-mono font-bold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
-            KSh Currency
-          </span>
+
+          <div className="pt-4 border-t-2 border-slate-300 flex justify-between items-center bg-slate-50 p-3 rounded-xl">
+            <span className="text-xs font-black text-slate-900 uppercase tracking-wider">TOTAL ASSETS</span>
+            <span className="text-lg font-black text-indigo-600">KSh {totalAssetsVal.toLocaleString()}</span>
+          </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-slate-700">
-            <tbody className="divide-y divide-slate-200">
-              {/* SECTION 1: ASSETS */}
-              <tr className="bg-slate-100/70 font-extrabold text-slate-900 text-xs uppercase tracking-wider">
-                <td colSpan={2} className="py-3 px-4">
-                  1. Current & Business Assets
-                </td>
-              </tr>
-              <tr className="hover:bg-slate-50 text-xs">
-                <td className="py-3 px-4 pl-8 text-slate-700 font-semibold">Liquid Cash Reserves & Bank Balance</td>
-                <td className="py-3 px-4 text-right text-emerald-700 font-bold">KSh {cashReserves.toLocaleString()}</td>
-              </tr>
-              <tr className="hover:bg-slate-50 text-xs">
-                <td className="py-3 px-4 pl-8 text-slate-700 font-semibold">Inventory Valuation (Products Retail Value)</td>
-                <td className="py-3 px-4 text-right text-indigo-600 font-bold">KSh {inventoryValuation.toLocaleString()}</td>
-              </tr>
-              <tr className="hover:bg-slate-50 text-xs">
-                <td className="py-3 px-4 pl-8 text-slate-700 font-semibold">Accounts Receivable (Customer Credit Balances)</td>
-                <td className="py-3 px-4 text-right text-amber-700 font-bold">KSh {customerReceivables.toLocaleString()}</td>
-              </tr>
-              <tr className="bg-slate-50 font-extrabold text-slate-900 border-t border-slate-200">
-                <td className="py-3.5 px-4 pl-6">TOTAL BUSINESS ASSETS</td>
-                <td className="py-3.5 px-4 text-right text-indigo-600 font-extrabold text-base">
-                  KSh {totalAssetsVal.toLocaleString()}
-                </td>
-              </tr>
+        {/* RIGHT COLUMN: LIABILITIES & EQUITY TABLE */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-6 flex flex-col justify-between space-y-4">
+          <div>
+            <div className="pb-3 border-b border-slate-200 flex justify-between items-center">
+              <h3 className="text-base font-extrabold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                <Coins className="w-4 h-4 text-rose-600" /> Liabilities & Equity
+              </h3>
+              <span className="text-xs font-bold text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-100">
+                Credits
+              </span>
+            </div>
 
-              {/* SECTION 2: LIABILITIES */}
-              <tr className="bg-slate-100/70 font-extrabold text-slate-900 text-xs uppercase tracking-wider">
-                <td colSpan={2} className="py-3 px-4 pt-6">
-                  2. Current Liabilities & Outflows
-                </td>
-              </tr>
-              <tr className="hover:bg-slate-50 text-xs">
-                <td className="py-3 px-4 pl-8 text-slate-700 font-semibold">Recorded Operating Outflows & Expenses</td>
-                <td className="py-3 px-4 text-right text-rose-600 font-bold">KSh {totalLiabilitiesVal.toLocaleString()}</td>
-              </tr>
-              <tr className="bg-slate-50 font-extrabold text-slate-900 border-t border-slate-200">
-                <td className="py-3.5 px-4 pl-6">TOTAL BUSINESS LIABILITIES</td>
-                <td className="py-3.5 px-4 text-right text-rose-600 font-extrabold text-base">
-                  KSh {totalLiabilitiesVal.toLocaleString()}
-                </td>
-              </tr>
+            <table className="w-full text-left text-xs text-slate-700 mt-4">
+              <tbody className="divide-y divide-slate-200">
+                <tr className="bg-slate-50 font-bold text-slate-900 uppercase text-[10px] tracking-wider">
+                  <td colSpan={2} className="py-2 px-2">Liabilities</td>
+                </tr>
+                <tr className="hover:bg-slate-50">
+                  <td className="py-3 px-2 pl-4 font-semibold text-slate-800">
+                    Operating Outflows & Recorded Payables
+                  </td>
+                  <td className="py-3 px-2 text-right font-bold text-rose-600">
+                    KSh {totalLiabilitiesVal.toLocaleString()}
+                  </td>
+                </tr>
 
-              {/* SECTION 3: EQUITY */}
-              <tr className="bg-slate-100/70 font-extrabold text-slate-900 text-xs uppercase tracking-wider">
-                <td colSpan={2} className="py-3 px-4 pt-6">
-                  3. Retained Owner Equity
-                </td>
-              </tr>
-              <tr className="hover:bg-slate-50 text-xs">
-                <td className="py-3 px-4 pl-8 text-slate-700 font-semibold">Retained Net Earnings / Capital</td>
-                <td className="py-3 px-4 text-right text-emerald-700 font-bold">KSh {totalEquityVal.toLocaleString()}</td>
-              </tr>
-              <tr className="bg-slate-50 font-extrabold text-slate-900 border-t border-slate-200">
-                <td className="py-3.5 px-4 pl-6">TOTAL OWNER EQUITY</td>
-                <td className="py-3.5 px-4 text-right text-emerald-700 font-extrabold text-base">
-                  KSh {totalEquityVal.toLocaleString()}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                <tr className="bg-slate-50 font-bold text-slate-900 uppercase text-[10px] tracking-wider">
+                  <td colSpan={2} className="py-2 px-2 pt-4">Owner Equity</td>
+                </tr>
+                <tr className="hover:bg-slate-50">
+                  <td className="py-3 px-2 pl-4 font-semibold text-slate-800">
+                    Retained Net Earnings / Business Capital
+                  </td>
+                  <td className="py-3 px-2 text-right font-bold text-emerald-700">
+                    KSh {totalEquityVal.toLocaleString()}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="pt-4 border-t-2 border-slate-300 flex justify-between items-center bg-slate-50 p-3 rounded-xl">
+            <span className="text-xs font-black text-slate-900 uppercase tracking-wider">TOTAL LIABILITIES & EQUITY</span>
+            <span className="text-lg font-black text-emerald-700">KSh {totalLiabilitiesAndEquity.toLocaleString()}</span>
+          </div>
         </div>
+      </div>
 
-        {/* Double Entry Accounting Verified Banner */}
-        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-center space-y-1">
-          <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider flex items-center justify-center gap-1.5">
-            <ShieldCheck className="w-4 h-4 text-emerald-600" /> Verified Fundamental Accounting Equation
-          </span>
-          <p className="text-sm font-black text-emerald-900">
-            Assets (KSh {totalAssetsVal.toLocaleString()}) = Liabilities (KSh {totalLiabilitiesVal.toLocaleString()}) + Equity (KSh {totalEquityVal.toLocaleString()})
-          </p>
-        </div>
+      {/* Accounting Balance Verification Bar */}
+      <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-center space-y-1">
+        <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider flex items-center justify-center gap-1.5">
+          <ShieldCheck className="w-4 h-4 text-emerald-600" /> Account Format Balance Verified
+        </span>
+        <p className="text-sm font-black text-emerald-900">
+          Assets (KSh {totalAssetsVal.toLocaleString()}) = Liabilities & Equity (KSh {totalLiabilitiesAndEquity.toLocaleString()})
+        </p>
       </div>
     </div>
   );
