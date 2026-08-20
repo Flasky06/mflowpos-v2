@@ -117,7 +117,7 @@ export const LoginPage: React.FC = () => {
             </Link>
           </p>
           <p className="text-xs font-bold text-slate-600 flex items-center justify-center gap-1.5 pt-1">
-            <PhoneCall className="w-3.5 h-3.5 text-indigo-600" /> Support & Enquiries: <a href="tel:0717299106" className="text-indigo-600 hover:underline font-mono">0717299106</a>
+            <PhoneCall className="w-3.5 h-3.5 text-emerald-600" /> Calls & WhatsApp: <a href="https://wa.me/254717299106" target="_blank" rel="noopener noreferrer" className="text-emerald-600 hover:underline font-mono">0717299106</a>
           </p>
         </div>
       </div>

@@ -33,8 +33,13 @@ export const LandingPage: React.FC = () => {
           <a href="#features" className="hover:text-indigo-600 transition-colors">Features</a>
           <a href="#pricing" className="hover:text-indigo-600 transition-colors">Pricing</a>
           <a href="#security" className="hover:text-indigo-600 transition-colors">Security</a>
-          <a href="tel:0717299106" className="flex items-center gap-1 text-indigo-600 hover:text-indigo-700 transition-colors">
-            <PhoneCall className="w-3.5 h-3.5" /> 0717299106
+          <a
+            href="https://wa.me/254717299106"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-emerald-600 hover:text-emerald-700 font-bold transition-colors"
+          >
+            <PhoneCall className="w-3.5 h-3.5" /> Calls & WhatsApp: 0717299106
           </a>
         </div>
 
@@ -224,7 +229,7 @@ export const LandingPage: React.FC = () => {
           <div className="space-y-1">
             <p>© 2026 mFlow POS. All rights reserved. Built for high-volume retail operations.</p>
             <p className="text-xs font-bold text-slate-700 flex items-center justify-center gap-1.5">
-              <PhoneCall className="w-3.5 h-3.5 text-indigo-600" /> Calls & Enquiries: <a href="tel:0717299106" className="text-indigo-600 hover:underline font-mono">0717299106</a>
+              <PhoneCall className="w-3.5 h-3.5 text-emerald-600" /> Calls & WhatsApp: <a href="https://wa.me/254717299106" target="_blank" rel="noopener noreferrer" className="text-emerald-600 hover:underline font-mono">0717299106</a>
             </p>
           </div>
           <div className="flex items-center gap-4 text-slate-600">

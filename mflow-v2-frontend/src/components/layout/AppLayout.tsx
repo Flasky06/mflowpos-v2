@@ -276,9 +276,15 @@ export const AppLayout: React.FC = () => {
           {/* SUPPORT CONTACT BADGE */}
           <div className="px-3.5 py-2 border-t border-slate-800 bg-slate-950/60 text-slate-400 text-[11px] flex items-center justify-between">
             <span className="flex items-center gap-1.5 font-semibold">
-              <PhoneCall className="w-3.5 h-3.5 text-indigo-400" /> Calls & Enquiries:
+              <PhoneCall className="w-3.5 h-3.5 text-emerald-400" /> Calls & WhatsApp:
             </span>
-            <a href="tel:0717299106" className="font-bold text-indigo-300 hover:text-white transition-colors font-mono">
+            <a
+              href="https://wa.me/254717299106"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold text-emerald-400 hover:text-emerald-300 transition-colors font-mono"
+              title="Click to WhatsApp or Call 0717299106"
+            >
               0717299106
             </a>
           </div>
