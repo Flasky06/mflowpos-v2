@@ -263,9 +263,8 @@ export const OnboardingWizardPage: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-xs font-bold text-slate-900">mflow POS Standard Plan</p>
-                      <p className="text-[11px] text-slate-500 font-medium">All features included · Unlimited shops & cashiers</p>
+                      <p className="text-[11px] text-slate-500 font-medium">All features included - Unlimited shops & cashiers</p>
                     </div>
-                    <span className="text-sm font-black text-indigo-600">KSh 1,000 <span className="text-[10px] font-bold text-slate-400">/ mo</span></span>
                   </div>
                 </div>
               </div>
