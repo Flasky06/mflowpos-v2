@@ -136,13 +136,6 @@ export const StockOperationsPage: React.FC = () => {
     <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <Package className="w-6 h-6 text-indigo-600" />
-            Stock Taking & Inventory Operations
-          </h1>
-          <p className="text-sm text-slate-500">v1 Stock level counts, branch transfers, and supplier returns</p>
-        </div>
 
         <div className="flex items-center gap-3">
           <button

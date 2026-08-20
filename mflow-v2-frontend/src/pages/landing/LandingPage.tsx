@@ -189,13 +189,6 @@ export const LandingPage: React.FC = () => {
             <div className="space-y-4 text-center">
               <span className="text-xs font-bold uppercase text-indigo-600 tracking-wide">Simple Flat Subscription</span>
               <h4 className="text-3xl font-extrabold text-slate-900">mflow POS Standard</h4>
-              <div className="flex items-baseline justify-center gap-1.5 pt-2">
-                <span className="text-5xl font-black text-slate-900">KSh 1,000</span>
-                <span className="text-sm text-slate-500 font-bold">/ month per business</span>
-              </div>
-              <p className="text-xs text-slate-600 font-medium max-w-md mx-auto">
-                No branch limits. No hidden fees. Full access to all point of sale, inventory, and accounting features.
-              </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-6 border-t border-slate-200 text-xs text-slate-800 font-semibold text-left">
                 <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" /> Unlimited Branch Shop Locations</div>

@@ -34,12 +34,6 @@ export const QuotationsPage: React.FC = () => {
 
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Pro-forma Quotations & Estimates</h1>
-          <p className="text-sm text-slate-500">Generate estimates and convert accepted quotes into POS sales in 1-click</p>
-        </div>
-      </div>
 
       <div className="glass-panel p-6 rounded-2xl border border-slate-200 overflow-x-auto">
         <table className="w-full text-left text-sm text-slate-700">

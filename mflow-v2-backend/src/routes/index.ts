@@ -16,6 +16,7 @@ import subscriptionRoutes from './subscription.routes';
 import superAdminAuthRoutes from './superadmin_auth.routes';
 import superAdminRoutes from './superadmin.routes';
 import webhookRoutes from './webhook.routes';
+import paymentAccountRoutes from './payment_account.routes';
 import { ApiResponse } from '../utils/response.util';
 
 const router = Router();
@@ -52,6 +53,7 @@ router.use('/stock-returns', stockReturnRoutes);
 router.use('/reports', reportRoutes);
 router.use('/subscriptions', subscriptionRoutes);
 router.use('/webhooks', webhookRoutes);
+router.use('/payment-accounts', paymentAccountRoutes);
 
 // Completely Decoupled SuperAdmin Control Desk Routes
 router.use('/superadmin/auth', superAdminAuthRoutes);

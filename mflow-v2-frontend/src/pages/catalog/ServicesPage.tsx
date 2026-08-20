@@ -186,14 +186,6 @@ export const ServicesPage: React.FC = () => {
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
-        <div>
-          <div className="flex items-center gap-2 text-xs font-bold text-violet-600 uppercase tracking-widest mb-1">
-            <Scissors className="w-4 h-4" /> Catalog Management
-          </div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Services Catalog</h1>
-          <p className="text-sm text-slate-500">Non-inventory services (Laundry, Tailoring, Repairs, Consultations)</p>
-        </div>
-
         <div className="flex flex-wrap items-center gap-2.5">
           <Link
             to="/service-categories"

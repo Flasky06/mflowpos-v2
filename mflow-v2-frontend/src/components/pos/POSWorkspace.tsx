@@ -28,7 +28,7 @@ export const POSWorkspace: React.FC = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [globalDiscount, setGlobalDiscount] = useState<number>(0);
   const [selectedCustomer, setSelectedCustomer] = useState<string>('');
-  const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'CARD' | 'MPESA' | 'CREDIT'>('CASH');
+  const [paymentMethod, setPaymentMethod] = useState<string>('Cash Account');
 
   const [isCartModalOpen, setIsCartModalOpen] = useState<boolean>(false);
   const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState<boolean>(false);
@@ -147,7 +147,8 @@ export const POSWorkspace: React.FC = () => {
       return;
     }
 
-    if (paymentMethod === 'CREDIT' && !selectedCustomer) {
+    const isCreditSale = paymentMethod === 'CREDIT' || paymentMethod.toLowerCase().includes('credit');
+    if (isCreditSale && !selectedCustomer) {
       addToast({ type: 'warning', title: 'Customer Required', message: 'Please select a customer for Credit sales' });
       return;
     }

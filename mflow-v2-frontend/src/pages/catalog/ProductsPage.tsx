@@ -168,14 +168,6 @@ export const ProductsPage: React.FC = () => {
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
-        <div>
-          <div className="flex items-center gap-2 text-xs font-bold text-indigo-600 uppercase tracking-widest mb-1">
-            <Layers className="w-4 h-4" /> Catalog Management
-          </div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Products Inventory</h1>
-          <p className="text-sm text-slate-500">Manage business products, stock levels, barcodes, and categories</p>
-        </div>
-
         <div className="flex items-center gap-3">
           <Link
             to="/categories"

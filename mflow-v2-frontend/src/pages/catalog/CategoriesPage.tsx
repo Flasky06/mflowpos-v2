@@ -120,14 +120,6 @@ export const CategoriesPage: React.FC = () => {
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       {/* Header & Tabs */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
-        <div>
-          <div className="flex items-center gap-2 text-xs font-bold text-indigo-600 uppercase tracking-widest mb-1">
-            <FolderTree className="w-4 h-4" /> Catalog Management
-          </div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Product Categories</h1>
-          <p className="text-sm text-slate-500">Organize products, assign department groupings, and filter catalog</p>
-        </div>
-
         <div className="flex items-center gap-3">
           <Link
             to="/products"

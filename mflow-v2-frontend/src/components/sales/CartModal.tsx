@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { apiClient } from '../../api/client';
 import {
   ShoppingCart,
   CheckCircle2,
@@ -28,7 +29,7 @@ interface CartModalProps {
   cart: CartItem[];
   customers: any[];
   selectedCustomer: string;
-  paymentMethod: 'CASH' | 'CARD' | 'MPESA' | 'CREDIT';
+  paymentMethod: string;
   globalDiscount: number;
   isCheckoutLoading: boolean;
   onCloseCartModal: () => void;
@@ -39,7 +40,7 @@ interface CartModalProps {
   onUpdateItemDiscount: (index: number, discountAmount: number) => void;
   onRemoveFromCart: (index: number) => void;
   onSetSelectedCustomer: (customer: string) => void;
-  onSetPaymentMethod: (method: 'CASH' | 'CARD' | 'MPESA' | 'CREDIT') => void;
+  onSetPaymentMethod: (method: string) => void;
   onSetGlobalDiscount: (discount: number) => void;
   onCompleteCheckout: () => void;
 }
@@ -65,6 +66,24 @@ export const CartModal: React.FC<CartModalProps> = ({
   onSetGlobalDiscount,
   onCompleteCheckout,
 }) => {
+  const [fetchedAccounts, setFetchedAccounts] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (isCheckoutModalOpen) {
+      apiClient
+        .get('/payment-accounts')
+        .then((res) => {
+          const list = res.data?.data || [];
+          setFetchedAccounts(list);
+          if (list.length > 0 && !paymentMethod) {
+            const defaultAcc = list.find((a: any) => a.isDefault) || list[0];
+            onSetPaymentMethod(defaultAcc.name);
+          }
+        })
+        .catch((err) => console.error(err));
+    }
+  }, [isCheckoutModalOpen]);
+
   const cartSubtotal = cart.reduce((sum, i) => {
     const effectiveUnitPrice = Math.max(0, i.unitPrice - (i.discount || 0));
     return sum + i.quantity * effectiveUnitPrice;
@@ -254,29 +273,42 @@ export const CartModal: React.FC<CartModalProps> = ({
                 <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2">
                   Select Payment Account
                 </label>
-                <div className="grid grid-cols-2 gap-3">
-                  {(
-                    [
-                      { id: 'CASH', name: 'Cash Account' },
-                      { id: 'CARD', name: 'Card / POS Terminal' },
-                      { id: 'MPESA', name: 'M-Pesa Express' },
-                      { id: 'CREDIT', name: 'Customer Credit' },
-                    ] as const
-                  ).map((method) => (
-                    <button
-                      key={method.id}
-                      type="button"
-                      onClick={() => onSetPaymentMethod(method.id)}
-                      className={`p-3.5 rounded-xl border-2 flex flex-col items-center justify-center gap-1 transition-all ${
-                        paymentMethod === method.id
-                          ? 'border-indigo-600 bg-indigo-50/70 text-indigo-900 shadow-xs'
-                          : 'border-slate-200 hover:border-slate-300 bg-slate-50/40 text-slate-600'
-                      }`}
-                    >
-                      <span className="font-bold text-xs">{method.name}</span>
-                      <span className="text-[10px] text-slate-400 font-mono">{method.id}</span>
-                    </button>
-                  ))}
+                <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto pr-1">
+                  {(fetchedAccounts.length > 0
+                    ? fetchedAccounts
+                    : [
+                        { id: 'CASH', name: 'Cash Account', type: 'CASH', accountNumber: null },
+                        { id: 'CARD', name: 'Card / POS Terminal', type: 'CARD', accountNumber: null },
+                        { id: 'MPESA', name: 'M-Pesa Express', type: 'MPESA', accountNumber: 'Paybill / Till' },
+                        { id: 'CREDIT', name: 'Customer Credit', type: 'CREDIT', accountNumber: null },
+                      ]
+                  ).map((acc: any) => {
+                    const accValue = acc.name || acc.id;
+                    const isSelected =
+                      paymentMethod === accValue ||
+                      paymentMethod === acc.type ||
+                      paymentMethod === acc.id;
+                    return (
+                      <button
+                        key={acc.id || acc.name}
+                        type="button"
+                        onClick={() => onSetPaymentMethod(accValue)}
+                        className={`p-3 rounded-xl border-2 flex flex-col items-center justify-center gap-1 transition-all ${
+                          isSelected
+                            ? 'border-indigo-600 bg-indigo-50/70 text-indigo-900 shadow-xs font-bold'
+                            : 'border-slate-200 hover:border-slate-300 bg-slate-50/40 text-slate-600 font-semibold'
+                        }`}
+                      >
+                        <span className="font-bold text-xs text-center">{acc.name}</span>
+                        {acc.accountNumber && (
+                          <span className="text-[10px] bg-indigo-100 text-indigo-800 font-mono font-semibold px-2 py-0.5 rounded-md">
+                            {acc.accountNumber}
+                          </span>
+                        )}
+                        <span className="text-[9px] text-slate-400 font-mono uppercase">{acc.type || acc.id}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 

@@ -132,6 +132,7 @@ model Business {
   stockTransfers StockTransfer[]
   stockReturns   StockReturn[]
   subscription   BusinessSubscription?
+  paymentAccounts PaymentAccount[]
 
   createdBy      String?   @map("created_by")
   updatedBy      String?   @map("updated_by")
@@ -161,6 +162,7 @@ model Shop {
   sourceTransfers  StockTransfer[] @relation("SourceTransfers")
   targetTransfers  StockTransfer[] @relation("TargetTransfers")
   stockReturns     StockReturn[]
+  paymentAccounts  PaymentAccount[]
 
   createdBy   String?   @map("created_by")
   updatedBy   String?   @map("updated_by")
@@ -631,4 +633,27 @@ model PurchaseItem {
   product         Product       @relation(fields: [productId], references: [id])
 
   @@map("purchase_items")
+}
+
+model PaymentAccount {
+  id            String   @id @default(uuid())
+  name          String
+  type          String   @default("MPESA") // CASH, MPESA, BANK, CARD, CREDIT, OTHER
+  accountNumber String?  @map("account_number")
+  description   String?
+  isDefault     Boolean  @default(false) @map("is_default")
+  active        Boolean  @default(true)
+
+  businessId    String   @map("business_id")
+  shopId        String?  @map("shop_id")
+
+  business      Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  shop          Shop?    @relation(fields: [shopId], references: [id], onDelete: SetNull)
+
+  createdBy     String?  @map("created_by")
+  updatedBy     String?  @map("updated_by")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("payment_accounts")
 }

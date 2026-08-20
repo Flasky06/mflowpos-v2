@@ -148,13 +148,6 @@ export const ExpensesPage: React.FC = () => {
     <div className="p-4 sm:p-6 lg:p-8 max-w-[1800px] w-full mx-auto space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <DollarSign className="w-6 h-6 text-rose-600" />
-            Operating Expenses Tracker
-          </h1>
-          <p className="text-sm text-slate-500">Record operational cash outflows, utilities, rent, and staff salaries</p>
-        </div>
 
         <div className="flex items-center gap-2">
           <button

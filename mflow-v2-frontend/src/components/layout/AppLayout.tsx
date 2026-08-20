@@ -121,6 +121,7 @@ export const AppLayout: React.FC = () => {
       isCollapsible: true,
       items: [
         { to: '/profile', label: 'Business Profile & Subscription', show: true },
+        { to: '/settings/payment-accounts', label: 'Payment Accounts & Paybills', show: true },
         { to: '/settings/branches', label: 'Branch Locations', show: user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' },
         { to: '/settings/staff', label: 'Staff Permissions', show: user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' },
         { to: '/settings/audit-trail', label: 'System Audit Trail', show: true },

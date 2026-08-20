@@ -30,6 +30,7 @@ import { GeneralLedgerPage } from './pages/reports/GeneralLedgerPage';
 import { BalanceSheetPage } from './pages/reports/BalanceSheetPage';
 import { BranchSettingsPage } from './pages/settings/BranchSettingsPage';
 import { StaffPage } from './pages/settings/StaffPage';
+import { PaymentAccountsPage } from './pages/settings/PaymentAccountsPage';
 import { ProfilePage } from './pages/settings/ProfilePage';
 import { AuditTrailPage } from './pages/settings/AuditTrailPage';
 import { SuperAdminDashboardPage } from './pages/superadmin/SuperAdminDashboardPage';
@@ -94,6 +95,7 @@ export const App: React.FC = () => {
 
             <Route path="/settings/branches" element={<BranchSettingsPage />} />
             <Route path="/settings/staff" element={<StaffPage />} />
+            <Route path="/settings/payment-accounts" element={<PaymentAccountsPage />} />
             <Route path="/settings/audit-trail" element={<AuditTrailPage />} />
             <Route path="/profile" element={<ProfilePage />} />
 
