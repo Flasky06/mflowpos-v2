@@ -218,20 +218,8 @@ export const AppLayout: React.FC = () => {
             isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
           }`}
         >
-          {/* DESKTOP BRAND LOGO HEADER */}
-          <div className="p-6 border-b border-slate-800 hidden lg:flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-black tracking-tight text-white">
-                mflowpos.com
-              </h1>
-              <p className="text-[11px] font-medium text-slate-400 mt-0.5">Smart Retail & Multi-Branch POS</p>
-            </div>
-          </div>
-
-
-
           {/* ACCORDION SIDEBAR MENU ITEMS */}
-          <nav className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
+          <nav className="flex-1 overflow-hidden p-4 space-y-3">
             {menuGroups.map((group) => {
               const isOpen = !group.isCollapsible || openGroupTitle === group.title;
               const visibleItems = group.items.filter((item) => item.show);
