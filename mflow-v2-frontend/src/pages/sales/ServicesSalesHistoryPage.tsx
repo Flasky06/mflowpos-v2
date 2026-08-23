@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { apiClient } from '../../api/client';
 import { useAuthStore } from '../../store/authStore';
 import { useToastStore } from '../../store/toastStore';
-import { Wrench, DollarSign, Calendar, Search } from 'lucide-react';
+import { Wrench, DollarSign, Calendar, Search, Printer } from 'lucide-react';
 
 export const ServicesSalesHistoryPage: React.FC = () => {
   const { activeShopId } = useAuthStore();
@@ -94,6 +94,14 @@ export const ServicesSalesHistoryPage: React.FC = () => {
           >
             <Search className="w-3.5 h-3.5" />
             Filter
+          </button>
+          <button
+            onClick={() => window.print()}
+            className="ml-2 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-lg transition-all flex items-center gap-1.5 border border-slate-200 cursor-pointer print:hidden"
+            title="Print Full Page Log (Standard Printer)"
+          >
+            <Printer className="w-3.5 h-3.5 text-slate-600" />
+            Print Log
           </button>
         </div>
       </div>

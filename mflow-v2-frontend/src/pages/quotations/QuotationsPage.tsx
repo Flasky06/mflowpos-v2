@@ -2,12 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { apiClient } from '../../api/client';
 import { useAuthStore } from '../../store/authStore';
 import { useToastStore } from '../../store/toastStore';
-import { ArrowRight } from 'lucide-react';
+import { ThermalReceiptModal } from '../../components/sales/ThermalReceiptModal';
+import { generateThermalQuotation } from '../../utils/thermalReceipt';
+import { ArrowRight, Printer } from 'lucide-react';
 
 export const QuotationsPage: React.FC = () => {
   const { activeShopId } = useAuthStore();
   const addToast = useToastStore((state) => state.addToast);
   const [quotations, setQuotations] = useState<any[]>([]);
+  const [selectedQuotation, setSelectedQuotation] = useState<string | null>(null);
 
   const fetchQuotations = async () => {
     try {
@@ -34,7 +37,6 @@ export const QuotationsPage: React.FC = () => {
 
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
-
       <div className="glass-panel p-6 rounded-2xl border border-slate-200 overflow-x-auto">
         <table className="w-full text-left text-sm text-slate-700">
           <thead className="text-xs uppercase bg-slate-100 text-slate-600 border-b border-slate-200">
@@ -77,15 +79,24 @@ export const QuotationsPage: React.FC = () => {
                     </span>
                   </td>
                   <td className="py-3.5 px-4 text-center">
-                    {q.status !== 'CONVERTED' && (
+                    <div className="flex items-center justify-center gap-2">
                       <button
-                        onClick={() => handleConvert(q.id)}
-                        className="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1 mx-auto shadow-xs"
+                        onClick={() => setSelectedQuotation(generateThermalQuotation(q))}
+                        title="Print Thermal Quotation / Invoice"
+                        className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors border border-slate-200"
                       >
-                        Convert to Sale
-                        <ArrowRight className="w-3.5 h-3.5" />
+                        <Printer className="w-4 h-4 text-indigo-600" />
                       </button>
-                    )}
+                      {q.status !== 'CONVERTED' && (
+                        <button
+                          onClick={() => handleConvert(q.id)}
+                          className="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1 shadow-xs"
+                        >
+                          Convert to Sale
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))
@@ -93,6 +104,12 @@ export const QuotationsPage: React.FC = () => {
           </tbody>
         </table>
       </div>
+
+      <ThermalReceiptModal
+        isOpen={!!selectedQuotation}
+        onClose={() => setSelectedQuotation(null)}
+        receiptPayload={selectedQuotation || ''}
+      />
     </div>
   );
 };

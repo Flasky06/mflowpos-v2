@@ -53,3 +53,43 @@ export function generateThermalReceipt(sale: any): string {
 
   return lines.join('\n');
 }
+
+export function generateThermalQuotation(q: any): string {
+  if (!q) return '';
+
+  const lines: string[] = [];
+  lines.push('================================');
+  lines.push('       QUOTATION / INVOICE      ');
+  lines.push('================================');
+  if (q.shop?.name) lines.push(`Branch    : ${q.shop.name}`);
+  lines.push(`Quote #   : ${q.quotationNumber || q.id || 'N/A'}`);
+  lines.push(`Date      : ${new Date(q.createdAt || Date.now()).toLocaleDateString()}`);
+  lines.push(`Customer  : ${q.customer?.name || 'Prospect Customer'}`);
+  lines.push(`Status    : ${q.status || 'DRAFT'}`);
+  lines.push('--------------------------------');
+  lines.push('Item              Qty     Total ');
+  lines.push('--------------------------------');
+
+  const items = q.items || [];
+  if (items.length > 0) {
+    for (const item of items) {
+      const itemName = item.product?.name || item.service?.name || item.name || 'Item';
+      const name = itemName.padEnd(16, ' ').slice(0, 16);
+      const qty = (item.quantity || 1).toString().padStart(3, ' ');
+      const totalVal = Number(item.totalPrice ?? item.price ?? 0);
+      const total = `KES ${totalVal.toLocaleString()}`.padStart(11, ' ');
+      lines.push(`${name} ${qty} ${total}`);
+    }
+  } else {
+    lines.push('Quotation Line Items');
+  }
+
+  lines.push('--------------------------------');
+  lines.push(`TOTAL ESTIMATE : KES ${Number(q.totalAmount || 0).toLocaleString()}`);
+  lines.push('--------------------------------');
+  lines.push('Valid for 30 Days');
+  lines.push('Thank you for choosing us!');
+  lines.push('================================\n');
+
+  return lines.join('\n');
+}
