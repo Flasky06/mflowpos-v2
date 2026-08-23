@@ -60,7 +60,7 @@ export const RegisterPage: React.FC = () => {
         <div className="text-center mb-8">
           <h1 className="text-2xl font-black text-indigo-600 tracking-tight mb-2">mflowpos.com</h1>
           <h2 className="text-xl font-bold text-slate-900 tracking-tight">Register Business Account</h2>
-          <p className="text-xs text-slate-500 mt-1">Start your 14-day free trial with multi-branch capabilities</p>
+          <p className="text-xs text-slate-500 mt-1">Start your 7-day free trial with multi-branch capabilities</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">

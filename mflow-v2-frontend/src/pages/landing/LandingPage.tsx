@@ -75,7 +75,7 @@ export const LandingPage: React.FC = () => {
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link to="/register" className="w-full sm:w-auto">
               <Button size="lg" fullWidth icon={<ArrowRight className="w-5 h-5" />} iconPosition="right">
-                Start Free 14-Day Trial
+                Start Free 7-Day Trial
               </Button>
             </Link>
             <Link to="/login" className="w-full sm:w-auto">
@@ -185,7 +185,7 @@ export const LandingPage: React.FC = () => {
         <div className="text-center max-w-3xl mx-auto space-y-2">
           <h2 className="text-xs font-black text-indigo-600 uppercase tracking-widest">Simple & Transparent Pricing</h2>
           <h3 className="text-3xl font-extrabold text-slate-900 tracking-tight">Flexible Subscription Plans Tailored for Your Business</h3>
-          <p className="text-slate-600 text-sm font-medium">No hidden transaction fees. Start your 14-day free trial today.</p>
+          <p className="text-slate-600 text-sm font-medium">No hidden transaction fees. Start your 7-day free trial today.</p>
         </div>
 
         <div className="max-w-2xl mx-auto mt-14">
@@ -213,7 +213,7 @@ export const LandingPage: React.FC = () => {
 
             <Link to="/register" className="block">
               <Button variant="primary" fullWidth size="lg" className="py-3.5 text-sm font-bold shadow-md shadow-indigo-600/20">
-                Start 14-Day Free Trial
+                Start 7-Day Free Trial
               </Button>
             </Link>
           </div>

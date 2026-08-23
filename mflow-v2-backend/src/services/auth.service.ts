@@ -60,7 +60,7 @@ export class AuthService {
         },
       });
 
-      // 4. Attach 14-Day Free Trial Subscription for Single Standard Plan (KES 1,000 / mo)
+      // 4. Attach 7-Day Free Trial Subscription for Single Standard Plan (KES 1,000 / mo)
       let standardPlan = await tx.subscriptionPlan.findUnique({
         where: { code: 'STANDARD' },
       });
@@ -77,7 +77,7 @@ export class AuthService {
       }
 
       const trialEndDate = new Date();
-      trialEndDate.setDate(trialEndDate.getDate() + 14);
+      trialEndDate.setDate(trialEndDate.getDate() + 7);
 
       await tx.businessSubscription.create({
         data: {
