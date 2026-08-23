@@ -157,10 +157,7 @@ export const ProductsPage: React.FC = () => {
   };
 
   const filteredProducts = products.filter((p) => {
-    const matchesSearch =
-      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.barcode?.includes(searchTerm);
+    const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory ? p.categoryId === selectedCategory : true;
     return matchesSearch && matchesCategory;
   });
@@ -200,7 +197,7 @@ export const ProductsPage: React.FC = () => {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search product name, SKU, or scan barcode..."
+            placeholder="Search product name..."
             className="w-full bg-white border border-slate-300 rounded-xl py-2.5 px-4 pl-10 text-slate-900 text-sm focus:outline-none focus:border-indigo-600 shadow-xs"
           />
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
@@ -226,7 +223,6 @@ export const ProductsPage: React.FC = () => {
             <tr>
               <th className="py-3 px-4">Product Name</th>
               <th className="py-3 px-4">Category</th>
-              <th className="py-3 px-4">SKU / Barcode</th>
               <th className="py-3 px-4 text-right">Cost Price</th>
               <th className="py-3 px-4 text-right">Selling Price</th>
               <th className="py-3 px-4 text-center">Branch Stock</th>
@@ -236,7 +232,7 @@ export const ProductsPage: React.FC = () => {
           <tbody className="divide-y divide-slate-200">
             {filteredProducts.length === 0 ? (
               <tr>
-                <td colSpan={7} className="py-8 text-center text-slate-500">
+                <td colSpan={6} className="py-8 text-center text-slate-500">
                   No products in catalog.
                 </td>
               </tr>
@@ -249,9 +245,6 @@ export const ProductsPage: React.FC = () => {
                   <tr key={p.id} className="hover:bg-slate-50 transition-colors">
                     <td className="py-3.5 px-4 font-semibold text-slate-900">{p.name}</td>
                     <td className="py-3.5 px-4 text-slate-500">{p.category?.name || 'Uncategorized'}</td>
-                    <td className="py-3.5 px-4 font-mono text-xs text-slate-500">
-                      {p.sku || p.barcode || '-'}
-                    </td>
                     <td className="py-3.5 px-4 text-right text-slate-500">
                       {p.costPrice ? `KSh ${Number(p.costPrice).toLocaleString()}` : '-'}
                     </td>
@@ -363,29 +356,6 @@ export const ProductsPage: React.FC = () => {
                     value={productForm.costPrice}
                     onChange={(e) => setProductForm({ ...productForm, costPrice: e.target.value })}
                     placeholder="100"
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 text-slate-900 text-sm focus:outline-none focus:border-indigo-600"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">SKU</label>
-                  <input
-                    type="text"
-                    value={productForm.sku}
-                    onChange={(e) => setProductForm({ ...productForm, sku: e.target.value })}
-                    placeholder="SKU-1001"
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 text-slate-900 text-sm focus:outline-none focus:border-indigo-600"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">Barcode</label>
-                  <input
-                    type="text"
-                    value={productForm.barcode}
-                    onChange={(e) => setProductForm({ ...productForm, barcode: e.target.value })}
-                    placeholder="6001234567"
                     className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 text-slate-900 text-sm focus:outline-none focus:border-indigo-600"
                   />
                 </div>

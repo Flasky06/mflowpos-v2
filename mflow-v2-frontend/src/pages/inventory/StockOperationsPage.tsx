@@ -126,16 +126,20 @@ export const StockOperationsPage: React.FC = () => {
   };
 
   const filteredProducts = products.filter(
-    (p) =>
-      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.barcode?.includes(searchTerm)
+    (p) => p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <Package className="w-6 h-6 text-indigo-600" />
+            Stock Operations & Inventory Auditing
+          </h1>
+          <p className="text-sm text-slate-500">Perform physical stock counts, stock reconciliations, and view audit history</p>
+        </div>
 
         <div className="flex items-center gap-3">
           <button
@@ -147,7 +151,7 @@ export const StockOperationsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Tabs Bar (v1 Navigation) */}
+      {/* Tabs Bar */}
       <div className="flex bg-white p-1.5 rounded-2xl border border-slate-200 shadow-xs gap-1">
         <button
           onClick={() => setActiveTab('SNAPSHOT')}
@@ -185,8 +189,8 @@ export const StockOperationsPage: React.FC = () => {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search product inventory by name, SKU, or barcode..."
-              className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2.5 px-4 pl-10 text-slate-900 text-xs font-semibold focus:outline-none focus:border-indigo-600"
+              placeholder="Search product inventory by name..."
+              className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2.5 px-4 pl-10 text-xs font-semibold focus:outline-none focus:border-indigo-600"
             />
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
           </div>

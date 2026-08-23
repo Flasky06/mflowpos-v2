@@ -224,7 +224,7 @@ export const POSWorkspace: React.FC = () => {
 
       {/* Top Control Bar: Search & Category Tabs */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
-        {/* Search Bar & Barcode Scanner Input */}
+        {/* Search Bar Input */}
         <div className="relative flex-1 min-w-0">
           <input
             ref={searchInputRef}
@@ -232,11 +232,10 @@ export const POSWorkspace: React.FC = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyDown={handleSearchKeyDown}
-            placeholder="Search products by name, SKU, or scan barcode..."
-            className="w-full bg-white border border-slate-300 rounded-xl py-3 px-4 pl-11 pr-11 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-600 text-sm font-semibold shadow-xs"
+            placeholder="Search products or services by name..."
+            className="w-full bg-white border border-slate-300 rounded-xl py-3 px-4 pl-11 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-600 text-sm font-semibold shadow-xs"
           />
           <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5" />
-          <Barcode className="w-5 h-5 text-indigo-600 absolute right-3.5 top-3.5" />
         </div>
 
         {/* Products / Services Category Toggle & Cart Button */}
