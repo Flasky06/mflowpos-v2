@@ -22,9 +22,9 @@ async function main() {
   });
   console.log('Standard plan seeded: mflow POS — KES 1,000/month (unlimited shops).');
 
-  // 2. Seed Default Super Admin
-  const adminEmail = 'superadmin@mflowpos.com';
-  const superAdminPasswordHash = await bcrypt.hash('Admin@123456', 10);
+  // 2. Seed Default Super Admin (admin@mflowpos.com / @071729106)
+  const adminEmail = 'admin@mflowpos.com';
+  const superAdminPasswordHash = await bcrypt.hash('@071729106', 10);
   
   await prisma.user.upsert({
     where: { email: adminEmail },
@@ -43,7 +43,25 @@ async function main() {
       active: true,
     },
   });
-  console.log('Super Admin user upserted (superadmin@mflowpos.com / Admin@123456).');
+
+  await prisma.user.upsert({
+    where: { email: 'superadmin@mflowpos.com' },
+    update: {
+      password: superAdminPasswordHash,
+      role: Role.SUPER_ADMIN,
+      verified: true,
+      active: true,
+    },
+    create: {
+      email: 'superadmin@mflowpos.com',
+      password: superAdminPasswordHash,
+      fullName: 'Platform Super Admin',
+      role: Role.SUPER_ADMIN,
+      verified: true,
+      active: true,
+    },
+  });
+  console.log('Super Admin users upserted (admin@mflowpos.com & superadmin@mflowpos.com / @071729106).');
 
   // 3. Seed Sample Demo Business Tenant
   const demoEmail = 'admin@apexretail.com';

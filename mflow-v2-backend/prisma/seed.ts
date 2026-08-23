@@ -47,26 +47,47 @@ async function main() {
   }
   console.log('Subscription plans seeded successfully with KSh pricing.');
 
-  // 2. Seed Default Super Admin
-  const adminEmail = 'superadmin@mflowpos.com';
-  const existingSuperAdmin = await prisma.user.findUnique({
+  // 2. Seed Default Super Admin (admin@mflowpos.com / @071729106)
+  const adminEmail = 'admin@mflowpos.com';
+  const superAdminPasswordHash = await bcrypt.hash('@071729106', 10);
+
+  await prisma.user.upsert({
     where: { email: adminEmail },
+    update: {
+      password: superAdminPasswordHash,
+      role: Role.SUPER_ADMIN,
+      verified: true,
+      active: true,
+    },
+    create: {
+      email: adminEmail,
+      password: superAdminPasswordHash,
+      fullName: 'Platform Super Admin',
+      role: Role.SUPER_ADMIN,
+      verified: true,
+      active: true,
+    },
   });
 
-  if (!existingSuperAdmin) {
-    const hashedPassword = await bcrypt.hash('Admin@123456', 12);
-    await prisma.user.create({
-      data: {
-        email: adminEmail,
-        password: hashedPassword,
-        fullName: 'Platform Super Admin',
-        role: Role.SUPER_ADMIN,
-        verified: true,
-        active: true,
-      },
-    });
-    console.log('Default Super Admin created (superadmin@mflowpos.com / Admin@123456).');
-  }
+  // Also seed superadmin@mflowpos.com alias for convenience
+  await prisma.user.upsert({
+    where: { email: 'superadmin@mflowpos.com' },
+    update: {
+      password: superAdminPasswordHash,
+      role: Role.SUPER_ADMIN,
+      verified: true,
+      active: true,
+    },
+    create: {
+      email: 'superadmin@mflowpos.com',
+      password: superAdminPasswordHash,
+      fullName: 'Platform Super Admin',
+      role: Role.SUPER_ADMIN,
+      verified: true,
+      active: true,
+    },
+  });
+  console.log('Default Super Admin seeded (admin@mflowpos.com & superadmin@mflowpos.com / @071729106).');
 
   // 3. Seed Sample Demo Business Tenant
   const demoEmail = 'admin@apexretail.com';
