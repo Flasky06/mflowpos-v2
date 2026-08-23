@@ -10,11 +10,35 @@ import {
   Barcode,
   List,
   LayoutGrid,
+  Maximize2,
+  Minimize2,
 } from 'lucide-react';
 
 export const POSWorkspace: React.FC = () => {
   const { activeShopId } = useAuthStore();
   const addToast = useToastStore((state) => state.addToast);
+
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {
+        addToast({ type: 'warning', title: 'Fullscreen', message: 'Fullscreen mode is not supported by your browser.' });
+      });
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+  };
 
   // POS State
   const [products, setProducts] = useState<any[]>([]);
@@ -258,6 +282,24 @@ export const POSWorkspace: React.FC = () => {
               Services ({filteredServices.length})
             </button>
           </div>
+
+          <button
+            onClick={toggleFullscreen}
+            className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-all border border-slate-200 flex items-center gap-1.5 text-xs font-bold shrink-0 cursor-pointer"
+            title={isFullscreen ? 'Exit Full Screen' : 'Enlarge Screen for Full View'}
+          >
+            {isFullscreen ? (
+              <>
+                <Minimize2 className="w-4 h-4 text-indigo-600" />
+                <span className="hidden sm:inline">Exit Full Screen</span>
+              </>
+            ) : (
+              <>
+                <Maximize2 className="w-4 h-4 text-indigo-600" />
+                <span className="hidden sm:inline">Full Screen View</span>
+              </>
+            )}
+          </button>
 
           <button
             onClick={() => setIsCartModalOpen(true)}

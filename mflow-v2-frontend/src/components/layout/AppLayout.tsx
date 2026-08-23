@@ -13,6 +13,8 @@ import {
   User,
   Bell,
   PackageCheck,
+  Maximize2,
+  Minimize2,
 } from 'lucide-react';
 
 export const AppLayout: React.FC = () => {
@@ -23,6 +25,25 @@ export const AppLayout: React.FC = () => {
   const [pendingPOs, setPendingPOs] = useState<any[]>([]);
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+  };
 
   const isNotificationEligible = user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' || user?.role === 'SHOP_ADMIN';
 
@@ -306,6 +327,14 @@ export const AppLayout: React.FC = () => {
                 </p>
               </div>
             </Link>
+
+            <button
+              onClick={toggleFullscreen}
+              className="p-2 text-slate-400 hover:text-indigo-400 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer shrink-0"
+              title={isFullscreen ? 'Exit Full Screen' : 'Enlarge Screen for Full View'}
+            >
+              {isFullscreen ? <Minimize2 className="w-4 h-4 text-indigo-400" /> : <Maximize2 className="w-4 h-4" />}
+            </button>
 
             {isNotificationEligible && (
               <Link
