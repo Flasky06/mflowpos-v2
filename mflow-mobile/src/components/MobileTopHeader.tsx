@@ -14,7 +14,7 @@ import { useAuthStore } from '../store/authStore';
 import { Bell, Store, Maximize, Minimize, X, AlertTriangle, CheckCircle2, ShieldCheck } from 'lucide-react-native';
 
 export const MobileTopHeader: React.FC = () => {
-  const { user, shops, activeShopId, setActiveShopId, getSubscriptionInfo } = useAuthStore();
+  const { user, shops, activeShopId, getSubscriptionInfo } = useAuthStore();
   const subInfo = getSubscriptionInfo();
 
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -29,14 +29,14 @@ export const MobileTopHeader: React.FC = () => {
     }
   };
 
-  // Mock notifications / system alerts
+  // System notifications / alerts
   const notifications = [
     ...(subInfo.isExpired
       ? [
           {
             id: 'sub-exp',
             title: 'Subscription Expired',
-            message: 'Your business subscription has expired. Please renew via the web portal.',
+            message: subInfo.message || 'Please log into the web portal to renew.',
             type: 'WARNING' as const,
             time: 'Just now',
           },
@@ -63,7 +63,9 @@ export const MobileTopHeader: React.FC = () => {
       <View style={styles.topHeaderBar}>
         {/* Left: Active Branch Badge */}
         <View style={styles.branchBox}>
-          <Store size={18} color="#818CF8" />
+          <View style={styles.storeBadge}>
+            <Store size={16} color="#4F46E5" />
+          </View>
           <View style={{ marginLeft: 8 }}>
             <Text style={styles.branchTitle} numberOfLines={1}>
               {activeShop?.name || user?.businessName || 'MFlow POS'}
@@ -99,7 +101,7 @@ export const MobileTopHeader: React.FC = () => {
             onPress={() => setIsNotificationsOpen(true)}
             activeOpacity={0.7}
           >
-            <Bell size={20} color="#CBD5E1" />
+            <Bell size={18} color="#475569" />
             {notifications.length > 0 ? (
               <View style={styles.notifBadge}>
                 <Text style={styles.notifBadgeText}>{notifications.length}</Text>
@@ -114,9 +116,9 @@ export const MobileTopHeader: React.FC = () => {
             activeOpacity={0.7}
           >
             {isFullscreen ? (
-              <Minimize size={20} color="#818CF8" />
+              <Minimize size={18} color="#4F46E5" />
             ) : (
-              <Maximize size={20} color="#CBD5E1" />
+              <Maximize size={18} color="#475569" />
             )}
           </TouchableOpacity>
         </View>
@@ -175,17 +177,17 @@ export const MobileTopHeader: React.FC = () => {
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: '#0F172A',
+    backgroundColor: '#FFFFFF',
   },
   topHeaderBar: {
     height: 56,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#FFFFFF',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#1E293B',
+    borderBottomColor: '#E2E8F0',
   },
   branchBox: {
     flexDirection: 'row',
@@ -193,21 +195,29 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 10,
   },
+  storeBadge: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    backgroundColor: '#EEF2FF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   branchTitle: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#0F172A',
   },
   branchSubtitle: {
     fontSize: 10,
-    color: '#94A3B8',
+    color: '#64748B',
     fontWeight: '600',
     marginTop: 1,
   },
   actionGroup: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 8,
   },
   subPill: {
     paddingHorizontal: 8,
@@ -215,50 +225,50 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   subPillActive: {
-    backgroundColor: '#064E3B',
+    backgroundColor: '#DCFCE7',
   },
   subPillExpired: {
-    backgroundColor: '#78350F',
+    backgroundColor: '#FEF3C7',
   },
   subPillText: {
     fontSize: 9,
     fontWeight: '900',
   },
   subTextActive: {
-    color: '#34D399',
+    color: '#166534',
   },
   subTextExpired: {
-    color: '#FDE68A',
+    color: '#92400E',
   },
   iconBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: 12,
-    backgroundColor: '#1E293B',
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: '#F1F5F9',
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
   },
   notifBadge: {
     position: 'absolute',
-    top: 4,
-    right: 4,
+    top: 2,
+    right: 2,
     backgroundColor: '#EF4444',
     borderRadius: 8,
-    minWidth: 16,
-    height: 16,
+    minWidth: 15,
+    height: 15,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 4,
+    paddingHorizontal: 3,
   },
   notifBadgeText: {
     color: '#FFFFFF',
-    fontSize: 9,
+    fontSize: 8,
     fontWeight: '900',
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.7)',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     justifyContent: 'flex-end',
   },
   modalCard: {
@@ -305,7 +315,7 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
   closeBtn: {
-    backgroundColor: '#0F172A',
+    backgroundColor: '#4F46E5',
     height: 48,
     borderRadius: 14,
     alignItems: 'center',

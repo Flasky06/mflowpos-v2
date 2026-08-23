@@ -10,7 +10,6 @@ import {
   Platform,
   ScrollView,
   SafeAreaView,
-  Alert,
 } from 'react-native';
 import { useAuthStore } from '../../store/authStore';
 import { ShoppingBag, Lock, Mail, Eye, EyeOff } from 'lucide-react-native';
@@ -31,9 +30,9 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
 
     setErrorMessage(null);
     try {
-      await login(email, password);
+      await login(email.trim().toLowerCase(), password);
     } catch (err: any) {
-      setErrorMessage(err.message || 'Login failed.');
+      setErrorMessage(err.message || 'Login failed. Please check credentials.');
     }
   };
 
@@ -47,7 +46,7 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
           {/* Brand Header */}
           <View style={styles.headerBox}>
             <View style={styles.logoBadge}>
-              <ShoppingBag size={32} color="#4F46E5" />
+              <ShoppingBag size={34} color="#4F46E5" />
             </View>
             <Text style={styles.brandTitle}>MFlow POS</Text>
             <Text style={styles.brandSubtitle}>Mobile POS & Retail Register</Text>
@@ -55,8 +54,8 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
 
           {/* Form Card */}
           <View style={styles.card}>
-            <Text style={styles.cardHeaderTitle}>Sign In to Workspace</Text>
-            <Text style={styles.cardHeaderDesc}>Enter staff or admin credentials</Text>
+            <Text style={styles.cardTitle}>Sign In to Terminal</Text>
+            <Text style={styles.cardSubtitle}>Access your retail shop register</Text>
 
             {errorMessage ? (
               <View style={styles.errorBox}>
@@ -109,10 +108,10 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
 
             {/* Forgot Password Link */}
             <TouchableOpacity
-              style={{ alignSelf: 'flex-end', marginTop: -6, marginBottom: 16 }}
+              style={{ alignSelf: 'flex-end', marginTop: -4, marginBottom: 20 }}
               onPress={() => navigation.navigate('ForgotPassword')}
             >
-              <Text style={{ color: '#818CF8', fontSize: 12, fontWeight: '700' }}>
+              <Text style={{ color: '#4F46E5', fontSize: 13, fontWeight: '700' }}>
                 Forgot Password?
               </Text>
             </TouchableOpacity>
@@ -132,19 +131,19 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
 
             {/* Register Navigation Link */}
             <TouchableOpacity
-              style={{ marginTop: 18, alignItems: 'center' }}
+              style={{ marginTop: 20, alignItems: 'center' }}
               onPress={() => navigation.navigate('Register')}
             >
-              <Text style={{ color: '#94A3B8', fontSize: 13 }}>
+              <Text style={{ color: '#64748B', fontSize: 13 }}>
                 Don't have an account?{' '}
-                <Text style={{ color: '#818CF8', fontWeight: '800' }}>Create Account (7 Days Free)</Text>
+                <Text style={{ color: '#4F46E5', fontWeight: '800' }}>Create Account (7 Days Free)</Text>
               </Text>
             </TouchableOpacity>
           </View>
 
           {/* Footer Info */}
           <Text style={styles.footerNote}>
-            MFlow POS Mobile v2.0 · Secured API Integration
+            MFlow POS Mobile v2.0 · Universal Retail System
           </Text>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -155,7 +154,7 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#FFFFFF',
   },
   scrollContent: {
     paddingHorizontal: 24,
@@ -165,77 +164,85 @@ const styles = StyleSheet.create({
   },
   headerBox: {
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: 28,
   },
   logoBadge: {
-    width: 64,
-    height: 64,
+    width: 68,
+    height: 68,
     borderRadius: 20,
     backgroundColor: '#EEF2FF',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#C7D2FE',
   },
   brandTitle: {
     fontSize: 28,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#0F172A',
     letterSpacing: -0.5,
   },
   brandSubtitle: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
-    color: '#818CF8',
+    color: '#64748B',
     marginTop: 4,
   },
   card: {
-    backgroundColor: '#1E293B',
+    backgroundColor: '#FFFFFF',
     borderRadius: 24,
     padding: 24,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#E2E8F0',
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 12,
+    elevation: 3,
   },
-  cardHeaderTitle: {
+  cardTitle: {
     fontSize: 20,
     fontWeight: '800',
-    color: '#F8FAFC',
+    color: '#0F172A',
+    marginBottom: 4,
   },
-  cardHeaderDesc: {
+  cardSubtitle: {
     fontSize: 13,
-    color: '#94A3B8',
-    marginTop: 4,
+    color: '#64748B',
     marginBottom: 20,
   },
   errorBox: {
-    backgroundColor: '#451A03',
-    borderColor: '#78350F',
+    backgroundColor: '#FEF2F2',
+    borderColor: '#FCA5A5',
     borderWidth: 1,
     borderRadius: 12,
     padding: 12,
     marginBottom: 16,
   },
   errorText: {
-    color: '#FDE68A',
+    color: '#991B1B',
     fontSize: 13,
     fontWeight: '600',
   },
   fieldGroup: {
-    marginBottom: 18,
+    marginBottom: 16,
   },
   label: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#CBD5E1',
-    marginBottom: 8,
+    color: '#475569',
+    marginBottom: 6,
     textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0F172A',
+    backgroundColor: '#F8FAFC',
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#CBD5E1',
     paddingHorizontal: 14,
   },
   inputIcon: {
@@ -244,7 +251,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     height: 48,
-    color: '#FFFFFF',
+    color: '#0F172A',
     fontSize: 14,
     fontWeight: '600',
   },
@@ -257,12 +264,11 @@ const styles = StyleSheet.create({
     height: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 8,
     shadowColor: '#4F46E5',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.25,
     shadowRadius: 8,
-    elevation: 4,
+    elevation: 3,
   },
   submitBtnDisabled: {
     opacity: 0.6,
@@ -274,9 +280,8 @@ const styles = StyleSheet.create({
   },
   footerNote: {
     textAlign: 'center',
-    color: '#64748B',
     fontSize: 12,
+    color: '#94A3B8',
     marginTop: 28,
-    fontWeight: '500',
   },
 });

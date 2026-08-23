@@ -14,7 +14,7 @@ export const TrialExpiredScreen: React.FC = () => {
       <View style={styles.content}>
         {/* Lock Icon */}
         <View style={styles.iconCircle}>
-          <Lock size={48} color="#F59E0B" />
+          <Lock size={48} color="#D97706" />
         </View>
 
         {/* Lockout Headline */}
@@ -28,12 +28,12 @@ export const TrialExpiredScreen: React.FC = () => {
           is no longer active.
         </Text>
 
-        {/* Informational Box - Strict Google Play & App Store Compliance (Zero Purchase Prompts) */}
+        {/* Informational Box - Strict Google Play & App Store Compliance */}
         <View style={styles.infoBox}>
           {isTrial ? (
-            <MailCheck size={26} color="#818CF8" style={{ marginBottom: 12 }} />
+            <MailCheck size={26} color="#4F46E5" style={{ marginBottom: 12 }} />
           ) : (
-            <AlertTriangle size={26} color="#F59E0B" style={{ marginBottom: 12 }} />
+            <AlertTriangle size={26} color="#D97706" style={{ marginBottom: 12 }} />
           )}
           <Text style={styles.infoText}>
             {subInfo.message ||
@@ -43,7 +43,7 @@ export const TrialExpiredScreen: React.FC = () => {
 
         {/* Sign Out Action */}
         <TouchableOpacity style={styles.logoutBtn} onPress={() => logout()}>
-          <LogOut size={18} color="#EF4444" style={{ marginRight: 8 }} />
+          <LogOut size={18} color="#991B1B" style={{ marginRight: 8 }} />
           <Text style={styles.logoutText}>Sign Out of Terminal</Text>
         </TouchableOpacity>
       </View>
@@ -54,7 +54,7 @@ export const TrialExpiredScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#FFFFFF',
   },
   content: {
     flex: 1,
@@ -66,43 +66,43 @@ const styles = StyleSheet.create({
     width: 96,
     height: 96,
     borderRadius: 48,
-    backgroundColor: '#312E81',
+    backgroundColor: '#FEF3C7',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 24,
-    borderWidth: 2,
-    borderColor: '#4338CA',
+    borderWidth: 1,
+    borderColor: '#FDE68A',
   },
   title: {
     fontSize: 24,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#0F172A',
     marginBottom: 8,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 14,
-    color: '#94A3B8',
+    color: '#64748B',
     textAlign: 'center',
     lineHeight: 20,
     marginBottom: 24,
   },
   bold: {
-    color: '#FFFFFF',
+    color: '#0F172A',
     fontWeight: '700',
   },
   infoBox: {
-    backgroundColor: '#1E293B',
+    backgroundColor: '#F8FAFC',
     borderRadius: 20,
     padding: 20,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#E2E8F0',
     alignItems: 'center',
     marginBottom: 32,
     width: '100%',
   },
   infoText: {
-    color: '#CBD5E1',
+    color: '#334155',
     fontSize: 13,
     textAlign: 'center',
     lineHeight: 20,
@@ -111,8 +111,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#451A03',
-    borderColor: '#78350F',
+    backgroundColor: '#FEF2F2',
+    borderColor: '#FCA5A5',
     borderWidth: 1,
     paddingHorizontal: 24,
     paddingVertical: 14,
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   logoutText: {
-    color: '#EF4444',
+    color: '#991B1B',
     fontSize: 14,
     fontWeight: '800',
   },

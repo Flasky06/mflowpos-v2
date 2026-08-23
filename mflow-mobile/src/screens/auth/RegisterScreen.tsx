@@ -42,7 +42,7 @@ export const RegisterScreen: React.FC<any> = ({ navigation }) => {
       await register({
         fullName,
         businessName,
-        email,
+        email: email.trim().toLowerCase(),
         phoneNumber,
         password,
       });
@@ -61,7 +61,7 @@ export const RegisterScreen: React.FC<any> = ({ navigation }) => {
           {/* Brand Header */}
           <View style={styles.headerBox}>
             <View style={styles.logoBadge}>
-              <ShoppingBag size={32} color="#4F46E5" />
+              <ShoppingBag size={34} color="#4F46E5" />
             </View>
             <Text style={styles.brandTitle}>Create Workspace</Text>
             <Text style={styles.brandSubtitle}>Start your MFlow POS 7-Day Free Trial</Text>
@@ -69,7 +69,7 @@ export const RegisterScreen: React.FC<any> = ({ navigation }) => {
 
           {/* 7-Day Free Trial Announcement Badge */}
           <View style={styles.trialCallout}>
-            <Sparkles size={20} color="#F59E0B" />
+            <Sparkles size={20} color="#D97706" />
             <View style={{ flex: 1, marginLeft: 10 }}>
               <Text style={styles.trialTitle}>7 Days Free Trial Included</Text>
               <Text style={styles.trialDesc}>
@@ -223,7 +223,7 @@ export const RegisterScreen: React.FC<any> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#FFFFFF',
   },
   scrollContent: {
     paddingHorizontal: 24,
@@ -234,29 +234,31 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   logoBadge: {
-    width: 60,
-    height: 60,
-    borderRadius: 18,
+    width: 64,
+    height: 64,
+    borderRadius: 20,
     backgroundColor: '#EEF2FF',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#C7D2FE',
   },
   brandTitle: {
     fontSize: 26,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#0F172A',
     letterSpacing: -0.5,
   },
   brandSubtitle: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#818CF8',
+    color: '#64748B',
     marginTop: 4,
   },
   trialCallout: {
-    backgroundColor: '#1E1B4B',
-    borderColor: '#4338CA',
+    backgroundColor: '#FEF3C7',
+    borderColor: '#FDE68A',
     borderWidth: 1,
     borderRadius: 16,
     padding: 14,
@@ -265,33 +267,38 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   trialTitle: {
-    color: '#F59E0B',
+    color: '#92400E',
     fontSize: 14,
     fontWeight: '900',
   },
   trialDesc: {
-    color: '#C7D2FE',
+    color: '#78350F',
     fontSize: 11,
     marginTop: 2,
     lineHeight: 15,
   },
   card: {
-    backgroundColor: '#1E293B',
+    backgroundColor: '#FFFFFF',
     borderRadius: 24,
     padding: 22,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#E2E8F0',
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 12,
+    elevation: 3,
   },
   errorBox: {
-    backgroundColor: '#451A03',
-    borderColor: '#78350F',
+    backgroundColor: '#FEF2F2',
+    borderColor: '#FCA5A5',
     borderWidth: 1,
     borderRadius: 12,
     padding: 12,
     marginBottom: 16,
   },
   errorText: {
-    color: '#FDE68A',
+    color: '#991B1B',
     fontSize: 13,
     fontWeight: '600',
   },
@@ -301,17 +308,17 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#CBD5E1',
+    color: '#475569',
     marginBottom: 6,
     textTransform: 'uppercase',
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0F172A',
+    backgroundColor: '#F8FAFC',
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#CBD5E1',
     paddingHorizontal: 14,
   },
   inputIcon: {
@@ -320,7 +327,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     height: 48,
-    color: '#FFFFFF',
+    color: '#0F172A',
     fontSize: 14,
     fontWeight: '600',
   },
@@ -336,9 +343,9 @@ const styles = StyleSheet.create({
     marginTop: 8,
     shadowColor: '#4F46E5',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.25,
     shadowRadius: 8,
-    elevation: 4,
+    elevation: 3,
   },
   submitBtnDisabled: {
     opacity: 0.6,
@@ -353,11 +360,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loginLinkText: {
-    color: '#94A3B8',
+    color: '#64748B',
     fontSize: 13,
   },
   loginLinkBold: {
-    color: '#818CF8',
+    color: '#4F46E5',
     fontWeight: '800',
   },
 });

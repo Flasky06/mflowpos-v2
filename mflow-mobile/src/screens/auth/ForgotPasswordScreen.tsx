@@ -13,7 +13,7 @@ import {
   Alert,
 } from 'react-native';
 import { apiClient } from '../../api/client';
-import { KeyRound, Mail, Lock, CheckCircle2, ArrowLeft } from 'lucide-react-native';
+import { KeyRound, Mail, Lock, ArrowLeft } from 'lucide-react-native';
 
 export const ForgotPasswordScreen: React.FC<any> = ({ navigation }) => {
   const [step, setStep] = useState<1 | 2>(1);
@@ -33,7 +33,7 @@ export const ForgotPasswordScreen: React.FC<any> = ({ navigation }) => {
     setIsLoading(true);
     setErrorMessage(null);
     try {
-      await apiClient.post('/auth/forgot-password', { email: email.trim() });
+      await apiClient.post('/auth/forgot-password', { email: email.trim().toLowerCase() });
       setIsLoading(false);
       setStep(2);
       Alert.alert(
@@ -88,14 +88,14 @@ export const ForgotPasswordScreen: React.FC<any> = ({ navigation }) => {
             style={styles.backBtn}
             onPress={() => navigation.navigate('Login')}
           >
-            <ArrowLeft size={18} color="#818CF8" />
+            <ArrowLeft size={18} color="#4F46E5" />
             <Text style={styles.backBtnText}>Back to Sign In</Text>
           </TouchableOpacity>
 
           {/* Header */}
           <View style={styles.headerBox}>
             <View style={styles.logoBadge}>
-              <KeyRound size={32} color="#4F46E5" />
+              <KeyRound size={34} color="#4F46E5" />
             </View>
             <Text style={styles.brandTitle}>Password Recovery</Text>
             <Text style={styles.brandSubtitle}>
@@ -212,7 +212,7 @@ export const ForgotPasswordScreen: React.FC<any> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#FFFFFF',
   },
   scrollContent: {
     paddingHorizontal: 24,
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   backBtnText: {
-    color: '#818CF8',
+    color: '#4F46E5',
     fontSize: 14,
     fontWeight: '700',
   },
@@ -234,44 +234,51 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   logoBadge: {
-    width: 60,
-    height: 60,
-    borderRadius: 18,
+    width: 64,
+    height: 64,
+    borderRadius: 20,
     backgroundColor: '#EEF2FF',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#C7D2FE',
   },
   brandTitle: {
     fontSize: 26,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#0F172A',
     letterSpacing: -0.5,
   },
   brandSubtitle: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#818CF8',
+    color: '#64748B',
     marginTop: 4,
     textAlign: 'center',
   },
   card: {
-    backgroundColor: '#1E293B',
+    backgroundColor: '#FFFFFF',
     borderRadius: 24,
     padding: 22,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#E2E8F0',
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 12,
+    elevation: 3,
   },
   errorBox: {
-    backgroundColor: '#451A03',
-    borderColor: '#78350F',
+    backgroundColor: '#FEF2F2',
+    borderColor: '#FCA5A5',
     borderWidth: 1,
     borderRadius: 12,
     padding: 12,
     marginBottom: 16,
   },
   errorText: {
-    color: '#FDE68A',
+    color: '#991B1B',
     fontSize: 13,
     fontWeight: '600',
   },
@@ -281,17 +288,17 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#CBD5E1',
+    color: '#475569',
     marginBottom: 6,
     textTransform: 'uppercase',
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0F172A',
+    backgroundColor: '#F8FAFC',
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#CBD5E1',
     paddingHorizontal: 14,
   },
   inputIcon: {
@@ -300,7 +307,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     height: 48,
-    color: '#FFFFFF',
+    color: '#0F172A',
     fontSize: 14,
     fontWeight: '600',
   },
@@ -313,9 +320,9 @@ const styles = StyleSheet.create({
     marginTop: 8,
     shadowColor: '#4F46E5',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.25,
     shadowRadius: 8,
-    elevation: 4,
+    elevation: 3,
   },
   submitBtnDisabled: {
     opacity: 0.6,

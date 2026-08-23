@@ -112,7 +112,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ isLoading: true });
     try {
       const response = await apiClient.post('/auth/login', {
-        email: email.trim(),
+        email: email.trim().toLowerCase(),
         password: pass,
       });
 
@@ -144,7 +144,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ isLoading: true });
     try {
       await apiClient.post('/auth/register', {
-        email: dto.email.trim(),
+        email: dto.email.trim().toLowerCase(),
         password: dto.password,
         fullName: dto.fullName.trim(),
         businessName: dto.businessName.trim(),

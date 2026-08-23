@@ -18,14 +18,14 @@ export const MainTabNavigator: React.FC = () => {
       screenOptions={{
         header: () => <MobileTopHeader />,
         tabBarStyle: {
-          backgroundColor: '#0F172A',
-          borderTopColor: '#1E293B',
+          backgroundColor: '#FFFFFF',
+          borderTopColor: '#E2E8F0',
           height: 62,
           paddingBottom: 8,
           paddingTop: 6,
         },
-        tabBarActiveTintColor: '#818CF8',
-        tabBarInactiveTintColor: '#64748B',
+        tabBarActiveTintColor: '#4F46E5',
+        tabBarInactiveTintColor: '#94A3B8',
       }}
     >
       {/* 1st Tab: POS Register (Selling is the primary app purpose) */}
