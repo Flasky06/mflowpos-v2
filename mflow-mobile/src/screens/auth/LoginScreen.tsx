@@ -15,7 +15,7 @@ import {
 import { useAuthStore } from '../../store/authStore';
 import { ShoppingBag, Lock, Mail, Eye, EyeOff } from 'lucide-react-native';
 
-export const LoginScreen: React.FC = () => {
+export const LoginScreen: React.FC<any> = ({ navigation }) => {
   const { login, isLoading } = useAuthStore();
 
   const [email, setEmail] = useState('');
@@ -107,6 +107,16 @@ export const LoginScreen: React.FC = () => {
               </View>
             </View>
 
+            {/* Forgot Password Link */}
+            <TouchableOpacity
+              style={{ alignSelf: 'flex-end', marginTop: -6, marginBottom: 16 }}
+              onPress={() => navigation.navigate('ForgotPassword')}
+            >
+              <Text style={{ color: '#818CF8', fontSize: 12, fontWeight: '700' }}>
+                Forgot Password?
+              </Text>
+            </TouchableOpacity>
+
             {/* Submit Button */}
             <TouchableOpacity
               style={[styles.submitBtn, isLoading && styles.submitBtnDisabled]}
@@ -118,6 +128,17 @@ export const LoginScreen: React.FC = () => {
               ) : (
                 <Text style={styles.submitBtnText}>Sign In to Terminal</Text>
               )}
+            </TouchableOpacity>
+
+            {/* Register Navigation Link */}
+            <TouchableOpacity
+              style={{ marginTop: 18, alignItems: 'center' }}
+              onPress={() => navigation.navigate('Register')}
+            >
+              <Text style={{ color: '#94A3B8', fontSize: 13 }}>
+                Don't have an account?{' '}
+                <Text style={{ color: '#818CF8', fontWeight: '800' }}>Create Account (7 Days Free)</Text>
+              </Text>
             </TouchableOpacity>
           </View>
 

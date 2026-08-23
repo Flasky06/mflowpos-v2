@@ -35,6 +35,7 @@ interface AuthState {
   isLoading: boolean;
   isInitializing: boolean;
   login: (email: string, pass: string) => Promise<void>;
+  register: (dto: { email: string; password: string; fullName: string; businessName: string; phoneNumber?: string }) => Promise<void>;
   logout: () => Promise<void>;
   setActiveShopId: (shopId: string) => Promise<void>;
   loadStoredAuth: () => Promise<void>;
@@ -61,14 +62,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       (sub.endDate ? new Date(sub.endDate).getTime() < Date.now() : false);
 
     const statusText = isExpired ? 'EXPIRED' : (sub.status || 'ACTIVE');
-    const planName = sub.plan?.name || 'Business Plan';
+    const planName = sub.plan?.name || '7-Day Free Trial';
 
     return {
       isExpired,
       statusText,
       planName,
       message: isExpired
-        ? 'Your business subscription has expired. Please contact your account administrator or renew via the MFlow web portal.'
+        ? 'Your 7-day free trial has expired. Check your email or log into the MFlow web portal to activate a subscription plan.'
         : null,
     };
   },
@@ -123,6 +124,26 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     } catch (error: any) {
       set({ isLoading: false });
       const msg = error.response?.data?.message || 'Login failed. Please check credentials.';
+      throw new Error(msg);
+    }
+  },
+
+  register: async (dto) => {
+    set({ isLoading: true });
+    try {
+      await apiClient.post('/auth/register', {
+        email: dto.email.trim(),
+        password: dto.password,
+        fullName: dto.fullName.trim(),
+        businessName: dto.businessName.trim(),
+        phoneNumber: dto.phoneNumber?.trim() || undefined,
+      });
+
+      // Auto login after registration to activate 7-day free trial
+      await get().login(dto.email, dto.password);
+    } catch (error: any) {
+      set({ isLoading: false });
+      const msg = error.response?.data?.message || 'Sign up failed. Please check inputs.';
       throw new Error(msg);
     }
   },

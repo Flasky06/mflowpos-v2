@@ -4,12 +4,16 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuthStore } from '../store/authStore';
 import { LoginScreen } from '../screens/auth/LoginScreen';
+import { RegisterScreen } from '../screens/auth/RegisterScreen';
+import { ForgotPasswordScreen } from '../screens/auth/ForgotPasswordScreen';
+import { TrialExpiredScreen } from '../screens/auth/TrialExpiredScreen';
 import { MainTabNavigator } from './MainTabNavigator';
 
 const Stack = createNativeStackNavigator();
 
 export const RootNavigator: React.FC = () => {
-  const { user, isInitializing } = useAuthStore();
+  const { user, isInitializing, getSubscriptionInfo } = useAuthStore();
+  const subInfo = getSubscriptionInfo();
 
   if (isInitializing) {
     return (
@@ -23,9 +27,17 @@ export const RootNavigator: React.FC = () => {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {user ? (
-          <Stack.Screen name="MainApp" component={MainTabNavigator} />
+          subInfo.isExpired ? (
+            <Stack.Screen name="TrialExpired" component={TrialExpiredScreen} />
+          ) : (
+            <Stack.Screen name="MainApp" component={MainTabNavigator} />
+          )
         ) : (
-          <Stack.Screen name="Login" component={LoginScreen} />
+          <>
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>
