@@ -68,44 +68,6 @@ export const ServicesSalesHistoryPage: React.FC = () => {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-[1800px] w-full mx-auto space-y-6">
-      {/* Date Filter Bar */}
-      <div className="flex justify-end pb-4 border-b border-slate-200">
-        {/* Date Filter */}
-        <div className="flex items-center bg-white border border-slate-200 p-1.5 rounded-xl shadow-xs">
-          <span className="text-xs font-semibold text-slate-500 px-2 flex items-center gap-1">
-            <Calendar className="w-3.5 h-3.5 text-indigo-600" /> Date Period:
-          </span>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="text-xs font-bold text-slate-800 bg-transparent py-1 px-1 focus:outline-none"
-          />
-          <span className="text-slate-300">-</span>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className="text-xs font-bold text-slate-800 bg-transparent py-1 px-1 focus:outline-none"
-          />
-          <button
-            onClick={fetchServicesHistory}
-            className="ml-2 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-xs rounded-lg transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
-          >
-            <Search className="w-3.5 h-3.5" />
-            Filter
-          </button>
-          <button
-            onClick={() => window.print()}
-            className="ml-2 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-lg transition-all flex items-center gap-1.5 border border-slate-200 cursor-pointer print:hidden"
-            title="Print Full Page Log (Standard Printer)"
-          >
-            <Printer className="w-3.5 h-3.5 text-slate-600" />
-            Print Log
-          </button>
-        </div>
-      </div>
-
       {/* Basic Total Sales KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Basic Total Services Sales */}
@@ -137,21 +99,62 @@ export const ServicesSalesHistoryPage: React.FC = () => {
 
       {/* Main Services Sales Table */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-6 space-y-4">
-        <div className="flex items-center justify-between gap-4 flex-wrap pb-3 border-b border-slate-200">
-          <div className="relative flex-1 max-w-md">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by receipt #, service title, or customer..."
-              className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 pl-9 text-xs font-semibold focus:outline-none focus:border-indigo-600"
-            />
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+        {/* Unified Search & Date Filter Toolbar */}
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 pb-3 border-b border-slate-200">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
+            {/* Search Input */}
+            <div className="relative flex-1 max-w-md">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search by receipt #, service title, or customer..."
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 pl-9 text-xs font-semibold focus:outline-none focus:border-indigo-600"
+              />
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+            </div>
+
+            {/* Date Range Picker */}
+            <div className="flex items-center bg-slate-50 border border-slate-300 p-1 rounded-xl shrink-0">
+              <span className="text-xs font-semibold text-slate-500 px-2 flex items-center gap-1">
+                <Calendar className="w-3.5 h-3.5 text-indigo-600" />
+              </span>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="text-xs font-bold text-slate-800 bg-transparent py-1 px-1 focus:outline-none"
+              />
+              <span className="text-slate-300">-</span>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="text-xs font-bold text-slate-800 bg-transparent py-1 px-1 focus:outline-none"
+              />
+              <button
+                onClick={fetchServicesHistory}
+                className="ml-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-xs rounded-lg transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
+              >
+                <Search className="w-3.5 h-3.5" />
+                Filter
+              </button>
+            </div>
           </div>
 
-          <span className="text-xs font-bold text-slate-500">
-            {filteredItems.length} Service Transactions
-          </span>
+          <div className="flex items-center justify-between sm:justify-end gap-3">
+            <button
+              onClick={() => window.print()}
+              className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-lg transition-all flex items-center gap-1.5 border border-slate-200 cursor-pointer print:hidden"
+              title="Print Full Page Log (Standard Printer)"
+            >
+              <Printer className="w-3.5 h-3.5 text-slate-600" />
+              Print Log
+            </button>
+            <span className="text-xs font-bold text-slate-500 shrink-0">
+              {filteredItems.length} Service Transactions
+            </span>
+          </div>
         </div>
 
         <div className="overflow-x-auto border border-slate-200 rounded-xl">
