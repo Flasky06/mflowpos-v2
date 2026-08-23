@@ -170,8 +170,28 @@ export class SuperAdminController {
     try {
       const { businessId } = req.params;
       const { planCode, daysValidity, status } = req.body;
-      const result = await SuperAdminService.overrideSubscription(businessId, planCode, daysValidity, status);
-      return ApiResponse.success(res, result, 'Subscription overridden successfully');
+      const result = await SuperAdminService.overrideSubscription(
+        businessId,
+        planCode,
+        daysValidity,
+        status
+      );
+      return ApiResponse.success(res, result, 'Subscription override applied successfully');
+    } catch (err: any) {
+      return ApiResponse.error(res, err.message, 400);
+    }
+  }
+
+  static async updateTenantCustomPricing(req: SuperAdminAuthenticatedRequest, res: Response) {
+    try {
+      const { businessId } = req.params;
+      const { customPrice, status } = req.body;
+      const numericPrice = customPrice !== undefined && customPrice !== null && customPrice !== ''
+        ? parseFloat(customPrice)
+        : null;
+
+      const updated = await SuperAdminService.updateTenantCustomPricing(businessId, numericPrice, status);
+      return ApiResponse.success(res, updated, 'Tenant custom pricing updated successfully');
     } catch (err: any) {
       return ApiResponse.error(res, err.message, 400);
     }

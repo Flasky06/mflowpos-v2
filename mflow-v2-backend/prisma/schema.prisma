@@ -193,6 +193,7 @@ model BusinessSubscription {
   id           String             @id @default(uuid())
   businessId   String             @unique @map("business_id")
   planId       String             @map("plan_id")
+  customPrice  Decimal?           @db.Decimal(10, 2) @map("custom_price")
   status       SubscriptionStatus @default(TRIALING)
   startDate    DateTime           @default(now()) @map("start_date")
   endDate      DateTime           @map("end_date")

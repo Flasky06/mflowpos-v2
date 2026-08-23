@@ -14,11 +14,18 @@ export class PaystackService {
       throw new Error('Paystack secret key is not configured');
     }
 
-    const standardPlan = await prisma.subscriptionPlan.findUnique({
-      where: { code: 'STANDARD' },
+    const subscription = await prisma.businessSubscription.findUnique({
+      where: { businessId },
+      include: { plan: true },
     });
 
-    const finalAmount = standardPlan ? Number(standardPlan.price) : amountKes;
+    let finalAmount = amountKes;
+    if (subscription?.customPrice !== null && subscription?.customPrice !== undefined) {
+      finalAmount = Number(subscription.customPrice);
+    } else if (subscription?.plan) {
+      finalAmount = Number(subscription.plan.price);
+    }
+
     const amountInCents = Math.round(finalAmount * 100); // Paystack expects amount in KES cents (e.g. 1000 KES = 100000)
 
     const payload = {

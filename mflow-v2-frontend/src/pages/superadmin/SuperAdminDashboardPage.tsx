@@ -12,6 +12,7 @@ import {
   CreditCard,
   X,
   Search,
+  Tag,
 } from 'lucide-react';
 
 export const SuperAdminDashboardPage: React.FC = () => {
@@ -28,6 +29,7 @@ export const SuperAdminDashboardPage: React.FC = () => {
 
   const [isCashPaymentModalOpen, setIsCashPaymentModalOpen] = useState(false);
   const [isExtendTrialModalOpen, setIsExtendTrialModalOpen] = useState(false);
+  const [isCustomPriceModalOpen, setIsCustomPriceModalOpen] = useState(false);
 
   const [cashPaymentForm, setCashPaymentForm] = useState({
     planCode: 'STANDARD',
@@ -38,6 +40,10 @@ export const SuperAdminDashboardPage: React.FC = () => {
   });
 
   const [extraTrialDays, setExtraTrialDays] = useState('14');
+  const [customPriceForm, setCustomPriceForm] = useState({
+    customPrice: '',
+    status: 'ACTIVE',
+  });
 
   const fetchData = async () => {
     try {
@@ -122,6 +128,23 @@ export const SuperAdminDashboardPage: React.FC = () => {
       fetchData();
     } catch (err: any) {
       addToast({ type: 'error', title: 'Extend Error', message: err.response?.data?.message || 'Failed' });
+    }
+  };
+
+  const handleSaveCustomPricing = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await apiClient.put(`/superadmin/tenants/${selectedTenant.id}/custom-pricing`, {
+        customPrice: customPriceForm.customPrice ? parseFloat(customPriceForm.customPrice) : null,
+        status: customPriceForm.status,
+      });
+
+      addToast({ type: 'success', title: 'Pricing Updated', message: `Updated custom pricing for '${selectedTenant.name}'` });
+      setIsCustomPriceModalOpen(false);
+      setSelectedTenant(null);
+      fetchData();
+    } catch (err: any) {
+      addToast({ type: 'error', title: 'Update Error', message: err.response?.data?.message || 'Failed' });
     }
   };
 
@@ -236,6 +259,7 @@ export const SuperAdminDashboardPage: React.FC = () => {
               <tr>
                 <th className="py-3 px-4">Business Tenant</th>
                 <th className="py-3 px-4">Plan Code</th>
+                <th className="py-3 px-4">Monthly Rate</th>
                 <th className="py-3 px-4">Shops</th>
                 <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4">Expiration</th>
@@ -246,6 +270,8 @@ export const SuperAdminDashboardPage: React.FC = () => {
               {filteredTenants.map((t) => {
                 const sub = t.subscription;
                 const isSuspended = sub?.status === 'CANCELLED' || !t.active;
+                const hasCustomPrice = sub?.customPrice !== null && sub?.customPrice !== undefined;
+                const effectiveRate = hasCustomPrice ? Number(sub.customPrice) : Number(sub?.plan?.price || 1000);
 
                 return (
                   <tr key={t.id} className="hover:bg-slate-50 transition-colors">
@@ -255,6 +281,14 @@ export const SuperAdminDashboardPage: React.FC = () => {
                     </td>
                     <td className="py-3.5 px-4 font-mono text-xs text-indigo-600 font-bold">
                       {sub?.plan?.code || 'TRIAL'}
+                    </td>
+                    <td className="py-3.5 px-4 text-xs font-bold text-slate-900">
+                      KSh {effectiveRate.toLocaleString()}
+                      {hasCustomPrice && (
+                        <span className="ml-1.5 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-wider bg-purple-100 text-purple-700 rounded-md border border-purple-200">
+                          Custom
+                        </span>
+                      )}
                     </td>
                     <td className="py-3.5 px-4 text-xs text-slate-700">
                       {t._count?.shops || 0} / {sub?.plan?.maxShops || 1}
@@ -274,6 +308,22 @@ export const SuperAdminDashboardPage: React.FC = () => {
                       {sub?.endDate ? new Date(sub.endDate).toLocaleDateString() : 'N/A'}
                     </td>
                     <td className="py-3.5 px-4 text-center flex items-center justify-center gap-1.5">
+                      <button
+                        onClick={() => {
+                          setSelectedTenant(t);
+                          setCustomPriceForm({
+                            customPrice: sub?.customPrice !== null && sub?.customPrice !== undefined ? String(sub.customPrice) : '',
+                            status: sub?.status || 'ACTIVE',
+                          });
+                          setIsCustomPriceModalOpen(true);
+                        }}
+                        className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded-lg text-xs font-semibold flex items-center gap-1 border border-amber-200"
+                        title="Set Custom Subscription Pricing for this Tenant"
+                      >
+                        <Tag className="w-3.5 h-3.5" />
+                        Set Price
+                      </button>
+
                       <button
                         onClick={() => {
                           setSelectedTenant(t);
@@ -524,6 +574,76 @@ export const SuperAdminDashboardPage: React.FC = () => {
               >
                 Grant Additional Trial Days
               </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Pricing Override Modal */}
+      {isCustomPriceModalOpen && selectedTenant && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
+          <div className="max-w-md w-full bg-white p-6 rounded-3xl border border-slate-200 shadow-2xl relative space-y-4">
+            <button
+              onClick={() => setIsCustomPriceModalOpen(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 p-1 rounded-full hover:bg-slate-100"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div>
+              <h3 className="text-lg font-bold text-slate-900">Custom Subscription Pricing</h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Set custom monthly rate for <span className="text-indigo-600 font-bold">{selectedTenant?.name}</span> (e.g. 1000 vs 1500 KES).
+              </p>
+            </div>
+
+            <form onSubmit={handleSaveCustomPricing} className="space-y-4">
+              <div>
+                <label className="text-xs font-semibold text-slate-700 block mb-1">
+                  Custom Monthly Price (KES)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  step="50"
+                  value={customPriceForm.customPrice}
+                  onChange={(e) => setCustomPriceForm({ ...customPriceForm, customPrice: e.target.value })}
+                  placeholder="e.g. 1500 (Leave empty for default plan rate)"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2.5 px-3 text-sm font-bold text-slate-900 focus:outline-none focus:border-indigo-600"
+                />
+                <p className="text-[11px] text-slate-400 mt-1">Default plan price: KSh {selectedTenant?.subscription?.plan?.price || 1000}</p>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-700 block mb-1">
+                  Subscription Status
+                </label>
+                <select
+                  value={customPriceForm.status}
+                  onChange={(e) => setCustomPriceForm({ ...customPriceForm, status: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-sm font-semibold rounded-xl py-2.5 px-3 focus:outline-none focus:border-indigo-600"
+                >
+                  <option value="ACTIVE">ACTIVE (Paid Active Account)</option>
+                  <option value="TRIALING">TRIALING (Free Trial Period)</option>
+                  <option value="EXPIRED">EXPIRED (Subscription Lapsed)</option>
+                  <option value="CANCELLED">CANCELLED (Suspended)</option>
+                </select>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsCustomPriceModalOpen(false)}
+                  className="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-xs font-bold bg-amber-600 hover:bg-amber-700 text-white rounded-xl shadow-md shadow-amber-600/20 transition-all"
+                >
+                  Save Custom Rate
+                </button>
+              </div>
             </form>
           </div>
         </div>

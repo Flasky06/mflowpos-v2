@@ -288,4 +288,28 @@ export class SuperAdminService {
       include: { plan: true, business: { select: { name: true } } },
     });
   }
+
+  // 6. Update Custom Tenant Pricing Override (Custom amount per business tenant, e.g. KSh 1,000 vs KSh 1,500)
+  static async updateTenantCustomPricing(
+    businessId: string,
+    customPrice: number | null,
+    status?: SubscriptionStatus
+  ) {
+    const subscription = await prisma.businessSubscription.findUnique({
+      where: { businessId },
+    });
+
+    if (!subscription) {
+      throw new Error('Business subscription not found');
+    }
+
+    return prisma.businessSubscription.update({
+      where: { businessId },
+      data: {
+        customPrice: customPrice !== null && !isNaN(customPrice) ? customPrice : null,
+        ...(status ? { status } : {}),
+      },
+      include: { plan: true, business: { select: { name: true } } },
+    });
+  }
 }
