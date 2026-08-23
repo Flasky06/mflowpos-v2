@@ -9,7 +9,22 @@ interface User {
   role: string;
   businessId: string;
   businessName?: string;
-  subscriptionPlan?: string;
+  business?: {
+    id: string;
+    name: string;
+    subscription?: {
+      status: string;
+      endDate?: string;
+      plan?: { name: string };
+    };
+  };
+}
+
+interface SubscriptionInfo {
+  isExpired: boolean;
+  statusText: string;
+  planName: string;
+  message: string | null;
 }
 
 interface AuthState {
@@ -24,6 +39,7 @@ interface AuthState {
   setActiveShopId: (shopId: string) => Promise<void>;
   loadStoredAuth: () => Promise<void>;
   fetchUserShops: () => Promise<void>;
+  getSubscriptionInfo: () => SubscriptionInfo;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -33,6 +49,29 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   activeShopId: null,
   isLoading: false,
   isInitializing: true,
+
+  getSubscriptionInfo: () => {
+    const user = get().user;
+    const sub = user?.business?.subscription;
+    if (!sub) return { isExpired: false, statusText: 'ACTIVE', planName: 'Standard Plan', message: null };
+
+    const isExpired =
+      sub.status === 'EXPIRED' ||
+      sub.status === 'CANCELED' ||
+      (sub.endDate ? new Date(sub.endDate).getTime() < Date.now() : false);
+
+    const statusText = isExpired ? 'EXPIRED' : (sub.status || 'ACTIVE');
+    const planName = sub.plan?.name || 'Business Plan';
+
+    return {
+      isExpired,
+      statusText,
+      planName,
+      message: isExpired
+        ? 'Your business subscription has expired. Please contact your account administrator or renew via the MFlow web portal.'
+        : null,
+    };
+  },
 
   loadStoredAuth: async () => {
     try {

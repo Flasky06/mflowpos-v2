@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { apiClient } from '../../api/client';
 import { useAuthStore } from '../../store/authStore';
-import { Search, ShoppingCart, Plus, Minus, Trash2, CheckCircle2, X, DollarSign, Smartphone } from 'lucide-react-native';
+import { Search, ShoppingCart, Plus, Minus, Trash2, CheckCircle2, X, DollarSign, Smartphone, AlertTriangle } from 'lucide-react-native';
 
 interface CartItem {
   id: string;
@@ -26,7 +26,8 @@ interface CartItem {
 }
 
 export const POSScreen: React.FC = () => {
-  const { activeShopId } = useAuthStore();
+  const { activeShopId, getSubscriptionInfo } = useAuthStore();
+  const subInfo = getSubscriptionInfo();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [products, setProducts] = useState<any[]>([]);
@@ -65,6 +66,14 @@ export const POSScreen: React.FC = () => {
   }, [activeShopId]);
 
   const addToCart = (item: any, type: 'PRODUCT' | 'SERVICE') => {
+    if (subInfo.isExpired) {
+      Alert.alert(
+        'Subscription Expired',
+        'Your business subscription has expired. Please contact your account administrator or renew via the MFlow web portal.'
+      );
+      return;
+    }
+
     const itemId = type === 'PRODUCT' ? item.id : item.id;
     const itemPrice = Number(type === 'PRODUCT' ? item.sellingPrice : item.price || 0);
 
@@ -107,6 +116,14 @@ export const POSScreen: React.FC = () => {
 
   const handleCheckout = async () => {
     if (cart.length === 0) return;
+    if (subInfo.isExpired) {
+      Alert.alert(
+        'Subscription Expired',
+        'Your business subscription has expired. Please contact your account administrator or renew via the MFlow web portal.'
+      );
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const payload = {
@@ -158,6 +175,16 @@ export const POSScreen: React.FC = () => {
           ) : null}
         </View>
       </View>
+
+      {/* Expired Subscription Informational Banner */}
+      {subInfo.isExpired ? (
+        <View style={styles.expiredBanner}>
+          <AlertTriangle size={18} color="#B45309" style={{ marginRight: 8 }} />
+          <Text style={styles.expiredBannerText}>
+            Business subscription expired. Checkout is paused. Please renew via the web portal.
+          </Text>
+        </View>
+      ) : null}
 
       {/* Catalog Items Grid */}
       {isLoading ? (
@@ -350,6 +377,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8FAFC',
+  },
+  expiredBanner: {
+    backgroundColor: '#FEF3C7',
+    borderColor: '#F59E0B',
+    borderWidth: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  expiredBannerText: {
+    color: '#92400E',
+    fontSize: 12,
+    fontWeight: '700',
+    flex: 1,
   },
   searchHeader: {
     paddingHorizontal: 16,
