@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { apiClient } from '../../api/client';
 import { useAuthStore } from '../../store/authStore';
 import { useToastStore } from '../../store/toastStore';
+import { Pagination } from '../../components/common/Pagination';
 import { Wrench, DollarSign, Calendar, Search, Printer } from 'lucide-react';
 
 export const ServicesSalesHistoryPage: React.FC = () => {
@@ -11,6 +12,9 @@ export const ServicesSalesHistoryPage: React.FC = () => {
   const [startDate, setStartDate] = useState<string>(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [searchTerm, setSearchTerm] = useState('');
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   const [salesList, setSalesList] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -32,6 +36,10 @@ export const ServicesSalesHistoryPage: React.FC = () => {
   useEffect(() => {
     fetchServicesHistory();
   }, [activeShopId, startDate, endDate]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, startDate, endDate]);
 
   // Extract all non-inventory service line items from sales
   const serviceLineItems: any[] = [];
@@ -64,6 +72,12 @@ export const ServicesSalesHistoryPage: React.FC = () => {
       i.serviceName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       i.receiptNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
       i.customerName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
+  const paginatedItems = filteredItems.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
   );
 
   return (
@@ -122,14 +136,24 @@ export const ServicesSalesHistoryPage: React.FC = () => {
               <input
                 type="date"
                 value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
+                max={endDate}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setStartDate(val);
+                  if (val && endDate && val > endDate) setEndDate(val);
+                }}
                 className="text-xs font-bold text-slate-800 bg-transparent py-1 px-1 focus:outline-none"
               />
               <span className="text-slate-300">-</span>
               <input
                 type="date"
                 value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
+                min={startDate}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setEndDate(val);
+                  if (val && startDate && val < startDate) setStartDate(val);
+                }}
                 className="text-xs font-bold text-slate-800 bg-transparent py-1 px-1 focus:outline-none"
               />
               <button
@@ -178,7 +202,7 @@ export const ServicesSalesHistoryPage: React.FC = () => {
                   </td>
                 </tr>
               ) : (
-                filteredItems.map((item) => (
+                paginatedItems.map((item) => (
                   <tr key={item.id} className="hover:bg-slate-50 text-xs">
                     <td className="py-3 px-4 font-mono font-bold text-indigo-700">{item.receiptNumber}</td>
                     <td className="py-3 px-4 font-bold text-slate-900">{item.serviceName}</td>
@@ -199,6 +223,13 @@ export const ServicesSalesHistoryPage: React.FC = () => {
             </tbody>
           </table>
         </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={filteredItems.length}
+          itemsPerPage={ITEMS_PER_PAGE}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </div>
   );

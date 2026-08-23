@@ -8,6 +8,7 @@ import { VoidSaleModal } from '../../components/sales/VoidSaleModal';
 import { PageHeader } from '../../components/common/PageHeader';
 import { Badge } from '../../components/common/Badge';
 import { Button } from '../../components/common/Button';
+import { Pagination } from '../../components/common/Pagination';
 import { Search, Printer, Ban, Receipt, CheckCircle2, Calendar } from 'lucide-react';
 
 export const SalesHistoryPage: React.FC = () => {
@@ -19,6 +20,9 @@ export const SalesHistoryPage: React.FC = () => {
   const [startDate, setStartDate] = useState<string>(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [selectedReceipt, setSelectedReceipt] = useState<string | null>(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   // Reusable Void Sale Modal State
   const [voidSaleTarget, setVoidSaleTarget] = useState<{ id: string; receiptNumber: string } | null>(null);
@@ -38,6 +42,10 @@ export const SalesHistoryPage: React.FC = () => {
     fetchSales();
   }, [activeShopId, startDate, endDate]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, startDate, endDate]);
+
   const handleUpdateServiceStatus = async (saleId: string, status: string) => {
     try {
       await apiClient.put(`/sales/${saleId}/service-status`, { status });
@@ -52,6 +60,12 @@ export const SalesHistoryPage: React.FC = () => {
     (s) =>
       s.receiptNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
       s.customer?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredSales.length / ITEMS_PER_PAGE);
+  const paginatedSales = filteredSales.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
   );
 
   return (
@@ -106,14 +120,24 @@ export const SalesHistoryPage: React.FC = () => {
               <input
                 type="date"
                 value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
+                max={endDate}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setStartDate(val);
+                  if (val && endDate && val > endDate) setEndDate(val);
+                }}
                 className="text-xs font-bold text-slate-800 bg-transparent py-1 px-1 focus:outline-none"
               />
               <span className="text-slate-300">-</span>
               <input
                 type="date"
                 value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
+                min={startDate}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setEndDate(val);
+                  if (val && startDate && val < startDate) setStartDate(val);
+                }}
                 className="text-xs font-bold text-slate-800 bg-transparent py-1 px-1 focus:outline-none"
               />
               <button
@@ -147,24 +171,26 @@ export const SalesHistoryPage: React.FC = () => {
             <tbody className="divide-y divide-slate-200 bg-white">
               {filteredSales.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-8 text-center text-slate-400">
-                    No transactions found matching filter.
+                  <td colSpan={7} className="py-8 text-center text-slate-500">
+                    No transactions found.
                   </td>
                 </tr>
               ) : (
-                filteredSales.map((sale) => {
-                  const isCancelled = sale.status === 'CANCELLED';
-                  const paymentMethod = sale.payments?.[0]?.paymentMethod || 'CASH';
+                paginatedSales.map((sale) => {
+                  const paymentMethods = sale.payments
+                    ? sale.payments.map((p: any) => p.paymentMethod?.name || p.paymentMethod).join(', ')
+                    : sale.paymentMethod;
+                  const isCancelled = sale.status === 'CANCELLED' || sale.status === 'VOIDED';
 
                   return (
-                    <tr key={sale.id} className="hover:bg-slate-50">
-                      <td className="py-3.5 px-4 font-mono font-bold text-indigo-700">{sale.receiptNumber}</td>
+                    <tr key={sale.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="py-3.5 px-4 font-mono font-bold text-indigo-600">{sale.receiptNumber}</td>
                       <td className="py-3.5 px-4 font-semibold text-slate-900">
                         {sale.customer?.name || 'Walk-in Customer'}
                       </td>
                       <td className="py-3.5 px-4 text-center">
-                        <span className="inline-block px-2.5 py-0.5 text-[10px] font-mono font-bold uppercase bg-slate-100 text-slate-700 rounded-md border border-slate-200">
-                          {paymentMethod}
+                        <span className="inline-block px-2.5 py-1 bg-slate-100 text-slate-700 rounded-md text-[10px] font-mono uppercase font-bold border border-slate-200">
+                          {paymentMethods || 'N/A'}
                         </span>
                       </td>
                       <td className="py-3.5 px-4 text-center">
@@ -206,6 +232,14 @@ export const SalesHistoryPage: React.FC = () => {
             </tbody>
           </table>
         </div>
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={filteredSales.length}
+          itemsPerPage={ITEMS_PER_PAGE}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </div>
   );

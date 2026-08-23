@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { apiClient } from '../../api/client';
 import { useAuthStore } from '../../store/authStore';
 import { useToastStore } from '../../store/toastStore';
+import { Pagination } from '../../components/common/Pagination';
 import {
   DollarSign,
   Plus,
@@ -30,6 +31,9 @@ export const ExpensesPage: React.FC = () => {
   const [endDate, setEndDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [categoryFilter, setCategoryFilter] = useState('ALL');
   const [isLoading, setIsLoading] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   // Modals
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
@@ -109,6 +113,10 @@ export const ExpensesPage: React.FC = () => {
     fetchData();
   }, [activeShopId, startDate, endDate]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, startDate, endDate, categoryFilter]);
+
   const [selectedExpense, setSelectedExpense] = useState<any | null>(null);
 
   const handleOpenCreateExpenseModal = () => {
@@ -117,7 +125,7 @@ export const ExpensesPage: React.FC = () => {
       title: '',
       amount: '',
       paymentMethod: 'CASH',
-      categoryId: categories[0]?.id || '',
+      categoryId: categories.length > 0 ? categories[0].id : '',
       notes: '',
     });
     setIsExpenseModalOpen(true);
@@ -126,10 +134,10 @@ export const ExpensesPage: React.FC = () => {
   const handleOpenEditExpenseModal = (exp: any) => {
     setSelectedExpense(exp);
     setExpenseForm({
-      title: exp.title,
-      amount: exp.amount ? exp.amount.toString() : '',
+      title: exp.title || '',
+      amount: String(exp.amount || ''),
       paymentMethod: exp.paymentMethod || 'CASH',
-      categoryId: exp.categoryId || '',
+      categoryId: exp.categoryId || (categories.length > 0 ? categories[0].id : ''),
       notes: exp.notes || '',
     });
     setIsExpenseModalOpen(true);
@@ -149,20 +157,20 @@ export const ExpensesPage: React.FC = () => {
     try {
       if (selectedExpense) {
         await apiClient.put(`/expenses/${selectedExpense.id}`, {
-          title: expenseForm.title,
+          title: expenseForm.title.trim(),
           amount: parseFloat(expenseForm.amount),
           paymentMethod: expenseForm.paymentMethod,
           categoryId: expenseForm.categoryId,
-          notes: expenseForm.notes || undefined,
+          notes: expenseForm.notes.trim() || undefined,
         });
         addToast({ type: 'success', title: 'Expense Updated', message: `Updated '${expenseForm.title}'` });
       } else {
         await apiClient.post('/expenses', {
-          title: expenseForm.title,
+          title: expenseForm.title.trim(),
           amount: parseFloat(expenseForm.amount),
           paymentMethod: expenseForm.paymentMethod,
           categoryId: expenseForm.categoryId,
-          notes: expenseForm.notes || undefined,
+          notes: expenseForm.notes.trim() || undefined,
           shopId: activeShopId || undefined,
         });
         addToast({ type: 'success', title: 'Expense Recorded', message: `Saved '${expenseForm.title}' (KES ${Number(expenseForm.amount).toLocaleString()})` });
@@ -215,6 +223,12 @@ export const ExpensesPage: React.FC = () => {
     const matchesCat = categoryFilter === 'ALL' || e.categoryId === categoryFilter;
     return matchesSearch && matchesCat;
   });
+
+  const totalPages = Math.ceil(filteredExpenses.length / ITEMS_PER_PAGE);
+  const paginatedExpenses = filteredExpenses.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   const maxExpenseAmount = expenses.length > 0 ? Math.max(...expenses.map((e) => Number(e.amount || 0))) : 0;
 
@@ -301,14 +315,24 @@ export const ExpensesPage: React.FC = () => {
               <input
                 type="date"
                 value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
+                max={endDate}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setStartDate(val);
+                  if (val && endDate && val > endDate) setEndDate(val);
+                }}
                 className="text-xs font-bold text-slate-800 bg-transparent py-1 px-1 focus:outline-none"
               />
               <span className="text-slate-300">-</span>
               <input
                 type="date"
                 value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
+                min={startDate}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setEndDate(val);
+                  if (val && startDate && val < startDate) setStartDate(val);
+                }}
                 className="text-xs font-bold text-slate-800 bg-transparent py-1 px-1 focus:outline-none"
               />
               <button
@@ -360,7 +384,7 @@ export const ExpensesPage: React.FC = () => {
                   </td>
                 </tr>
               ) : (
-                filteredExpenses.map((exp) => (
+                paginatedExpenses.map((exp) => (
                   <tr key={exp.id} className="hover:bg-slate-50">
                     <td className="py-3.5 px-4 font-bold text-slate-900">
                       <div>{exp.title}</div>
@@ -409,6 +433,14 @@ export const ExpensesPage: React.FC = () => {
             </tbody>
           </table>
         </div>
+        
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={filteredExpenses.length}
+          itemsPerPage={ITEMS_PER_PAGE}
+          onPageChange={setCurrentPage}
+        />
       </div>
 
       {/* RECORD / EDIT EXPENSE MODAL */}
