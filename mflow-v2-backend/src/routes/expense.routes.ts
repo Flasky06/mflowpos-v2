@@ -22,6 +22,19 @@ router.post(
   validateBody(createExpenseCategorySchema),
   ExpenseController.createCategory
 );
+router.put(
+  '/categories/:id',
+  checkSubscriptionPaywall,
+  authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN),
+  validateBody(createExpenseCategorySchema),
+  ExpenseController.updateCategory
+);
+router.delete(
+  '/categories/:id',
+  checkSubscriptionPaywall,
+  authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN),
+  ExpenseController.deleteCategory
+);
 
 // Expenses
 router.get('/', ExpenseController.getExpenses);

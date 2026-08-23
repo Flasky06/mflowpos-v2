@@ -140,6 +140,7 @@ export const AppLayout: React.FC = () => {
       isCollapsible: true,
       items: [
         { to: '/expenses', label: 'Operating Expenses', show: true },
+        { to: '/expense-categories', label: 'Expense Categories', show: true },
         { to: '/finance/reports/profit-and-loss', label: 'Statement of Profit & Loss', show: true },
         { to: '/finance/reports/general-ledger', label: 'General Ledger', show: true },
         { to: '/finance/reports/balance-sheet', label: 'Statement of Balance Sheet', show: true },

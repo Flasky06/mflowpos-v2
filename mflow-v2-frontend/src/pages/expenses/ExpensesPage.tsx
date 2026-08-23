@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { apiClient } from '../../api/client';
 import { useAuthStore } from '../../store/authStore';
 import { useToastStore } from '../../store/toastStore';
@@ -181,12 +182,12 @@ export const ExpensesPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
 
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setIsCategoryModalOpen(true)}
+          <Link
+            to="/expense-categories"
             className="py-2.5 px-4 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-xl text-xs transition-all flex items-center gap-2"
           >
-            <Tag className="w-4 h-4" /> Manage Categories ({categories.length})
-          </button>
+            <Tag className="w-4 h-4 text-slate-600" /> Manage Expense Categories ({categories.length})
+          </Link>
           <button
             onClick={() => {
               setExpenseForm({

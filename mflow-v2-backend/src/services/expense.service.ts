@@ -53,6 +53,47 @@ export class ExpenseService {
     });
   }
 
+  static async updateCategory(businessId: string, categoryId: string, name: string) {
+    const existing = await prisma.expenseCategory.findFirst({
+      where: { businessId, id: categoryId },
+    });
+
+    if (!existing) {
+      throw new Error('Expense category not found');
+    }
+
+    const nameCheck = await prisma.expenseCategory.findFirst({
+      where: {
+        businessId,
+        name: { equals: name, mode: 'insensitive' },
+        NOT: { id: categoryId },
+      },
+    });
+
+    if (nameCheck) {
+      throw new Error('Another expense category with this name already exists');
+    }
+
+    return prisma.expenseCategory.update({
+      where: { id: categoryId },
+      data: { name },
+    });
+  }
+
+  static async deleteCategory(businessId: string, categoryId: string) {
+    const existing = await prisma.expenseCategory.findFirst({
+      where: { businessId, id: categoryId },
+    });
+
+    if (!existing) {
+      throw new Error('Expense category not found');
+    }
+
+    return prisma.expenseCategory.delete({
+      where: { id: categoryId },
+    });
+  }
+
   // Expense management
   static async getExpenses(
     businessId: string,

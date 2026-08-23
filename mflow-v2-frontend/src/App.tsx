@@ -24,6 +24,7 @@ import { ReturnsPage } from './pages/inventory/ReturnsPage';
 import { CustomersPage } from './pages/customers/CustomersPage';
 import { SuppliersPage } from './pages/suppliers/SuppliersPage';
 import { ExpensesPage } from './pages/expenses/ExpensesPage';
+import { ExpenseCategoriesPage } from './pages/expenses/ExpenseCategoriesPage';
 import { QuotationsPage } from './pages/quotations/QuotationsPage';
 import { ProfitLossPage } from './pages/reports/ProfitLossPage';
 import { GeneralLedgerPage } from './pages/reports/GeneralLedgerPage';
@@ -89,6 +90,7 @@ export const App: React.FC = () => {
             <Route path="/customers" element={<CustomersPage />} />
             <Route path="/suppliers" element={<SuppliersPage />} />
             <Route path="/expenses" element={<ExpensesPage />} />
+            <Route path="/expense-categories" element={<ExpenseCategoriesPage />} />
             <Route path="/quotations" element={<QuotationsPage />} />
 
             {/* 3 Standalone Financial Report Routes */}

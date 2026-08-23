@@ -42,6 +42,32 @@ export class ExpenseController {
     }
   }
 
+  static async updateCategory(req: AuthenticatedRequest, res: Response) {
+    try {
+      const businessId = req.user?.businessId;
+      const { id } = req.params;
+      if (!businessId) return ApiResponse.error(res, 'Business ID required', 400);
+
+      const category = await ExpenseService.updateCategory(businessId, id, req.body.name);
+      return ApiResponse.success(res, category, 'Expense category updated successfully');
+    } catch (err: any) {
+      return ApiResponse.error(res, err.message, 400);
+    }
+  }
+
+  static async deleteCategory(req: AuthenticatedRequest, res: Response) {
+    try {
+      const businessId = req.user?.businessId;
+      const { id } = req.params;
+      if (!businessId) return ApiResponse.error(res, 'Business ID required', 400);
+
+      await ExpenseService.deleteCategory(businessId, id);
+      return ApiResponse.success(res, null, 'Expense category deleted successfully');
+    } catch (err: any) {
+      return ApiResponse.error(res, err.message, 400);
+    }
+  }
+
   static async getExpenses(req: AuthenticatedRequest, res: Response) {
     try {
       const businessId = req.user?.businessId;
