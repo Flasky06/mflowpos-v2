@@ -2,7 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Default to localhost / dev backend URL. Adjust to server domain or local IP (e.g. http://192.168.1.X:5000/api/v1) for phone testing
-export const API_BASE_URL = 'https://www.mflowpos.com/api/v1';
+export const API_BASE_URL = 'https://api.mflowpos.com/api/v1';
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
