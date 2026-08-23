@@ -43,7 +43,15 @@ export const SuppliersPage: React.FC = () => {
   const [isPOModalOpen, setIsPOModalOpen] = useState(false);
   const [poSupplierId, setPoSupplierId] = useState('');
   const [poNotes, setPoNotes] = useState('');
-  const [poItems, setPoItems] = useState<{ productId: string; quantity: number; unitCost: number }[]>([]);
+  const [poItems, setPoItems] = useState<
+    {
+      productId: string;
+      quantity: number;
+      unitCost: number;
+      priceMode?: 'PER_UNIT' | 'WHOLESALE_BATCH';
+      wholesaleBatchTotal?: number;
+    }[]
+  >([]);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -79,18 +87,17 @@ export const SuppliersPage: React.FC = () => {
     try {
       if (editingSupplier) {
         await apiClient.put(`/suppliers/${editingSupplier.id}`, supplierForm).catch(() => apiClient.put(`/purchases/suppliers/${editingSupplier.id}`, supplierForm));
-        addToast({ type: 'success', title: 'Supplier Updated', message: `Updated '${supplierForm.name}'` });
+        addToast({ type: 'success', title: 'Supplier Updated', message: 'Supplier details updated' });
       } else {
         await apiClient.post('/suppliers', supplierForm).catch(() => apiClient.post('/purchases/suppliers', supplierForm));
-        addToast({ type: 'success', title: 'Supplier Created', message: `Created supplier '${supplierForm.name}'` });
+        addToast({ type: 'success', title: 'Supplier Saved', message: 'New supplier added to directory' });
       }
       setIsSupplierModalOpen(false);
       setEditingSupplier(null);
       setSupplierForm({ name: '', phone: '', email: '', address: '', notes: '' });
       fetchData();
     } catch (err: any) {
-      const msg = err.response?.data?.message || 'Failed to save supplier.';
-      addToast({ type: 'error', title: 'Save Error', message: msg });
+      addToast({ type: 'error', title: 'Save Failed', message: err.response?.data?.message || 'Could not save supplier' });
     }
   };
 
@@ -125,7 +132,16 @@ export const SuppliersPage: React.FC = () => {
     }
     if (products.length > 0) {
       const p = products[0];
-      setPoItems([{ productId: p.id, quantity: 1, unitCost: Number(p.buyingPrice || p.costPrice || 0) }]);
+      const unitCost = Number(p.buyingPrice || p.costPrice || 0);
+      setPoItems([
+        {
+          productId: p.id,
+          quantity: 1,
+          unitCost,
+          priceMode: 'PER_UNIT',
+          wholesaleBatchTotal: unitCost,
+        },
+      ]);
     } else {
       setPoItems([]);
     }
@@ -150,16 +166,29 @@ export const SuppliersPage: React.FC = () => {
       return;
     }
 
+    // Ensure all items have unitCost calculated correctly
+    const preparedItems = poItems.map((item) => {
+      let finalUnitCost = item.unitCost;
+      if (item.priceMode === 'WHOLESALE_BATCH' && item.wholesaleBatchTotal) {
+        finalUnitCost = item.quantity > 0 ? item.wholesaleBatchTotal / item.quantity : 0;
+      }
+      return {
+        productId: item.productId,
+        quantity: item.quantity,
+        unitCost: Math.round(finalUnitCost * 100) / 100,
+      };
+    });
+
     try {
       await apiClient.post('/purchase-orders', {
         shopId: activeShopId || undefined,
         supplierId: targetSupplierId,
-        items: poItems,
+        items: preparedItems,
         notes: poNotes,
       }).catch(() => apiClient.post('/purchases/orders', {
         shopId: activeShopId || undefined,
         supplierId: targetSupplierId,
-        items: poItems,
+        items: preparedItems,
         notes: poNotes,
       }));
 
@@ -177,7 +206,17 @@ export const SuppliersPage: React.FC = () => {
   const addPOItemRow = () => {
     if (products.length === 0) return;
     const p = products[0];
-    setPoItems([...poItems, { productId: p.id, quantity: 1, unitCost: Number(p.buyingPrice || p.costPrice || 0) }]);
+    const unitCost = Number(p.buyingPrice || p.costPrice || 0);
+    setPoItems([
+      ...poItems,
+      {
+        productId: p.id,
+        quantity: 1,
+        unitCost,
+        priceMode: 'PER_UNIT',
+        wholesaleBatchTotal: unitCost,
+      },
+    ]);
   };
 
   const filteredSuppliers = suppliers.filter(
@@ -580,39 +619,89 @@ export const SuppliersPage: React.FC = () => {
                 ) : (
                   <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
                     {poItems.map((item, idx) => {
-                      const lineTotal = item.quantity * item.unitCost;
+                      const isWholesale = item.priceMode === 'WHOLESALE_BATCH';
+                      const currentVal = isWholesale
+                        ? item.wholesaleBatchTotal !== undefined
+                          ? item.wholesaleBatchTotal
+                          : item.unitCost * item.quantity
+                        : item.unitCost;
+
+                      const calculatedUnitCost = isWholesale
+                        ? item.quantity > 0
+                          ? currentVal / item.quantity
+                          : 0
+                        : item.unitCost;
+
+                      const lineTotal = isWholesale ? currentVal : item.quantity * item.unitCost;
 
                       return (
                         <div
                           key={idx}
-                          className="flex flex-col sm:flex-row sm:items-center gap-2 bg-slate-50 p-3 rounded-2xl border border-slate-200"
+                          className="flex flex-col gap-2 bg-slate-50 p-3 rounded-2xl border border-slate-200"
                         >
-                          <div className="flex-1 min-w-0">
-                            <label className="text-[10px] font-bold text-slate-500 uppercase block mb-0.5 sm:hidden">
-                              Product
-                            </label>
-                            <select
-                              value={item.productId}
-                              onChange={(e) => {
-                                const newItems = [...poItems];
-                                newItems[idx].productId = e.target.value;
-                                const selProd = products.find((p) => p.id === e.target.value);
-                                if (selProd) {
-                                  newItems[idx].unitCost = Number(selProd.buyingPrice || selProd.costPrice || 0);
-                                }
-                                setPoItems(newItems);
-                              }}
-                              className="w-full bg-white border border-slate-300 rounded-xl py-1.5 px-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-indigo-600"
-                            >
-                              {products.map((p) => (
-                                <option key={p.id} value={p.id}>
-                                  {p.name}
-                                </option>
-                              ))}
-                            </select>
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div className="flex-1 min-w-0">
+                              <select
+                                value={item.productId}
+                                onChange={(e) => {
+                                  const newItems = [...poItems];
+                                  newItems[idx].productId = e.target.value;
+                                  const selProd = products.find((p) => p.id === e.target.value);
+                                  if (selProd) {
+                                    const cost = Number(selProd.buyingPrice || selProd.costPrice || 0);
+                                    newItems[idx].unitCost = cost;
+                                    newItems[idx].wholesaleBatchTotal = cost * newItems[idx].quantity;
+                                  }
+                                  setPoItems(newItems);
+                                }}
+                                className="w-full bg-white border border-slate-300 rounded-xl py-1.5 px-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-indigo-600"
+                              >
+                                {products.map((p) => (
+                                  <option key={p.id} value={p.id}>
+                                    {p.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+
+                            {/* Mode Toggle Switch */}
+                            <div className="flex items-center gap-1 bg-slate-200/80 p-0.5 rounded-lg shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newItems = [...poItems];
+                                  newItems[idx].priceMode = 'PER_UNIT';
+                                  newItems[idx].unitCost = calculatedUnitCost;
+                                  setPoItems(newItems);
+                                }}
+                                className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition-all ${
+                                  !isWholesale
+                                    ? 'bg-indigo-600 text-white shadow-xs'
+                                    : 'text-slate-600 hover:text-slate-900'
+                                }`}
+                              >
+                                Price / Unit
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newItems = [...poItems];
+                                  newItems[idx].priceMode = 'WHOLESALE_BATCH';
+                                  newItems[idx].wholesaleBatchTotal = lineTotal;
+                                  setPoItems(newItems);
+                                }}
+                                className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition-all ${
+                                  isWholesale
+                                    ? 'bg-indigo-600 text-white shadow-xs'
+                                    : 'text-slate-600 hover:text-slate-900'
+                                }`}
+                              >
+                                Wholesale Bunch
+                              </button>
+                            </div>
                           </div>
 
-                          <div className="flex items-center gap-2 shrink-0">
+                          <div className="flex items-center justify-between gap-2 shrink-0">
                             <div>
                               <label className="text-[10px] font-bold text-slate-500 uppercase block mb-0.5">
                                 Qty
@@ -630,37 +719,46 @@ export const SuppliersPage: React.FC = () => {
                               />
                             </div>
 
-                            <div>
+                            <div className="flex-1 max-w-[170px]">
                               <label className="text-[10px] font-bold text-slate-500 uppercase block mb-0.5">
-                                Buying Price (KES)
+                                {isWholesale ? 'Wholesale Bunch Total (KES)' : 'Unit Cost (KES)'}
                               </label>
                               <input
                                 type="number"
                                 min="0"
                                 step="10"
-                                value={item.unitCost}
+                                value={currentVal}
                                 onChange={(e) => {
+                                  const val = Math.max(0, parseFloat(e.target.value) || 0);
                                   const newItems = [...poItems];
-                                  newItems[idx].unitCost = Math.max(0, parseFloat(e.target.value) || 0);
+                                  if (isWholesale) {
+                                    newItems[idx].wholesaleBatchTotal = val;
+                                    newItems[idx].unitCost = newItems[idx].quantity > 0 ? val / newItems[idx].quantity : 0;
+                                  } else {
+                                    newItems[idx].unitCost = val;
+                                    newItems[idx].wholesaleBatchTotal = val * newItems[idx].quantity;
+                                  }
                                   setPoItems(newItems);
                                 }}
-                                className="w-28 bg-white border border-slate-300 rounded-xl py-1.5 px-2 text-xs font-bold text-slate-900 text-right"
+                                className="w-full bg-white border border-slate-300 rounded-xl py-1.5 px-2 text-xs font-bold text-slate-900 text-right"
                               />
                             </div>
 
-                            <div className="text-right min-w-[70px]">
+                            <div className="text-right min-w-[90px]">
                               <label className="text-[10px] font-bold text-slate-400 uppercase block mb-0.5">
-                                Subtotal
+                                {isWholesale ? 'Unit Price' : 'Line Total'}
                               </label>
-                              <span className="text-xs font-bold text-slate-900">
-                                KSh {lineTotal.toLocaleString()}
+                              <span className="text-xs font-bold text-indigo-700 block">
+                                {isWholesale
+                                  ? `KSh ${calculatedUnitCost.toFixed(2)} / ea`
+                                  : `KSh ${lineTotal.toLocaleString()}`}
                               </span>
                             </div>
 
                             <button
                               type="button"
                               onClick={() => setPoItems(poItems.filter((_, i) => i !== idx))}
-                              className="p-1.5 text-rose-500 hover:bg-rose-100 rounded-xl transition-colors mt-4 sm:mt-0"
+                              className="p-1.5 text-rose-500 hover:bg-rose-100 rounded-xl transition-colors shrink-0"
                               title="Remove item"
                             >
                               <X className="w-4 h-4" />
@@ -681,7 +779,12 @@ export const SuppliersPage: React.FC = () => {
                 <span className="text-lg font-black text-indigo-700">
                   KSh{' '}
                   {poItems
-                    .reduce((acc, item) => acc + item.quantity * item.unitCost, 0)
+                    .reduce((acc, item) => {
+                      if (item.priceMode === 'WHOLESALE_BATCH' && item.wholesaleBatchTotal !== undefined) {
+                        return acc + item.wholesaleBatchTotal;
+                      }
+                      return acc + item.quantity * item.unitCost;
+                    }, 0)
                     .toLocaleString()}
                 </span>
               </div>

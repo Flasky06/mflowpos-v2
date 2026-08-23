@@ -212,6 +212,27 @@ export class PurchaseService {
             });
           }
 
+          // Update product costPrice using Moving Weighted Average Cost (AVCO)
+          const product = await tx.product.findUnique({
+            where: { id: item.productId },
+          });
+
+          if (product) {
+            const currentCost = product.costPrice ? Number(product.costPrice) : 0;
+            const receivedCost = Number(item.unitCost);
+            const receivedQty = item.quantity;
+
+            let newCostPrice = receivedCost;
+            if (currentQty > 0 && currentCost > 0) {
+              newCostPrice = ((currentQty * currentCost) + (receivedQty * receivedCost)) / (currentQty + receivedQty);
+            }
+
+            await tx.product.update({
+              where: { id: item.productId },
+              data: { costPrice: Math.round(newCostPrice * 100) / 100 },
+            });
+          }
+
           await tx.stockHistory.create({
             data: {
               productId: item.productId,
@@ -220,7 +241,7 @@ export class PurchaseService {
               changeQty: item.quantity,
               newQty,
               reason: 'PURCHASE_RECEIVE',
-              notes: `Goods received for PO #${order.orderNumber}`,
+              notes: `Goods received for PO #${order.orderNumber} @ KSh ${Number(item.unitCost).toLocaleString()}/unit`,
             },
           });
         }
