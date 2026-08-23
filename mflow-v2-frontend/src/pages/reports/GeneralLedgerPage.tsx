@@ -94,6 +94,13 @@ export const GeneralLedgerPage: React.FC = () => {
             onChange={(e) => setEndDate(e.target.value)}
             className="text-xs font-bold text-slate-800 bg-transparent py-1 px-1 focus:outline-none"
           />
+          <button
+            onClick={fetchLedgerData}
+            className="ml-2 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-xs rounded-lg transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
+          >
+            <Search className="w-3.5 h-3.5" />
+            Filter
+          </button>
         </div>
       </div>
 
