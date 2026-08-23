@@ -154,7 +154,6 @@ export const ServicesSalesHistoryPage: React.FC = () => {
                 <th className="py-3.5 px-4">Receipt #</th>
                 <th className="py-3.5 px-4">Service Title</th>
                 <th className="py-3.5 px-4">Customer</th>
-                <th className="py-3.5 px-4 text-center font-mono">Service Code</th>
                 <th className="py-3.5 px-4 text-center">Times Rendered</th>
                 <th className="py-3.5 px-4 text-right">Unit Price</th>
                 <th className="py-3.5 px-4 text-right">Total Revenue</th>
@@ -164,7 +163,7 @@ export const ServicesSalesHistoryPage: React.FC = () => {
             <tbody className="divide-y divide-slate-200 bg-white">
               {filteredItems.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-8 text-center text-slate-400">
+                  <td colSpan={7} className="py-8 text-center text-slate-400">
                     No service sales recorded for this period.
                   </td>
                 </tr>
@@ -174,7 +173,6 @@ export const ServicesSalesHistoryPage: React.FC = () => {
                     <td className="py-3 px-4 font-mono font-bold text-indigo-700">{item.receiptNumber}</td>
                     <td className="py-3 px-4 font-bold text-slate-900">{item.serviceName}</td>
                     <td className="py-3 px-4 text-slate-600">{item.customerName}</td>
-                    <td className="py-3 px-4 text-center font-mono text-slate-500">{item.serviceCode}</td>
                     <td className="py-3 px-4 text-center font-bold text-slate-800">{item.quantity}</td>
                     <td className="py-3 px-4 text-right font-semibold text-slate-800">
                       KSh {item.unitPrice.toLocaleString()}

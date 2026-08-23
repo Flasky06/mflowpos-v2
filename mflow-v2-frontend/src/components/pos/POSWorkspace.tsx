@@ -323,7 +323,6 @@ export const POSWorkspace: React.FC = () => {
                 ) : (
                   <tr>
                     <th className="py-3.5 px-4">Service Title</th>
-                    <th className="py-3.5 px-4">Service Code</th>
                     <th className="py-3.5 px-4 text-right">Selling Price</th>
                     <th className="py-3.5 px-4 text-center">Inventory Type</th>
                     <th className="py-3.5 px-4 text-center">Action</th>
@@ -343,19 +342,21 @@ export const POSWorkspace: React.FC = () => {
                         <td className="py-3.5 px-4 text-xs text-slate-500">
                           {p.costPrice ? `KSh ${Number(p.costPrice).toLocaleString()}` : '-'}
                         </td>
-                        <td className="py-3.5 px-4 text-right font-bold text-emerald-700">
+                        <td className="py-3.5 px-4 text-right font-bold text-slate-900">
                           KSh {Number(p.sellingPrice).toLocaleString()}
                         </td>
-                        <td className="py-3.5 px-4 text-center">
-                          <span className={`font-bold text-xs ${isOut ? 'text-rose-600' : 'text-slate-700'}`}>
-                            {qty} {p.unit}
-                          </span>
+                        <td className="py-3.5 px-4 text-center font-bold text-slate-700">
+                          {isOut ? (
+                            <span className="text-rose-600 font-black">Out of Stock</span>
+                          ) : (
+                            `${qty} units`
+                          )}
                         </td>
                         <td className="py-3.5 px-4 text-center">
                           <button
-                            onClick={() => addToCart(p, 'PRODUCT')}
                             disabled={isOut}
-                            className="px-3.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed shadow-xs transition-colors"
+                            onClick={() => addToCart(p, 'PRODUCT')}
+                            className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-lg text-xs font-bold shadow-xs transition-colors"
                           >
                             + Add
                           </button>
@@ -368,7 +369,6 @@ export const POSWorkspace: React.FC = () => {
                   filteredServices.map((s) => (
                     <tr key={s.id} className="hover:bg-violet-50/50 transition-colors">
                       <td className="py-3.5 px-4 font-semibold text-slate-900">{s.name}</td>
-                      <td className="py-3.5 px-4 font-mono text-xs text-slate-500">{s.code || '-'}</td>
                       <td className="py-3.5 px-4 text-right font-bold text-emerald-700">
                         KSh {Number(s.price).toLocaleString()}
                       </td>

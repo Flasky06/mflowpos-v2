@@ -238,7 +238,7 @@ export const ServicesPage: React.FC = () => {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search service name or service code..."
+            placeholder="Search service name..."
             className="w-full bg-white border border-slate-300 rounded-xl py-2.5 px-4 pl-10 text-slate-900 text-sm focus:outline-none focus:border-violet-600 shadow-xs"
           />
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
@@ -264,7 +264,6 @@ export const ServicesPage: React.FC = () => {
             <tr>
               <th className="py-3 px-4">Service Name</th>
               <th className="py-3 px-4">Category</th>
-              <th className="py-3 px-4">Code</th>
               <th className="py-3 px-4 text-right">Service Price</th>
               <th className="py-3 px-4 text-center">Inventory Requirement</th>
               <th className="py-3 px-4 text-center">Actions</th>
@@ -273,7 +272,7 @@ export const ServicesPage: React.FC = () => {
           <tbody className="divide-y divide-slate-200">
             {filteredServices.length === 0 ? (
               <tr>
-                <td colSpan={6} className="py-8 text-center text-slate-500">
+                <td colSpan={5} className="py-8 text-center text-slate-500">
                   No services in catalog.
                 </td>
               </tr>
@@ -282,7 +281,6 @@ export const ServicesPage: React.FC = () => {
                 <tr key={s.id} className="hover:bg-slate-50 transition-colors">
                   <td className="py-3.5 px-4 font-semibold text-slate-900">{s.name}</td>
                   <td className="py-3.5 px-4 text-slate-500">{s.category?.name || 'General Service'}</td>
-                  <td className="py-3.5 px-4 font-mono text-xs text-slate-500">{s.code || '-'}</td>
                   <td className="py-3.5 px-4 text-right font-bold text-emerald-700">
                     KSh {Number(s.price).toLocaleString()}
                   </td>
@@ -352,29 +350,17 @@ export const ServicesPage: React.FC = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">Service Price (KSh) *</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    required
-                    value={serviceForm.price}
-                    onChange={(e) => setServiceForm({ ...serviceForm, price: e.target.value })}
-                    placeholder="800"
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 text-slate-900 text-sm focus:outline-none focus:border-violet-600"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">Service Code</label>
-                  <input
-                    type="text"
-                    value={serviceForm.code}
-                    onChange={(e) => setServiceForm({ ...serviceForm, code: e.target.value })}
-                    placeholder="SRV-SUIT"
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 text-slate-900 text-sm focus:outline-none focus:border-violet-600"
-                  />
-                </div>
+              <div>
+                <label className="text-xs font-semibold text-slate-700 block mb-1">Service Price (KSh) *</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  required
+                  value={serviceForm.price}
+                  onChange={(e) => setServiceForm({ ...serviceForm, price: e.target.value })}
+                  placeholder="800"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 text-slate-900 text-sm focus:outline-none focus:border-violet-600"
+                />
               </div>
 
               <div>
