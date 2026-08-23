@@ -67,17 +67,17 @@ export const AppLayout: React.FC = () => {
   // Grouped Navigation Tree Structure (Aligned with original mflowpos)
   const menuGroups = [
     {
-      title: 'Main',
+      title: 'Dashboard',
       isCollapsible: false,
       items: [
         { to: '/dashboard', label: 'Dashboard', show: true },
-        { to: '/pos', label: 'POS Terminal', show: true },
       ],
     },
     {
       title: 'Sales',
       isCollapsible: true,
       items: [
+        { to: '/pos', label: 'POS Terminal / Checkout', show: true },
         { to: '/sales', label: 'Sales History', show: true },
         { to: '/sales/products', label: 'Products Sales History', show: isProductsAllowed },
         { to: '/sales/services', label: 'Services Sales History', show: isServicesAllowed },
@@ -234,35 +234,52 @@ export const AppLayout: React.FC = () => {
               return (
                 <div key={group.title} className="space-y-1">
                   {group.isCollapsible ? (
-                    <button
-                      onClick={() => toggleGroup(group.title)}
-                      className="w-full flex items-center justify-between px-3 py-2 text-xs font-extrabold uppercase tracking-wider text-slate-400 hover:text-slate-200 transition-colors rounded-lg"
-                    >
-                      <span>{group.title}</span>
-                      {isOpen ? (
-                        <ChevronUp className="w-3.5 h-3.5 text-slate-500" />
-                      ) : (
-                        <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
-                      )}
-                    </button>
-                  ) : (
-                    <div className="px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                      {group.title}
-                    </div>
-                  )}
+                    <>
+                      <button
+                        onClick={() => toggleGroup(group.title)}
+                        className="w-full flex items-center justify-between px-3 py-2 text-xs font-extrabold uppercase tracking-wider text-slate-400 hover:text-slate-200 transition-colors rounded-lg"
+                      >
+                        <span>{group.title}</span>
+                        {isOpen ? (
+                          <ChevronUp className="w-3.5 h-3.5 text-slate-500" />
+                        ) : (
+                          <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+                        )}
+                      </button>
 
-                  {isOpen && (
-                    <div className="space-y-1 pl-1">
+                      {isOpen && (
+                        <div className="space-y-1 pl-1">
+                          {visibleItems.map((item) => (
+                            <NavLink
+                              key={item.to}
+                              to={item.to}
+                              onClick={() => setIsMobileMenuOpen(false)}
+                              className={({ isActive }) =>
+                                `block px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                                  isActive
+                                    ? 'bg-indigo-600 text-white font-bold shadow-sm shadow-indigo-600/30'
+                                    : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60'
+                                }`
+                              }
+                            >
+                              {item.label}
+                            </NavLink>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="space-y-1">
                       {visibleItems.map((item) => (
                         <NavLink
                           key={item.to}
                           to={item.to}
                           onClick={() => setIsMobileMenuOpen(false)}
                           className={({ isActive }) =>
-                            `block px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                            `block px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
                               isActive
-                                ? 'bg-indigo-600 text-white font-bold shadow-sm shadow-indigo-600/30'
-                                : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60'
+                                ? 'bg-indigo-600 text-white font-black shadow-md shadow-indigo-600/30'
+                                : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
                             }`
                           }
                         >
