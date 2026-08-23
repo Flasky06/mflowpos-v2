@@ -104,6 +104,19 @@ export class ExpenseController {
     }
   }
 
+  static async updateExpense(req: AuthenticatedRequest, res: Response) {
+    try {
+      const businessId = req.user?.businessId;
+      const { id } = req.params;
+      if (!businessId) return ApiResponse.error(res, 'Business ID required', 400);
+
+      const expense = await ExpenseService.updateExpense(id, businessId, req.body);
+      return ApiResponse.success(res, expense, 'Expense record updated successfully');
+    } catch (err: any) {
+      return ApiResponse.error(res, err.message, 400);
+    }
+  }
+
   static async deleteExpense(req: AuthenticatedRequest, res: Response) {
     try {
       const businessId = req.user?.businessId;

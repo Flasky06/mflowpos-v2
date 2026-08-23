@@ -172,6 +172,49 @@ export class ExpenseService {
     });
   }
 
+  static async updateExpense(
+    expenseId: string,
+    businessId: string,
+    dto: {
+      title?: string;
+      amount?: number;
+      categoryId?: string;
+      paymentMethod?: string;
+      notes?: string;
+    }
+  ) {
+    const expense = await prisma.expense.findFirst({
+      where: { id: expenseId, businessId },
+    });
+
+    if (!expense) {
+      throw new Error('Expense record not found');
+    }
+
+    if (dto.categoryId) {
+      const category = await prisma.expenseCategory.findFirst({
+        where: { id: dto.categoryId, businessId },
+      });
+      if (!category) throw new Error('Expense category not found');
+    }
+
+    return prisma.expense.update({
+      where: { id: expenseId },
+      data: {
+        ...(dto.title && { title: dto.title }),
+        ...(dto.amount !== undefined && { amount: dto.amount }),
+        ...(dto.categoryId && { categoryId: dto.categoryId }),
+        ...(dto.paymentMethod && { paymentMethod: dto.paymentMethod }),
+        ...(dto.notes !== undefined && { notes: dto.notes }),
+      },
+      include: {
+        category: true,
+        shop: { select: { name: true } },
+        user: { select: { fullName: true } },
+      },
+    });
+  }
+
   static async deleteExpense(expenseId: string, businessId: string) {
     const expense = await prisma.expense.findFirst({
       where: { id: expenseId, businessId },

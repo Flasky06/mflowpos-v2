@@ -6,6 +6,7 @@ import { useToastStore } from '../../store/toastStore';
 import {
   DollarSign,
   Plus,
+  Edit2,
   Trash2,
   X,
   Search,
@@ -105,7 +106,33 @@ export const ExpensesPage: React.FC = () => {
     fetchData();
   }, [activeShopId]);
 
-  const handleCreateExpense = async (e: React.FormEvent) => {
+  const [selectedExpense, setSelectedExpense] = useState<any | null>(null);
+
+  const handleOpenCreateExpenseModal = () => {
+    setSelectedExpense(null);
+    setExpenseForm({
+      title: '',
+      amount: '',
+      paymentMethod: 'CASH',
+      categoryId: categories[0]?.id || '',
+      notes: '',
+    });
+    setIsExpenseModalOpen(true);
+  };
+
+  const handleOpenEditExpenseModal = (exp: any) => {
+    setSelectedExpense(exp);
+    setExpenseForm({
+      title: exp.title,
+      amount: exp.amount ? exp.amount.toString() : '',
+      paymentMethod: exp.paymentMethod || 'CASH',
+      categoryId: exp.categoryId || '',
+      notes: exp.notes || '',
+    });
+    setIsExpenseModalOpen(true);
+  };
+
+  const handleSaveExpense = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!expenseForm.title.trim() || !expenseForm.amount || parseFloat(expenseForm.amount) <= 0) {
       addToast({ type: 'warning', title: 'Invalid Fields', message: 'Expense title and a positive amount are required' });
@@ -117,21 +144,33 @@ export const ExpensesPage: React.FC = () => {
     }
 
     try {
-      await apiClient.post('/expenses', {
-        title: expenseForm.title,
-        amount: parseFloat(expenseForm.amount),
-        paymentMethod: expenseForm.paymentMethod,
-        categoryId: expenseForm.categoryId,
-        notes: expenseForm.notes || undefined,
-        shopId: activeShopId || undefined,
-      });
+      if (selectedExpense) {
+        await apiClient.put(`/expenses/${selectedExpense.id}`, {
+          title: expenseForm.title,
+          amount: parseFloat(expenseForm.amount),
+          paymentMethod: expenseForm.paymentMethod,
+          categoryId: expenseForm.categoryId,
+          notes: expenseForm.notes || undefined,
+        });
+        addToast({ type: 'success', title: 'Expense Updated', message: `Updated '${expenseForm.title}'` });
+      } else {
+        await apiClient.post('/expenses', {
+          title: expenseForm.title,
+          amount: parseFloat(expenseForm.amount),
+          paymentMethod: expenseForm.paymentMethod,
+          categoryId: expenseForm.categoryId,
+          notes: expenseForm.notes || undefined,
+          shopId: activeShopId || undefined,
+        });
+        addToast({ type: 'success', title: 'Expense Recorded', message: `Saved '${expenseForm.title}' (KES ${Number(expenseForm.amount).toLocaleString()})` });
+      }
 
-      addToast({ type: 'success', title: 'Expense Recorded', message: `Saved '${expenseForm.title}' (KES ${Number(expenseForm.amount).toLocaleString()})` });
       setIsExpenseModalOpen(false);
+      setSelectedExpense(null);
       setExpenseForm({ title: '', amount: '', paymentMethod: 'CASH', categoryId: '', notes: '' });
       fetchData();
     } catch (err: any) {
-      addToast({ type: 'error', title: 'Save Error', message: err.response?.data?.message || 'Failed to record expense' });
+      addToast({ type: 'error', title: 'Save Error', message: err.response?.data?.message || 'Failed to save expense' });
     }
   };
 
@@ -189,16 +228,7 @@ export const ExpensesPage: React.FC = () => {
             <Tag className="w-4 h-4 text-slate-600" /> Manage Expense Categories ({categories.length})
           </Link>
           <button
-            onClick={() => {
-              setExpenseForm({
-                title: '',
-                amount: '',
-                paymentMethod: 'CASH',
-                categoryId: categories[0]?.id || '',
-                notes: '',
-              });
-              setIsExpenseModalOpen(true);
-            }}
+            onClick={handleOpenCreateExpenseModal}
             className="py-2.5 px-4 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs transition-all shadow-md flex items-center gap-2"
           >
             <Plus className="w-4 h-4" /> Record New Expense
@@ -320,12 +350,22 @@ export const ExpensesPage: React.FC = () => {
                       </div>
                     </td>
                     <td className="py-3.5 px-4 text-center">
-                      <button
-                        onClick={() => handleDeleteExpense(exp.id, exp.title)}
-                        className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 border border-transparent hover:border-rose-200 transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center justify-center gap-1">
+                        <button
+                          onClick={() => handleOpenEditExpenseModal(exp)}
+                          title="Edit Expense Record"
+                          className="p-1.5 text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 border border-transparent hover:border-indigo-200 transition-colors"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteExpense(exp.id, exp.title)}
+                          title="Delete Expense Record"
+                          className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 border border-transparent hover:border-rose-200 transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -335,12 +375,14 @@ export const ExpensesPage: React.FC = () => {
         </div>
       </div>
 
-      {/* RECORD EXPENSE MODAL */}
+      {/* RECORD / EDIT EXPENSE MODAL */}
       {isExpenseModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
           <div className="max-w-md w-full bg-white p-6 rounded-2xl border border-slate-200 shadow-xl relative space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-              <h3 className="text-base font-bold text-slate-900">Record Operating Expense</h3>
+              <h3 className="text-base font-bold text-slate-900">
+                {selectedExpense ? 'Edit Expense Record' : 'Record Operating Expense'}
+              </h3>
               <button
                 onClick={() => setIsExpenseModalOpen(false)}
                 className="text-slate-400 hover:text-slate-700 p-1 rounded-lg"
@@ -349,7 +391,7 @@ export const ExpensesPage: React.FC = () => {
               </button>
             </div>
 
-            <form onSubmit={handleCreateExpense} className="space-y-3">
+            <form onSubmit={handleSaveExpense} className="space-y-3">
               <div>
                 <label className="text-xs font-bold text-slate-700 uppercase block mb-1">Expense Title *</label>
                 <input
@@ -471,7 +513,7 @@ export const ExpensesPage: React.FC = () => {
                   type="submit"
                   className="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs shadow-md"
                 >
-                  Record Expense Outflow
+                  {selectedExpense ? 'Update Expense Record' : 'Record Expense Outflow'}
                 </button>
               </div>
             </form>

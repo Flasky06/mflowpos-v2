@@ -45,6 +45,12 @@ router.post(
   validateBody(createExpenseSchema),
   ExpenseController.createExpense
 );
+router.put(
+  '/:id',
+  checkSubscriptionPaywall,
+  authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN),
+  ExpenseController.updateExpense
+);
 router.delete(
   '/:id',
   checkSubscriptionPaywall,
