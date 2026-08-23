@@ -334,24 +334,6 @@ export const AppLayout: React.FC = () => {
 
         {/* MAIN CONTENT AREA */}
         <main className="flex-1 flex flex-col min-w-0 bg-slate-100 overflow-y-auto">
-          {/* PENDING PURCHASE ORDERS TOP NOTIFICATION BANNER */}
-          {pendingPOs.length > 0 && (
-            <div className="bg-amber-500 text-white px-4 py-2 flex items-center justify-between text-xs font-bold shadow-xs">
-              <div className="flex items-center gap-2">
-                <PackageCheck className="w-4 h-4 animate-bounce" />
-                <span>
-                  Pending Stock Delivery Alert: You have {pendingPOs.length} purchase order(s) waiting to be received into inventory stock.
-                </span>
-              </div>
-              <button
-                onClick={() => navigate('/suppliers')}
-                className="px-3 py-1 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg text-[11px] transition-all"
-              >
-                Receive Stock Deliveries
-              </button>
-            </div>
-          )}
-
           <div className="flex-1">
             <Outlet />
           </div>
