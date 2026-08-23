@@ -119,11 +119,30 @@ export const SuppliersPage: React.FC = () => {
     }
   };
 
+  const handleOpenPOModal = () => {
+    if (suppliers.length > 0) {
+      setPoSupplierId(suppliers[0].id);
+    }
+    if (products.length > 0) {
+      const p = products[0];
+      setPoItems([{ productId: p.id, quantity: 1, unitCost: Number(p.buyingPrice || p.costPrice || 0) }]);
+    } else {
+      setPoItems([]);
+    }
+    setPoNotes('');
+    setIsPOModalOpen(true);
+  };
+
   // Handle PO Creation
   const handleCreatePO = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!poSupplierId) {
-      addToast({ type: 'warning', title: 'Missing Supplier', message: 'Please select a supplier' });
+    let targetSupplierId = poSupplierId;
+    if (!targetSupplierId && suppliers.length > 0) {
+      targetSupplierId = suppliers[0].id;
+    }
+
+    if (!targetSupplierId) {
+      addToast({ type: 'warning', title: 'Missing Supplier', message: 'Please select or create a supplier first' });
       return;
     }
     if (poItems.length === 0) {
@@ -134,17 +153,17 @@ export const SuppliersPage: React.FC = () => {
     try {
       await apiClient.post('/purchase-orders', {
         shopId: activeShopId || undefined,
-        supplierId: poSupplierId,
+        supplierId: targetSupplierId,
         items: poItems,
         notes: poNotes,
       }).catch(() => apiClient.post('/purchases/orders', {
         shopId: activeShopId || undefined,
-        supplierId: poSupplierId,
+        supplierId: targetSupplierId,
         items: poItems,
         notes: poNotes,
       }));
 
-      addToast({ type: 'success', title: 'Purchase Order Created', message: 'Order created in PENDING status' });
+      addToast({ type: 'success', title: 'Purchase Order Saved', message: 'Stock purchase recorded in PENDING status' });
       setIsPOModalOpen(false);
       setPoSupplierId('');
       setPoNotes('');
@@ -202,11 +221,7 @@ export const SuppliersPage: React.FC = () => {
             </button>
           ) : (
             <button
-              onClick={() => {
-                if (suppliers.length > 0) setPoSupplierId(suppliers[0].id);
-                setPoItems([]);
-                setIsPOModalOpen(true);
-              }}
+              onClick={handleOpenPOModal}
               className="py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs transition-all shadow-md flex items-center gap-2"
             >
               <Plus className="w-4 h-4" /> Issue Purchase Order
@@ -518,140 +533,210 @@ export const SuppliersPage: React.FC = () => {
         </div>
       )}
 
-      {/* CREATE PURCHASE ORDER MODAL */}
+      {/* CREATE / RECORD PURCHASE ORDER MODAL */}
       {isPOModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
-          <div className="max-w-xl w-full bg-white p-6 rounded-2xl border border-slate-200 shadow-xl relative space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
+          <div className="max-w-2xl w-full bg-white p-6 rounded-3xl border border-slate-200 shadow-2xl relative space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-              <h3 className="text-base font-bold text-slate-900">Issue Purchase Order</h3>
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">Record Stock Purchase</h3>
+                <p className="text-xs text-slate-500">Select items, edit buying prices, and record vendor stock orders</p>
+              </div>
               <button
                 onClick={() => setIsPOModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700 p-1 rounded-lg"
+                className="text-slate-400 hover:text-slate-700 p-1.5 rounded-full hover:bg-slate-100"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleCreatePO} className="space-y-4">
-              <div>
-                <label className="text-xs font-bold text-slate-700 uppercase block mb-1">Select Supplier *</label>
-                <select
-                  required
-                  value={poSupplierId}
-                  onChange={(e) => setPoSupplierId(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 text-xs font-semibold focus:outline-none focus:border-indigo-600"
-                >
-                  {suppliers.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name} ({s.phone || 'No phone'})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-xs font-bold text-slate-700 uppercase">Order Items & Wholesale Cost</label>
+              {/* Step 1: Items Selection & Buying Price Grid */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    Purchase Order Items
+                  </label>
                   <button
                     type="button"
                     onClick={addPOItemRow}
-                    className="text-xs font-bold text-indigo-600 hover:underline flex items-center gap-1"
+                    className="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200"
                   >
                     <Plus className="w-3.5 h-3.5" /> Add Product Item
                   </button>
                 </div>
 
                 {poItems.length === 0 ? (
-                  <p className="text-xs text-slate-400 italic bg-slate-50 p-3 rounded-xl border border-dashed border-slate-200 text-center">
-                    No items added yet. Click 'Add Product Item' above.
-                  </p>
+                  <div className="p-6 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-300">
+                    <p className="text-xs text-slate-500 font-medium mb-2">No product items added yet.</p>
+                    <button
+                      type="button"
+                      onClick={addPOItemRow}
+                      className="px-3 py-1.5 bg-indigo-600 text-white font-bold rounded-xl text-xs"
+                    >
+                      + Add Item to Order
+                    </button>
+                  </div>
                 ) : (
-                  <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                    {poItems.map((item, idx) => (
-                      <div key={idx} className="flex items-center gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200">
-                        <select
-                          value={item.productId}
-                          onChange={(e) => {
-                            const newItems = [...poItems];
-                            newItems[idx].productId = e.target.value;
-                            const selProd = products.find((p) => p.id === e.target.value);
-                            if (selProd) {
-                              newItems[idx].unitCost = Number(selProd.buyingPrice || selProd.costPrice || 0);
-                            }
-                            setPoItems(newItems);
-                          }}
-                          className="flex-1 bg-white border border-slate-300 rounded-lg py-1.5 px-2 text-xs font-semibold"
+                  <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                    {poItems.map((item, idx) => {
+                      const lineTotal = item.quantity * item.unitCost;
+
+                      return (
+                        <div
+                          key={idx}
+                          className="flex flex-col sm:flex-row sm:items-center gap-2 bg-slate-50 p-3 rounded-2xl border border-slate-200"
                         >
-                          {products.map((p) => (
-                            <option key={p.id} value={p.id}>
-                              {p.name}
-                            </option>
-                          ))}
-                        </select>
+                          <div className="flex-1 min-w-0">
+                            <label className="text-[10px] font-bold text-slate-500 uppercase block mb-0.5 sm:hidden">
+                              Product
+                            </label>
+                            <select
+                              value={item.productId}
+                              onChange={(e) => {
+                                const newItems = [...poItems];
+                                newItems[idx].productId = e.target.value;
+                                const selProd = products.find((p) => p.id === e.target.value);
+                                if (selProd) {
+                                  newItems[idx].unitCost = Number(selProd.buyingPrice || selProd.costPrice || 0);
+                                }
+                                setPoItems(newItems);
+                              }}
+                              className="w-full bg-white border border-slate-300 rounded-xl py-1.5 px-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-indigo-600"
+                            >
+                              {products.map((p) => (
+                                <option key={p.id} value={p.id}>
+                                  {p.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
 
-                        <input
-                          type="number"
-                          min="1"
-                          value={item.quantity}
-                          onChange={(e) => {
-                            const newItems = [...poItems];
-                            newItems[idx].quantity = Math.max(1, parseInt(e.target.value) || 1);
-                            setPoItems(newItems);
-                          }}
-                          placeholder="Qty"
-                          className="w-16 bg-white border border-slate-300 rounded-lg py-1.5 px-2 text-xs font-semibold text-center"
-                        />
+                          <div className="flex items-center gap-2 shrink-0">
+                            <div>
+                              <label className="text-[10px] font-bold text-slate-500 uppercase block mb-0.5">
+                                Qty
+                              </label>
+                              <input
+                                type="number"
+                                min="1"
+                                value={item.quantity}
+                                onChange={(e) => {
+                                  const newItems = [...poItems];
+                                  newItems[idx].quantity = Math.max(1, parseInt(e.target.value) || 1);
+                                  setPoItems(newItems);
+                                }}
+                                className="w-16 bg-white border border-slate-300 rounded-xl py-1.5 px-2 text-xs font-bold text-slate-900 text-center"
+                              />
+                            </div>
 
-                        <input
-                          type="number"
-                          min="0"
-                          value={item.unitCost}
-                          onChange={(e) => {
-                            const newItems = [...poItems];
-                            newItems[idx].unitCost = Math.max(0, parseFloat(e.target.value) || 0);
-                            setPoItems(newItems);
-                          }}
-                          placeholder="Unit Cost"
-                          className="w-24 bg-white border border-slate-300 rounded-lg py-1.5 px-2 text-xs font-semibold text-right"
-                        />
+                            <div>
+                              <label className="text-[10px] font-bold text-slate-500 uppercase block mb-0.5">
+                                Buying Price (KES)
+                              </label>
+                              <input
+                                type="number"
+                                min="0"
+                                step="10"
+                                value={item.unitCost}
+                                onChange={(e) => {
+                                  const newItems = [...poItems];
+                                  newItems[idx].unitCost = Math.max(0, parseFloat(e.target.value) || 0);
+                                  setPoItems(newItems);
+                                }}
+                                className="w-28 bg-white border border-slate-300 rounded-xl py-1.5 px-2 text-xs font-bold text-slate-900 text-right"
+                              />
+                            </div>
 
-                        <button
-                          type="button"
-                          onClick={() => setPoItems(poItems.filter((_, i) => i !== idx))}
-                          className="p-1 text-rose-500 hover:bg-rose-100 rounded-md"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                    ))}
+                            <div className="text-right min-w-[70px]">
+                              <label className="text-[10px] font-bold text-slate-400 uppercase block mb-0.5">
+                                Subtotal
+                              </label>
+                              <span className="text-xs font-bold text-slate-900">
+                                KSh {lineTotal.toLocaleString()}
+                              </span>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => setPoItems(poItems.filter((_, i) => i !== idx))}
+                              className="p-1.5 text-rose-500 hover:bg-rose-100 rounded-xl transition-colors mt-4 sm:mt-0"
+                              title="Remove item"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
 
-              <div>
-                <label className="text-xs font-bold text-slate-700 uppercase block mb-1">Notes / Terms</label>
-                <textarea
-                  rows={2}
-                  value={poNotes}
-                  onChange={(e) => setPoNotes(e.target.value)}
-                  placeholder="Expected delivery date or payment terms..."
-                  className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 text-xs font-semibold focus:outline-none"
-                />
+              {/* Order Summary Total Box */}
+              <div className="bg-indigo-50/70 p-3.5 rounded-2xl border border-indigo-200 flex items-center justify-between">
+                <span className="text-xs font-extrabold text-indigo-900 uppercase tracking-wider">
+                  Total Order Amount
+                </span>
+                <span className="text-lg font-black text-indigo-700">
+                  KSh{' '}
+                  {poItems
+                    .reduce((acc, item) => acc + item.quantity * item.unitCost, 0)
+                    .toLocaleString()}
+                </span>
+              </div>
+
+              {/* Step 2: Supplier Selection & Notes */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-slate-700 uppercase block mb-1">
+                    Select Supplier *
+                  </label>
+                  <select
+                    required
+                    value={poSupplierId}
+                    onChange={(e) => setPoSupplierId(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 text-xs font-bold text-slate-900 focus:outline-none focus:border-indigo-600"
+                  >
+                    {suppliers.length === 0 ? (
+                      <option value="">-- No Suppliers Found --</option>
+                    ) : (
+                      suppliers.map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.name} ({s.phone || 'No phone'})
+                        </option>
+                      ))
+                    )}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold text-slate-700 uppercase block mb-1">
+                    Order Notes / Payment Terms
+                  </label>
+                  <input
+                    type="text"
+                    value={poNotes}
+                    onChange={(e) => setPoNotes(e.target.value)}
+                    placeholder="e.g. Expected delivery Friday..."
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 text-xs font-semibold text-slate-900 focus:outline-none focus:border-indigo-600"
+                  />
+                </div>
               </div>
 
               <div className="pt-3 border-t border-slate-200 flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsPOModalOpen(false)}
-                  className="px-4 py-2 border border-slate-300 text-slate-700 font-bold rounded-xl text-xs"
+                  className="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-md"
+                  className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-md shadow-indigo-600/20 transition-all"
                 >
-                  Issue Purchase Order
+                  Save Purchase Order
                 </button>
               </div>
             </form>
