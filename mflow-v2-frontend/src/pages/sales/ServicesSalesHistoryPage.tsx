@@ -18,7 +18,7 @@ export const ServicesSalesHistoryPage: React.FC = () => {
   const fetchServicesHistory = async () => {
     setIsLoading(true);
     try {
-      const salesRes = await apiClient.get(`/sales${activeShopId ? `?shopId=${activeShopId}` : ''}`);
+      const salesRes = await apiClient.get(`/sales?startDate=${startDate}&endDate=${endDate}${activeShopId ? `&shopId=${activeShopId}` : ''}`);
       const salesArr = salesRes.data.data?.sales || salesRes.data.data || [];
       setSalesList(Array.isArray(salesArr) ? salesArr : []);
     } catch (err: any) {

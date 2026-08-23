@@ -23,8 +23,8 @@ export const ProductsSalesHistoryPage: React.FC = () => {
       const shopQuery = activeShopId ? `&shopId=${activeShopId}` : '';
 
       const [topRes, salesRes] = await Promise.all([
-        apiClient.get(`/reports/top-products?itemType=PRODUCTS_ONLY${shopQuery}${dateQuery}`),
-        apiClient.get(`/sales${activeShopId ? `?shopId=${activeShopId}` : ''}`),
+        apiClient.get(`/reports/top-products?itemType=PRODUCTS_ONLY${shopQuery}${dateQuery}`).catch(() => ({ data: { data: [] } })),
+        apiClient.get(`/sales?startDate=${startDate}&endDate=${endDate}${activeShopId ? `&shopId=${activeShopId}` : ''}`),
       ]);
 
       setTopProducts(topRes.data.data || []);

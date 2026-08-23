@@ -24,7 +24,11 @@ export class ReportService {
     if (startDate || endDate) {
       const dateFilter: any = {};
       if (startDate) dateFilter.gte = new Date(startDate);
-      if (endDate) dateFilter.lte = new Date(endDate);
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        dateFilter.lte = end;
+      }
 
       salesWhere.createdAt = dateFilter;
       expenseWhere.createdAt = dateFilter;
@@ -115,7 +119,11 @@ export class ReportService {
     if (startDate || endDate) {
       salesWhere.createdAt = {};
       if (startDate) salesWhere.createdAt.gte = new Date(startDate);
-      if (endDate) salesWhere.createdAt.lte = new Date(endDate);
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        salesWhere.createdAt.lte = end;
+      }
     }
 
     const itemWhere: any = {};
