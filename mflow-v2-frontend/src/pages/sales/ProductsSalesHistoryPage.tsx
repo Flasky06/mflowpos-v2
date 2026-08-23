@@ -121,7 +121,7 @@ export const ProductsSalesHistoryPage: React.FC = () => {
           <div>
             <p className="text-xs font-semibold text-slate-500 uppercase">Basic Total Products Sales</p>
             <h3 className="text-2xl font-extrabold text-indigo-600 mt-0.5">
-              KSh {totalProductsSales.toLocaleString()}
+              KES {totalProductsSales.toLocaleString()}
             </h3>
           </div>
         </div>
@@ -134,7 +134,7 @@ export const ProductsSalesHistoryPage: React.FC = () => {
           <div>
             <p className="text-xs font-semibold text-slate-500 uppercase">Total Products Net Profit</p>
             <h3 className="text-2xl font-extrabold text-emerald-600 mt-0.5">
-              KSh {totalProductsProfit.toLocaleString()}
+              KES {totalProductsProfit.toLocaleString()}
             </h3>
           </div>
         </div>
@@ -201,13 +201,13 @@ export const ProductsSalesHistoryPage: React.FC = () => {
                     <td className="py-3 px-4 text-slate-600">{item.customerName}</td>
                     <td className="py-3 px-4 text-center font-bold text-slate-800">{item.quantity}</td>
                     <td className="py-3 px-4 text-right font-semibold text-slate-800">
-                      KSh {item.unitPrice.toLocaleString()}
+                      KES {item.unitPrice.toLocaleString()}
                     </td>
                     <td className="py-3 px-4 text-right font-extrabold text-indigo-600">
-                      KSh {item.lineRevenue.toLocaleString()}
+                      KES {item.lineRevenue.toLocaleString()}
                     </td>
                     <td className="py-3 px-4 text-right font-extrabold text-emerald-700">
-                      KSh {item.lineProfit.toLocaleString()}
+                      KES {item.lineProfit.toLocaleString()}
                     </td>
                     <td className="py-3 px-4 text-center font-mono text-slate-500">
                       {new Date(item.date).toLocaleDateString()}

@@ -347,10 +347,10 @@ export const POSWorkspace: React.FC = () => {
                     <tr key={p.id} className="hover:bg-indigo-50/50 transition-colors">
                       <td className="py-3.5 px-4 font-semibold text-slate-900">{p.name}</td>
                       <td className="py-3.5 px-4 text-xs text-slate-500">
-                        {p.costPrice ? `KSh ${Number(p.costPrice).toLocaleString()}` : '-'}
+                        {p.costPrice ? `KES ${Number(p.costPrice).toLocaleString()}` : '-'}
                       </td>
                       <td className="py-3.5 px-4 text-right font-bold text-slate-900">
-                        KSh {Number(p.sellingPrice).toLocaleString()}
+                        KES {Number(p.sellingPrice).toLocaleString()}
                       </td>
                       <td className="py-3.5 px-4 text-center font-bold text-slate-700">
                         {isOut ? (
@@ -377,7 +377,7 @@ export const POSWorkspace: React.FC = () => {
                   <tr key={s.id} className="hover:bg-violet-50/50 transition-colors">
                     <td className="py-3.5 px-4 font-semibold text-slate-900">{s.name}</td>
                     <td className="py-3.5 px-4 text-right font-bold text-emerald-700">
-                      KSh {Number(s.price).toLocaleString()}
+                      KES {Number(s.price).toLocaleString()}
                     </td>
                     <td className="py-3.5 px-4 text-center text-xs text-slate-400 font-semibold">Non-Inventory Service</td>
                     <td className="py-3.5 px-4 text-center">

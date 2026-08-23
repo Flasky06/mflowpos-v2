@@ -282,7 +282,7 @@ export const ServicesPage: React.FC = () => {
                   <td className="py-3.5 px-4 font-semibold text-slate-900">{s.name}</td>
                   <td className="py-3.5 px-4 text-slate-500">{s.category?.name || 'General Service'}</td>
                   <td className="py-3.5 px-4 text-right font-bold text-emerald-700">
-                    KSh {Number(s.price).toLocaleString()}
+                    KES {Number(s.price).toLocaleString()}
                   </td>
                   <td className="py-3.5 px-4 text-center">
                     <span className="inline-block px-2.5 py-0.5 text-xs rounded-full font-semibold bg-violet-50 text-violet-700 border border-violet-200">
@@ -351,7 +351,7 @@ export const ServicesPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1">Service Price (KSh) *</label>
+                <label className="text-xs font-semibold text-slate-700 block mb-1">Service Price (KES) *</label>
                 <input
                   type="number"
                   step="0.01"

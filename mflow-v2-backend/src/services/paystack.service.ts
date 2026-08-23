@@ -7,7 +7,7 @@ export class PaystackService {
   private static baseUrl = 'https://api.paystack.co';
 
   /**
-   * Initialize a Paystack checkout transaction for business subscription renewal (KSh 1,000 / mo)
+   * Initialize a Paystack checkout transaction for business subscription renewal (KES 1,000 / mo)
    */
   static async initializeSubscriptionPayment(businessId: string, email: string, amountKes = 1000) {
     if (!ENV.PAYSTACK_SECRET_KEY) {

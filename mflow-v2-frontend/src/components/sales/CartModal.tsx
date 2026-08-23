@@ -177,7 +177,7 @@ export const CartModal: React.FC<CartModalProps> = ({
                             </div>
                           </td>
                           <td className="py-3 px-4 text-right font-bold text-slate-900">
-                            KSh {itemLineTotal.toLocaleString()}
+                            KES {itemLineTotal.toLocaleString()}
                           </td>
                           <td className="py-3 px-4 text-center">
                             <button
@@ -199,7 +199,7 @@ export const CartModal: React.FC<CartModalProps> = ({
             <div className="pt-4 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4">
               <div>
                 <span className="text-xs text-slate-500 font-semibold uppercase block">Cart Subtotal</span>
-                <span className="text-2xl font-extrabold text-slate-900">KSh {cartSubtotal.toLocaleString()}</span>
+                <span className="text-2xl font-extrabold text-slate-900">KES {cartSubtotal.toLocaleString()}</span>
               </div>
 
               <div className="flex gap-3 w-full sm:w-auto">
@@ -244,7 +244,7 @@ export const CartModal: React.FC<CartModalProps> = ({
               <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 text-center space-y-1">
                 <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Total to Pay</span>
                 <span className="text-3xl font-extrabold text-indigo-600 block">
-                  KSh {totalPayableAmount.toLocaleString()}
+                  KES {totalPayableAmount.toLocaleString()}
                 </span>
                 <span className="text-xs text-slate-400 font-semibold block">{totalItemCount} Items in Sale</span>
               </div>
@@ -252,7 +252,7 @@ export const CartModal: React.FC<CartModalProps> = ({
               {/* Total Cart Discount Input */}
               <div>
                 <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1">
-                  Full Cart Discount (KSh)
+                  Full Cart Discount (KES)
                 </label>
                 <div className="relative">
                   <input

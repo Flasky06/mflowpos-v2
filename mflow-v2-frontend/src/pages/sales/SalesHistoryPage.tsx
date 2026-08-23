@@ -129,7 +129,7 @@ export const SalesHistoryPage: React.FC = () => {
                         </Badge>
                       </td>
                       <td className="py-3.5 px-4 text-right font-extrabold text-slate-900">
-                        KSh {Number(sale.totalAmount).toLocaleString()}
+                        KES {Number(sale.totalAmount).toLocaleString()}
                       </td>
                       <td className="py-3.5 px-4 text-center font-mono text-xs text-slate-500">
                         {new Date(sale.createdAt).toLocaleString()}

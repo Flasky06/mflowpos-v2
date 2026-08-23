@@ -215,7 +215,7 @@ export const StockOperationsPage: React.FC = () => {
                       <tr key={p.id} className="hover:bg-slate-50">
                         <td className="py-3.5 px-4 font-bold text-slate-900">{p.name}</td>
                         <td className="py-3.5 px-4 text-center font-bold text-emerald-700">
-                          KSh {Number(p.sellingPrice).toLocaleString()}
+                          KES {Number(p.sellingPrice).toLocaleString()}
                         </td>
                         <td className="py-3.5 px-4 text-center">
                           <span

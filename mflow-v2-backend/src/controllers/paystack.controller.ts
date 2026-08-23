@@ -6,7 +6,7 @@ import { ApiResponse } from '../utils/response.util';
 export class PaystackController {
   /**
    * POST /api/v1/subscriptions/paystack/initialize
-   * Initialize a Paystack payment session for KSh 1,000 monthly subscription renewal
+   * Initialize a Paystack payment session for KES 1,000 monthly subscription renewal
    */
   static async initializeSubscription(req: AuthenticatedRequest, res: Response) {
     try {

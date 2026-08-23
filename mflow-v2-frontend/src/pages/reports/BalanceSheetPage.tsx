@@ -85,7 +85,7 @@ export const BalanceSheetPage: React.FC = () => {
             </div>
           </div>
           <div>
-            <span className="text-2xl font-black text-indigo-600 block">KSh {totalAssetsVal.toLocaleString()}</span>
+            <span className="text-2xl font-black text-indigo-600 block">KES {totalAssetsVal.toLocaleString()}</span>
             <span className="text-[11px] text-slate-400 font-semibold block mt-0.5">Liquid cash + stock + receivables</span>
           </div>
         </div>
@@ -99,7 +99,7 @@ export const BalanceSheetPage: React.FC = () => {
             </div>
           </div>
           <div>
-            <span className="text-2xl font-black text-rose-600 block">KSh {totalLiabilitiesVal.toLocaleString()}</span>
+            <span className="text-2xl font-black text-rose-600 block">KES {totalLiabilitiesVal.toLocaleString()}</span>
             <span className="text-[11px] text-slate-400 font-semibold block mt-0.5">Operating payables & liabilities</span>
           </div>
         </div>
@@ -113,7 +113,7 @@ export const BalanceSheetPage: React.FC = () => {
             </div>
           </div>
           <div>
-            <span className="text-2xl font-black block">KSh {totalEquityVal.toLocaleString()}</span>
+            <span className="text-2xl font-black block">KES {totalEquityVal.toLocaleString()}</span>
             <span className="text-xs font-bold text-emerald-200 block mt-0.5">Solvency Ratio: {currentRatio}x</span>
           </div>
         </div>
@@ -140,7 +140,7 @@ export const BalanceSheetPage: React.FC = () => {
                     Liquid Cash Reserves & Bank Balance
                   </td>
                   <td className="py-3 px-2 text-right font-bold text-emerald-700">
-                    KSh {cashReserves.toLocaleString()}
+                    KES {cashReserves.toLocaleString()}
                   </td>
                 </tr>
                 <tr className="hover:bg-slate-50">
@@ -148,7 +148,7 @@ export const BalanceSheetPage: React.FC = () => {
                     Inventory Valuation (Products Retail Value)
                   </td>
                   <td className="py-3 px-2 text-right font-bold text-indigo-600">
-                    KSh {inventoryValuation.toLocaleString()}
+                    KES {inventoryValuation.toLocaleString()}
                   </td>
                 </tr>
                 <tr className="hover:bg-slate-50">
@@ -156,7 +156,7 @@ export const BalanceSheetPage: React.FC = () => {
                     Accounts Receivable (Customer Credit Balances)
                   </td>
                   <td className="py-3 px-2 text-right font-bold text-amber-700">
-                    KSh {customerReceivables.toLocaleString()}
+                    KES {customerReceivables.toLocaleString()}
                   </td>
                 </tr>
               </tbody>
@@ -165,7 +165,7 @@ export const BalanceSheetPage: React.FC = () => {
 
           <div className="pt-4 border-t-2 border-slate-300 flex justify-between items-center bg-slate-50 p-3 rounded-xl">
             <span className="text-xs font-black text-slate-900 uppercase tracking-wider">TOTAL ASSETS</span>
-            <span className="text-lg font-black text-indigo-600">KSh {totalAssetsVal.toLocaleString()}</span>
+            <span className="text-lg font-black text-indigo-600">KES {totalAssetsVal.toLocaleString()}</span>
           </div>
         </div>
 
@@ -191,7 +191,7 @@ export const BalanceSheetPage: React.FC = () => {
                     Operating Outflows & Recorded Payables
                   </td>
                   <td className="py-3 px-2 text-right font-bold text-rose-600">
-                    KSh {totalLiabilitiesVal.toLocaleString()}
+                    KES {totalLiabilitiesVal.toLocaleString()}
                   </td>
                 </tr>
 
@@ -203,7 +203,7 @@ export const BalanceSheetPage: React.FC = () => {
                     Retained Net Earnings / Business Capital
                   </td>
                   <td className="py-3 px-2 text-right font-bold text-emerald-700">
-                    KSh {totalEquityVal.toLocaleString()}
+                    KES {totalEquityVal.toLocaleString()}
                   </td>
                 </tr>
               </tbody>
@@ -212,7 +212,7 @@ export const BalanceSheetPage: React.FC = () => {
 
           <div className="pt-4 border-t-2 border-slate-300 flex justify-between items-center bg-slate-50 p-3 rounded-xl">
             <span className="text-xs font-black text-slate-900 uppercase tracking-wider">TOTAL LIABILITIES & EQUITY</span>
-            <span className="text-lg font-black text-emerald-700">KSh {totalLiabilitiesAndEquity.toLocaleString()}</span>
+            <span className="text-lg font-black text-emerald-700">KES {totalLiabilitiesAndEquity.toLocaleString()}</span>
           </div>
         </div>
       </div>
@@ -223,7 +223,7 @@ export const BalanceSheetPage: React.FC = () => {
           <ShieldCheck className="w-4 h-4 text-emerald-600" /> Account Format Balance Verified
         </span>
         <p className="text-sm font-black text-emerald-900">
-          Assets (KSh {totalAssetsVal.toLocaleString()}) = Liabilities & Equity (KSh {totalLiabilitiesAndEquity.toLocaleString()})
+          Assets (KES {totalAssetsVal.toLocaleString()}) = Liabilities & Equity (KES {totalLiabilitiesAndEquity.toLocaleString()})
         </p>
       </div>
     </div>

@@ -241,7 +241,7 @@ export class PurchaseService {
               changeQty: item.quantity,
               newQty,
               reason: 'PURCHASE_RECEIVE',
-              notes: `Goods received for PO #${order.orderNumber} @ KSh ${Number(item.unitCost).toLocaleString()}/unit`,
+              notes: `Goods received for PO #${order.orderNumber} @ KES ${Number(item.unitCost).toLocaleString()}/unit`,
             },
           });
         }

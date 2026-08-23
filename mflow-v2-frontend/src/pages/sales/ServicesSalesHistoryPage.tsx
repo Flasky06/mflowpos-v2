@@ -108,7 +108,7 @@ export const ServicesSalesHistoryPage: React.FC = () => {
           <div>
             <p className="text-xs font-semibold text-slate-500 uppercase">Basic Total Services Sales</p>
             <h3 className="text-2xl font-extrabold text-violet-600 mt-0.5">
-              KSh {totalServicesSales.toLocaleString()}
+              KES {totalServicesSales.toLocaleString()}
             </h3>
           </div>
         </div>
@@ -174,10 +174,10 @@ export const ServicesSalesHistoryPage: React.FC = () => {
                     <td className="py-3 px-4 text-slate-600">{item.customerName}</td>
                     <td className="py-3 px-4 text-center font-bold text-slate-800">{item.quantity}</td>
                     <td className="py-3 px-4 text-right font-semibold text-slate-800">
-                      KSh {item.unitPrice.toLocaleString()}
+                      KES {item.unitPrice.toLocaleString()}
                     </td>
                     <td className="py-3 px-4 text-right font-extrabold text-violet-600">
-                      KSh {item.lineRevenue.toLocaleString()}
+                      KES {item.lineRevenue.toLocaleString()}
                     </td>
                     <td className="py-3 px-4 text-center font-mono text-slate-500">
                       {new Date(item.date).toLocaleDateString()}

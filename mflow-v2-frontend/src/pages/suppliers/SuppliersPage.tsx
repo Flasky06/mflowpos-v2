@@ -452,7 +452,7 @@ export const SuppliersPage: React.FC = () => {
                           </span>
                         </td>
                         <td className="py-3.5 px-4 text-right font-bold text-slate-900">
-                          KSh {Number(po.totalAmount || 0).toLocaleString()}
+                          KES {Number(po.totalAmount || 0).toLocaleString()}
                         </td>
                         <td className="py-3.5 px-4 text-center font-mono text-xs text-slate-500">
                           {new Date(po.createdAt).toLocaleDateString()}
@@ -741,8 +741,8 @@ export const SuppliersPage: React.FC = () => {
                               </label>
                               <span className="text-xs font-bold text-indigo-700 block">
                                 {isWholesale
-                                  ? `KSh ${calculatedUnitCost.toFixed(2)} / ea`
-                                  : `KSh ${lineTotal.toLocaleString()}`}
+                                  ? `KES ${calculatedUnitCost.toFixed(2)} / ea`
+                                  : `KES ${lineTotal.toLocaleString()}`}
                               </span>
                             </div>
 
@@ -768,7 +768,7 @@ export const SuppliersPage: React.FC = () => {
                   Total Order Amount
                 </span>
                 <span className="text-lg font-black text-indigo-700">
-                  KSh{' '}
+                  KES{' '}
                   {poItems
                     .reduce((acc, item) => {
                       if (item.priceMode === 'WHOLESALE_BATCH' && item.wholesaleBatchTotal !== undefined) {

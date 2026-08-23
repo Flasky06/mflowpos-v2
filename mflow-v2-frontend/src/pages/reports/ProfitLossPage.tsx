@@ -184,7 +184,7 @@ export const ProfitLossPage: React.FC = () => {
             </div>
           </div>
           <div className="mt-3">
-            <span className="text-2xl font-black text-slate-900 block">KSh {totalSalesRevenue.toLocaleString()}</span>
+            <span className="text-2xl font-black text-slate-900 block">KES {totalSalesRevenue.toLocaleString()}</span>
             <span className="text-[11px] text-slate-400 font-semibold block mt-0.5">Total Invoiced Sales</span>
           </div>
         </div>
@@ -198,7 +198,7 @@ export const ProfitLossPage: React.FC = () => {
             </div>
           </div>
           <div className="mt-3">
-            <span className="text-2xl font-black text-emerald-700 block">KSh {totalPaidRevenue.toLocaleString()}</span>
+            <span className="text-2xl font-black text-emerald-700 block">KES {totalPaidRevenue.toLocaleString()}</span>
             <span className="text-[11px] text-slate-400 font-semibold block mt-0.5">Realized Liquid Cash</span>
           </div>
         </div>
@@ -212,7 +212,7 @@ export const ProfitLossPage: React.FC = () => {
             </div>
           </div>
           <div className="mt-3">
-            <span className="text-2xl font-black text-rose-600 block">KSh {totalExpenses.toLocaleString()}</span>
+            <span className="text-2xl font-black text-rose-600 block">KES {totalExpenses.toLocaleString()}</span>
             <span className="text-[11px] text-slate-400 font-semibold block mt-0.5">Operational Cash Outflows</span>
           </div>
         </div>
@@ -230,7 +230,7 @@ export const ProfitLossPage: React.FC = () => {
             </div>
           </div>
           <div className="mt-3">
-            <span className="text-2xl font-black block">KSh {netProfit.toLocaleString()}</span>
+            <span className="text-2xl font-black block">KES {netProfit.toLocaleString()}</span>
             <span className="text-xs font-bold opacity-90 block mt-0.5">
               Net Profit Margin: <span className="underline decoration-white/40">{netMarginPercent}%</span>
             </span>
@@ -243,7 +243,7 @@ export const ProfitLossPage: React.FC = () => {
         <div className="border-b border-slate-200 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
           <div>
             <h2 className="text-lg font-bold text-slate-900">Statement of Profit & Loss</h2>
-            <p className="text-xs text-slate-500">Period: {startDate} to {endDate} • All amounts in KSh</p>
+            <p className="text-xs text-slate-500">Period: {startDate} to {endDate} • All amounts in KES</p>
           </div>
           <div className="flex items-center gap-2">
             <span
@@ -273,21 +273,21 @@ export const ProfitLossPage: React.FC = () => {
               <tr className="hover:bg-slate-50">
                 <td className="py-3.5 px-4 pl-6 text-slate-800 font-bold">Total Invoiced Sales Revenue</td>
                 <td className="py-3.5 px-4 text-right text-indigo-600 font-extrabold text-base">
-                  KSh {totalSalesRevenue.toLocaleString()}
+                  KES {totalSalesRevenue.toLocaleString()}
                 </td>
               </tr>
 
               <tr className="hover:bg-slate-50 text-xs">
                 <td className="py-2.5 px-4 pl-10 text-slate-600">Collected Cash & Digital Payments</td>
                 <td className="py-2.5 px-4 text-right text-emerald-700 font-bold">
-                  KSh {totalPaidRevenue.toLocaleString()}
+                  KES {totalPaidRevenue.toLocaleString()}
                 </td>
               </tr>
 
               <tr className="hover:bg-slate-50 text-xs">
                 <td className="py-2.5 px-4 pl-10 text-slate-600">Uncollected Customer Credit Sales (Accounts Receivable)</td>
                 <td className="py-2.5 px-4 text-right text-amber-700 font-bold">
-                  KSh {creditOutstanding.toLocaleString()}
+                  KES {creditOutstanding.toLocaleString()}
                 </td>
               </tr>
 
@@ -301,7 +301,7 @@ export const ProfitLossPage: React.FC = () => {
               {Object.keys(expensesByCategory).length === 0 ? (
                 <tr className="hover:bg-slate-50 text-xs">
                   <td className="py-3 px-4 pl-10 text-slate-400 italic">No operating expenses recorded for this period.</td>
-                  <td className="py-3 px-4 text-right text-slate-400 font-medium">KSh 0.00</td>
+                  <td className="py-3 px-4 text-right text-slate-400 font-medium">KES 0.00</td>
                 </tr>
               ) : (
                 Object.entries(expensesByCategory).map(([catName, amount], idx) => {
@@ -315,7 +315,7 @@ export const ProfitLossPage: React.FC = () => {
                         </span>
                       </td>
                       <td className="py-3 px-4 text-right text-rose-700 font-bold">
-                        - KSh {amount.toLocaleString()}
+                        - KES {amount.toLocaleString()}
                       </td>
                     </tr>
                   );
@@ -325,7 +325,7 @@ export const ProfitLossPage: React.FC = () => {
               <tr className="bg-slate-50 font-extrabold text-slate-900 border-t border-slate-200">
                 <td className="py-3.5 px-4 pl-6 text-slate-800">Total Operating Expenses Outflow</td>
                 <td className="py-3.5 px-4 text-right text-rose-600 font-extrabold text-base">
-                  - KSh {totalExpenses.toLocaleString()}
+                  - KES {totalExpenses.toLocaleString()}
                 </td>
               </tr>
 
@@ -344,7 +344,7 @@ export const ProfitLossPage: React.FC = () => {
                     netProfit >= 0 ? 'text-emerald-700' : 'text-rose-600'
                   }`}
                 >
-                  KSh {netProfit.toLocaleString()}
+                  KES {netProfit.toLocaleString()}
                 </td>
               </tr>
             </tbody>

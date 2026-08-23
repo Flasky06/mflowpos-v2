@@ -291,7 +291,7 @@ export class SuperAdminService {
     });
   }
 
-  // 6. Update Custom Tenant Pricing Override (Custom amount per business tenant, e.g. KSh 1,000 vs KSh 1,500)
+  // 6. Update Custom Tenant Pricing Override (Custom amount per business tenant, e.g. KES 1,000 vs KES 1,500)
   static async updateTenantCustomPricing(
     businessId: string,
     customPrice: number | null,

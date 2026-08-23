@@ -63,7 +63,7 @@ export const QuotationsPage: React.FC = () => {
                     {new Date(q.createdAt).toLocaleDateString()}
                   </td>
                   <td className="py-3.5 px-4 text-right font-bold text-emerald-700">
-                    KSh {Number(q.totalAmount).toLocaleString()}
+                    KES {Number(q.totalAmount).toLocaleString()}
                   </td>
                   <td className="py-3.5 px-4 text-center">
                     <span

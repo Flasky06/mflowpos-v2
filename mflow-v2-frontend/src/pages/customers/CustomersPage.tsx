@@ -128,7 +128,7 @@ export const CustomersPage: React.FC = () => {
                     <td className="py-3.5 px-4 text-xs text-slate-500">{c.email || '-'}</td>
                     <td className="py-3.5 px-4 text-right font-bold">
                       <span className={debt > 0 ? 'text-rose-600' : 'text-emerald-700'}>
-                        KSh {debt.toLocaleString()}
+                        KES {debt.toLocaleString()}
                       </span>
                     </td>
                     <td className="py-3.5 px-4 text-center flex items-center justify-center gap-2">
@@ -226,7 +226,7 @@ export const CustomersPage: React.FC = () => {
 
             <form onSubmit={handlePayDebt} className="space-y-3">
               <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1">Repayment Amount (KSh)</label>
+                <label className="text-xs font-semibold text-slate-700 block mb-1">Repayment Amount (KES)</label>
                 <input
                   type="number"
                   step="0.01"

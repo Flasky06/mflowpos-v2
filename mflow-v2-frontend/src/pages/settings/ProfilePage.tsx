@@ -140,7 +140,7 @@ export const ProfilePage: React.FC = () => {
           <div>
             <label className="text-xs font-semibold text-slate-500 uppercase block mb-1">Pricing Rate</label>
             <p className="font-bold text-indigo-600 bg-indigo-50 p-3 rounded-xl border border-indigo-200">
-              KSh 1,000 / month
+              KES 1,000 / month
             </p>
           </div>
 
@@ -175,7 +175,7 @@ export const ProfilePage: React.FC = () => {
             }}
             className="py-2.5 px-5 bg-indigo-600 hover:bg-indigo-700 active:scale-98 text-white font-bold rounded-xl text-xs transition-all shadow-md shadow-indigo-600/20 cursor-pointer shrink-0"
           >
-            Renew via Paystack (KSh 1,000)
+            Renew via Paystack (KES 1,000)
           </button>
         </div>
       </div>

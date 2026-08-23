@@ -43,7 +43,7 @@ export const AuditTrailPage: React.FC = () => {
             userName: s.user?.fullName || 'Cashier',
             action: s.status === 'CANCELLED' ? 'SALE_VOIDED' : 'SALE_COMPLETED',
             reference: `Receipt #${s.receiptNumber || s.id?.slice(0, 8)}`,
-            details: `Total Amount: KSh ${Number(s.totalAmount || 0).toLocaleString()} (${s.customer?.name || 'Walk-in'})`,
+            details: `Total Amount: KES ${Number(s.totalAmount || 0).toLocaleString()} (${s.customer?.name || 'Walk-in'})`,
             statusColor: s.status === 'CANCELLED' ? 'rose' : 'emerald',
           });
         });
@@ -59,7 +59,7 @@ export const AuditTrailPage: React.FC = () => {
             userName: e.user?.fullName || 'Staff',
             action: 'EXPENSE_RECORDED',
             reference: `Expense #${e.id?.substring(0, 8) || 'EXP'}`,
-            details: `Amount: KSh ${Number(e.amount || 0).toLocaleString()} (${e.description || e.category?.name || 'General'})`,
+            details: `Amount: KES ${Number(e.amount || 0).toLocaleString()} (${e.description || e.category?.name || 'General'})`,
             statusColor: 'amber',
           });
         });

@@ -150,10 +150,10 @@ export const GeneralLedgerPage: React.FC = () => {
                     <td className="py-3 px-4 font-semibold text-slate-800">{entry.accountName}</td>
                     <td className="py-3 px-4 text-slate-600">{entry.description}</td>
                     <td className="py-3 px-4 text-right font-bold text-rose-600">
-                      {entry.debit > 0 ? `KSh ${entry.debit.toLocaleString()}` : '-'}
+                      {entry.debit > 0 ? `KES ${entry.debit.toLocaleString()}` : '-'}
                     </td>
                     <td className="py-3 px-4 text-right font-bold text-emerald-700">
-                      {entry.credit > 0 ? `KSh ${entry.credit.toLocaleString()}` : '-'}
+                      {entry.credit > 0 ? `KES ${entry.credit.toLocaleString()}` : '-'}
                     </td>
                   </tr>
                 ))

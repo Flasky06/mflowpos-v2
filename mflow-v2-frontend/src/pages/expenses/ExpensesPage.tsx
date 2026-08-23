@@ -94,7 +94,7 @@ export const ExpensesPage: React.FC = () => {
         shopId: activeShopId || undefined,
       });
 
-      addToast({ type: 'success', title: 'Expense Recorded', message: `Saved '${expenseForm.title}' (KSh ${Number(expenseForm.amount).toLocaleString()})` });
+      addToast({ type: 'success', title: 'Expense Recorded', message: `Saved '${expenseForm.title}' (KES ${Number(expenseForm.amount).toLocaleString()})` });
       setIsExpenseModalOpen(false);
       setExpenseForm({ title: '', amount: '', paymentMethod: 'CASH', categoryId: '', notes: '' });
       fetchData();
@@ -183,7 +183,7 @@ export const ExpensesPage: React.FC = () => {
           <div>
             <p className="text-xs font-semibold text-slate-500 uppercase">Total Expenses Outflow</p>
             <h3 className="text-2xl font-extrabold text-rose-600 mt-0.5">
-              KSh {Number(totalExpenseAmount).toLocaleString()}
+              KES {Number(totalExpenseAmount).toLocaleString()}
             </h3>
           </div>
         </div>
@@ -205,7 +205,7 @@ export const ExpensesPage: React.FC = () => {
           <div>
             <p className="text-xs font-semibold text-slate-500 uppercase">Largest Single Outflow</p>
             <h3 className="text-2xl font-extrabold text-amber-600 mt-0.5">
-              KSh {Number(maxExpenseAmount).toLocaleString()}
+              KES {Number(maxExpenseAmount).toLocaleString()}
             </h3>
           </div>
         </div>
@@ -279,7 +279,7 @@ export const ExpensesPage: React.FC = () => {
                       </span>
                     </td>
                     <td className="py-3.5 px-4 text-right font-extrabold text-rose-600">
-                      KSh {Number(exp.amount || 0).toLocaleString()}
+                      KES {Number(exp.amount || 0).toLocaleString()}
                     </td>
                     <td className="py-3.5 px-4 text-xs text-slate-500">
                       <div className="font-semibold text-slate-800">{exp.user?.fullName || 'Staff'}</div>
@@ -348,7 +348,7 @@ export const ExpensesPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-700 uppercase block mb-1">Amount (KSh) *</label>
+                <label className="text-xs font-bold text-slate-700 uppercase block mb-1">Amount (KES) *</label>
                 <input
                   type="number"
                   required

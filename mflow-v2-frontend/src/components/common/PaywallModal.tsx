@@ -74,7 +74,7 @@ export const PaywallModal: React.FC = () => {
           <div className="flex items-baseline justify-between">
             <span className="text-xs font-bold text-slate-900">mflow POS Standard</span>
             <div className="flex items-baseline gap-1">
-              <span className="text-xl font-black text-indigo-600">KSh 1,000</span>
+              <span className="text-xl font-black text-indigo-600">KES 1,000</span>
               <span className="text-[10px] font-bold text-slate-400">/ 30 days</span>
             </div>
           </div>
@@ -116,7 +116,7 @@ export const PaywallModal: React.FC = () => {
             ) : (
               <>
                 <ShieldCheck className="w-4 h-4" />
-                Pay KSh 1,000 with M-PESA / Card
+                Pay KES 1,000 with M-PESA / Card
                 <ArrowRight className="w-3.5 h-3.5 ml-0.5" />
               </>
             )}

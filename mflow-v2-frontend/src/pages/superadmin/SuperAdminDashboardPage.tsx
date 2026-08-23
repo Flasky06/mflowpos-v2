@@ -247,7 +247,7 @@ export const SuperAdminDashboardPage: React.FC = () => {
           <div>
             <p className="text-xs font-semibold text-slate-500 uppercase">Gross Platform Revenue</p>
             <h3 className="text-2xl font-bold text-violet-700 mt-1">
-              KSh {stats ? Number(stats.totalRevenue).toLocaleString() : '0'}
+              KES {stats ? Number(stats.totalRevenue).toLocaleString() : '0'}
             </h3>
           </div>
           <DollarSign className="w-8 h-8 text-violet-600 opacity-80" />
@@ -336,7 +336,7 @@ export const SuperAdminDashboardPage: React.FC = () => {
                       {sub?.plan?.code || 'TRIAL'}
                     </td>
                     <td className="py-3.5 px-4 text-xs font-bold text-slate-900">
-                      KSh {effectiveRate.toLocaleString()}
+                      KES {effectiveRate.toLocaleString()}
                       {hasCustomPrice && (
                         <span className="ml-1.5 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-wider bg-purple-100 text-purple-700 rounded-md border border-purple-200">
                           Custom
@@ -508,7 +508,7 @@ export const SuperAdminDashboardPage: React.FC = () => {
                   <td className="py-3.5 px-4 text-xs text-slate-700 font-bold">{p.paymentMethod}</td>
                   <td className="py-3.5 px-4 font-mono text-xs text-slate-500">{p.transactionRef || '-'}</td>
                   <td className="py-3.5 px-4 text-right font-bold text-emerald-700">
-                    KSh {Number(p.amount).toLocaleString()}
+                    KES {Number(p.amount).toLocaleString()}
                   </td>
                 </tr>
               ))}
@@ -755,7 +755,7 @@ export const SuperAdminDashboardPage: React.FC = () => {
                   onChange={(e) => setCashPaymentForm({ ...cashPaymentForm, planCode: e.target.value })}
                   className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-xl py-2 px-3 focus:outline-none focus:border-indigo-600 font-medium"
                 >
-                  <option value="STANDARD">STANDARD (KSh 1,000/mo - Unlimited Shops)</option>
+                  <option value="STANDARD">STANDARD (KES 1,000/mo - Unlimited Shops)</option>
                 </select>
               </div>
 
@@ -878,7 +878,7 @@ export const SuperAdminDashboardPage: React.FC = () => {
                   placeholder="e.g. 1500 (Leave empty for default plan rate)"
                   className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2.5 px-3 text-sm font-bold text-slate-900 focus:outline-none focus:border-indigo-600"
                 />
-                <p className="text-[11px] text-slate-400 mt-1">Default plan price: KSh {selectedTenant?.subscription?.plan?.price || 1000}</p>
+                <p className="text-[11px] text-slate-400 mt-1">Default plan price: KES {selectedTenant?.subscription?.plan?.price || 1000}</p>
               </div>
 
               <div>

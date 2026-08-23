@@ -154,7 +154,7 @@ export const ReportsPage: React.FC = () => {
               <p className="text-xs text-slate-500 mt-1">Operating income statement summarizing revenues, expenses, and net margin</p>
             </div>
             <span className="text-xs font-mono font-bold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
-              KSh Currency
+              KES Currency
             </span>
           </div>
 
@@ -163,21 +163,21 @@ export const ReportsPage: React.FC = () => {
               <tr className="bg-slate-50 font-bold text-slate-900">
                 <td className="py-4 px-4">1. Gross Revenue (Total Sales)</td>
                 <td className="py-4 px-4 text-right text-indigo-600 font-extrabold text-base">
-                  KSh {summaryData ? Number(summaryData.totalSalesRevenue).toLocaleString() : '0.00'}
+                  KES {summaryData ? Number(summaryData.totalSalesRevenue).toLocaleString() : '0.00'}
                 </td>
               </tr>
 
               <tr className="hover:bg-slate-50">
                 <td className="py-3.5 px-4 pl-8 text-slate-600">Collected Cash Revenue</td>
                 <td className="py-3.5 px-4 text-right text-emerald-700 font-bold">
-                  KSh {summaryData ? Number(summaryData.totalPaidRevenue).toLocaleString() : '0.00'}
+                  KES {summaryData ? Number(summaryData.totalPaidRevenue).toLocaleString() : '0.00'}
                 </td>
               </tr>
 
               <tr className="bg-slate-50 font-bold text-slate-900">
                 <td className="py-4 px-4">2. Operating Expenses & Outflows</td>
                 <td className="py-4 px-4 text-right text-rose-600 font-extrabold text-base">
-                  - KSh {summaryData ? Number(summaryData.totalExpenses).toLocaleString() : '0.00'}
+                  - KES {summaryData ? Number(summaryData.totalExpenses).toLocaleString() : '0.00'}
                 </td>
               </tr>
 
@@ -187,7 +187,7 @@ export const ReportsPage: React.FC = () => {
                     {exp.description || exp.category || 'General Expense'}
                   </td>
                   <td className="py-2.5 px-4 text-right text-rose-700 font-medium">
-                    - KSh {Number(exp.amount).toLocaleString()}
+                    - KES {Number(exp.amount).toLocaleString()}
                   </td>
                 </tr>
               ))}
@@ -206,7 +206,7 @@ export const ReportsPage: React.FC = () => {
                     summaryData?.netProfit >= 0 ? 'text-emerald-700' : 'text-rose-600'
                   }`}
                 >
-                  KSh {summaryData ? Number(summaryData.netProfit).toLocaleString() : '0.00'}
+                  KES {summaryData ? Number(summaryData.netProfit).toLocaleString() : '0.00'}
                 </td>
               </tr>
             </tbody>
@@ -249,10 +249,10 @@ export const ReportsPage: React.FC = () => {
                       <td className="py-3 px-4 font-semibold text-slate-800">{entry.accountName}</td>
                       <td className="py-3 px-4 text-slate-600">{entry.description}</td>
                       <td className="py-3 px-4 text-right font-bold text-rose-600">
-                        {entry.debit > 0 ? `KSh ${entry.debit.toLocaleString()}` : '-'}
+                        {entry.debit > 0 ? `KES ${entry.debit.toLocaleString()}` : '-'}
                       </td>
                       <td className="py-3 px-4 text-right font-bold text-emerald-700">
-                        {entry.credit > 0 ? `KSh ${entry.credit.toLocaleString()}` : '-'}
+                        {entry.credit > 0 ? `KES ${entry.credit.toLocaleString()}` : '-'}
                       </td>
                     </tr>
                   ))
@@ -276,7 +276,7 @@ export const ReportsPage: React.FC = () => {
             <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-2">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">1. Total Assets</span>
               <span className="text-2xl font-extrabold text-indigo-600 block">
-                KSh {totalAssetsVal.toLocaleString()}
+                KES {totalAssetsVal.toLocaleString()}
               </span>
               <p className="text-[11px] text-slate-500">Cash, receivables & inventory</p>
             </div>
@@ -285,7 +285,7 @@ export const ReportsPage: React.FC = () => {
             <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-2">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">2. Total Liabilities</span>
               <span className="text-2xl font-extrabold text-rose-600 block">
-                KSh {totalLiabilitiesVal.toLocaleString()}
+                KES {totalLiabilitiesVal.toLocaleString()}
               </span>
               <p className="text-[11px] text-slate-500">Operating payables & outflows</p>
             </div>
@@ -294,7 +294,7 @@ export const ReportsPage: React.FC = () => {
             <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-2">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">3. Owner Equity</span>
               <span className="text-2xl font-extrabold text-emerald-600 block">
-                KSh {totalEquityVal.toLocaleString()}
+                KES {totalEquityVal.toLocaleString()}
               </span>
               <p className="text-[11px] text-slate-500">Net retained business capital</p>
             </div>
@@ -305,7 +305,7 @@ export const ReportsPage: React.FC = () => {
               Balance Sheet Accounting Equation
             </span>
             <p className="text-sm font-extrabold text-emerald-900 mt-1">
-              Assets (KSh {totalAssetsVal.toLocaleString()}) = Liabilities (KSh {totalLiabilitiesVal.toLocaleString()}) + Equity (KSh {totalEquityVal.toLocaleString()})
+              Assets (KES {totalAssetsVal.toLocaleString()}) = Liabilities (KES {totalLiabilitiesVal.toLocaleString()}) + Equity (KES {totalEquityVal.toLocaleString()})
             </p>
           </div>
         </div>

@@ -246,10 +246,10 @@ export const ProductsPage: React.FC = () => {
                     <td className="py-3.5 px-4 font-semibold text-slate-900">{p.name}</td>
                     <td className="py-3.5 px-4 text-slate-500">{p.category?.name || 'Uncategorized'}</td>
                     <td className="py-3.5 px-4 text-right text-slate-500">
-                      {p.costPrice ? `KSh ${Number(p.costPrice).toLocaleString()}` : '-'}
+                      {p.costPrice ? `KES ${Number(p.costPrice).toLocaleString()}` : '-'}
                     </td>
                     <td className="py-3.5 px-4 text-right font-bold text-emerald-700">
-                      KSh {Number(p.sellingPrice).toLocaleString()}
+                      KES {Number(p.sellingPrice).toLocaleString()}
                     </td>
                     <td className="py-3.5 px-4 text-center">
                       <span
@@ -337,7 +337,7 @@ export const ProductsPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">Selling Price (KSh)</label>
+                  <label className="text-xs font-semibold text-slate-700 block mb-1">Selling Price (KES)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -349,7 +349,7 @@ export const ProductsPage: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">Cost Price (KSh)</label>
+                  <label className="text-xs font-semibold text-slate-700 block mb-1">Cost Price (KES)</label>
                   <input
                     type="number"
                     step="0.01"

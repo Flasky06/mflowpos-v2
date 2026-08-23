@@ -27,7 +27,7 @@ export function generateThermalReceipt(sale: any): string {
       const name = itemName.padEnd(16, ' ').slice(0, 16);
       const qty = (item.quantity || 1).toString().padStart(3, ' ');
       const totalVal = Number(item.totalPrice ?? item.price ?? 0);
-      const total = `KSh ${totalVal.toLocaleString()}`.padStart(11, ' ');
+      const total = `KES ${totalVal.toLocaleString()}`.padStart(11, ' ');
       lines.push(`${name} ${qty} ${total}`);
     }
   } else {
@@ -35,9 +35,9 @@ export function generateThermalReceipt(sale: any): string {
   }
 
   lines.push('--------------------------------');
-  lines.push(`TOTAL AMOUNT  : KSh ${Number(sale.totalAmount || 0).toLocaleString()}`);
+  lines.push(`TOTAL AMOUNT  : KES ${Number(sale.totalAmount || 0).toLocaleString()}`);
   if (sale.paidAmount !== undefined && sale.paidAmount !== null) {
-    lines.push(`PAID AMOUNT   : KSh ${Number(sale.paidAmount).toLocaleString()}`);
+    lines.push(`PAID AMOUNT   : KES ${Number(sale.paidAmount).toLocaleString()}`);
   }
 
   const paymentMethods = sale.payments
