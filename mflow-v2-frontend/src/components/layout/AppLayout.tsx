@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, Link, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { apiClient } from '../../api/client';
 import { PaywallModal } from '../common/PaywallModal';
@@ -20,6 +20,7 @@ import {
 export const AppLayout: React.FC = () => {
   const { user, activeShopId, setActiveShopId, logout } = useAuthStore();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [shops, setShops] = useState<any[]>([]);
   const [pendingPOs, setPendingPOs] = useState<any[]>([]);
@@ -48,7 +49,7 @@ export const AppLayout: React.FC = () => {
   const isNotificationEligible = user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' || user?.role === 'SHOP_ADMIN';
 
   // Exclusive Accordion State (Only one group open at a time)
-  const [openGroupTitle, setOpenGroupTitle] = useState<string | null>('Dashboard');
+  const [openGroupTitle, setOpenGroupTitle] = useState<string | null>('Sales');
 
   const fetchLayoutData = async () => {
     try {
@@ -160,6 +161,15 @@ export const AppLayout: React.FC = () => {
       ],
     },
   ];
+
+  useEffect(() => {
+    const activeGroup = menuGroups.find((g) =>
+      g.items.some((item) => item.to === location.pathname)
+    );
+    if (activeGroup && activeGroup.isCollapsible) {
+      setOpenGroupTitle(activeGroup.title);
+    }
+  }, [location.pathname]);
 
   const toggleGroup = (title: string) => {
     setOpenGroupTitle((prev) => (prev === title ? null : title));
