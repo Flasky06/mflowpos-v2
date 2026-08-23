@@ -13,6 +13,11 @@ import {
   X,
   Search,
   Tag,
+  Send,
+  Megaphone,
+  Mail,
+  MessageSquare,
+  Trash2,
 } from 'lucide-react';
 
 export const SuperAdminDashboardPage: React.FC = () => {
@@ -22,7 +27,7 @@ export const SuperAdminDashboardPage: React.FC = () => {
   const [tenants, setTenants] = useState<any[]>([]);
   const [usersList, setUsersList] = useState<any[]>([]);
   const [revenueData, setRevenueData] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState<'TENANTS' | 'USERS' | 'REVENUE'>('TENANTS');
+  const [activeTab, setActiveTab] = useState<'TENANTS' | 'USERS' | 'REVENUE' | 'ANNOUNCEMENTS'>('TENANTS');
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTenant, setSelectedTenant] = useState<any>(null);
@@ -45,18 +50,29 @@ export const SuperAdminDashboardPage: React.FC = () => {
     status: 'ACTIVE',
   });
 
+  const [broadcasts, setBroadcasts] = useState<any[]>([]);
+  const [broadcastForm, setBroadcastForm] = useState({
+    title: '',
+    content: '',
+    targetType: 'ALL_BUSINESSES',
+    businessId: '',
+    channels: ['IN_APP'],
+  });
+
   const fetchData = async () => {
     try {
-      const [statsRes, tenantsRes, usersRes, revRes] = await Promise.all([
+      const [statsRes, tenantsRes, usersRes, revRes, broadRes] = await Promise.all([
         apiClient.get('/superadmin/stats'),
         apiClient.get('/superadmin/tenants'),
         apiClient.get('/superadmin/users'),
         apiClient.get('/superadmin/revenue'),
+        apiClient.get('/superadmin/broadcasts').catch(() => ({ data: { data: [] } })),
       ]);
       setStats(statsRes.data.data);
       setTenants(tenantsRes.data.data || []);
       setUsersList(usersRes.data.data || []);
       setRevenueData(revRes.data.data);
+      setBroadcasts(broadRes.data?.data || []);
     } catch (err) {
       console.error(err);
     }
@@ -148,6 +164,44 @@ export const SuperAdminDashboardPage: React.FC = () => {
     }
   };
 
+  const handleSendBroadcast = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!broadcastForm.title || !broadcastForm.content) {
+      addToast({ type: 'warning', title: 'Missing Fields', message: 'Title and Content are required' });
+      return;
+    }
+
+    try {
+      const res = await apiClient.post('/superadmin/broadcasts', broadcastForm);
+      addToast({
+        type: 'success',
+        title: 'Broadcast Sent',
+        message: res.data?.message || 'Message delivered to target businesses',
+      });
+      setBroadcastForm({
+        title: '',
+        content: '',
+        targetType: 'ALL_BUSINESSES',
+        businessId: '',
+        channels: ['IN_APP'],
+      });
+      fetchData();
+    } catch (err: any) {
+      addToast({ type: 'error', title: 'Broadcast Failed', message: err.response?.data?.message || 'Failed to send' });
+    }
+  };
+
+  const handleDeleteBroadcast = async (id: string) => {
+    if (!window.confirm('Delete this broadcast log?')) return;
+    try {
+      await apiClient.delete(`/superadmin/broadcasts/${id}`);
+      addToast({ type: 'info', title: 'Deleted', message: 'Broadcast log removed' });
+      fetchData();
+    } catch (err: any) {
+      addToast({ type: 'error', title: 'Error', message: 'Failed to delete broadcast' });
+    }
+  };
+
   const filteredTenants = tenants.filter(
     (t) =>
       t.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -236,6 +290,15 @@ export const SuperAdminDashboardPage: React.FC = () => {
             }`}
           >
             Subscription Payments
+          </button>
+          <button
+            onClick={() => setActiveTab('ANNOUNCEMENTS')}
+            className={`px-4 py-2 text-xs font-semibold rounded-xl transition-colors flex items-center gap-1.5 ${
+              activeTab === 'ANNOUNCEMENTS' ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <Megaphone className="w-3.5 h-3.5" />
+            Announcements & Messaging ({broadcasts.length})
           </button>
         </div>
 
@@ -461,6 +524,221 @@ export const SuperAdminDashboardPage: React.FC = () => {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* Tab 4: Announcements & Messaging */}
+      {activeTab === 'ANNOUNCEMENTS' && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Composer Form */}
+          <div className="lg:col-span-1 glass-panel p-6 rounded-2xl border border-slate-200 bg-white space-y-4">
+            <div>
+              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <Megaphone className="w-5 h-5 text-indigo-600" />
+                Send Broadcast Message
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">Send announcements to tenant business owners & shop admins</p>
+            </div>
+
+            <form onSubmit={handleSendBroadcast} className="space-y-3.5">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  Message Title
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={broadcastForm.title}
+                  onChange={(e) => setBroadcastForm({ ...broadcastForm, title: e.target.value })}
+                  placeholder="e.g. Scheduled System Upgrade"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 text-xs font-bold text-slate-900 focus:outline-none focus:border-indigo-600"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  Target Audience
+                </label>
+                <select
+                  value={broadcastForm.targetType}
+                  onChange={(e) => setBroadcastForm({ ...broadcastForm, targetType: e.target.value as any })}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 text-xs font-semibold text-slate-900 focus:outline-none focus:border-indigo-600"
+                >
+                  <option value="ALL_BUSINESSES">All Platform Businesses ({tenants.length})</option>
+                  <option value="SPECIFIC_BUSINESS">Specific Business Tenant</option>
+                  <option value="ACTIVE_ONLY">Active Subscribers Only</option>
+                  <option value="TRIALING_ONLY">Free Trialing Businesses Only</option>
+                </select>
+              </div>
+
+              {broadcastForm.targetType === 'SPECIFIC_BUSINESS' && (
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                    Select Target Business
+                  </label>
+                  <select
+                    value={broadcastForm.businessId}
+                    onChange={(e) => setBroadcastForm({ ...broadcastForm, businessId: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 text-xs font-semibold text-slate-900 focus:outline-none focus:border-indigo-600"
+                  >
+                    <option value="">-- Choose Business --</option>
+                    {tenants.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name} ({t.email})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  Delivery Channels
+                </label>
+                <div className="space-y-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                  <label className="flex items-center gap-2 text-xs font-semibold text-slate-800 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={broadcastForm.channels.includes('IN_APP')}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        setBroadcastForm((prev) => ({
+                          ...prev,
+                          channels: checked
+                            ? [...prev.channels, 'IN_APP']
+                            : prev.channels.filter((c) => c !== 'IN_APP'),
+                        }));
+                      }}
+                      className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                    />
+                    🔔 In-App Notifications Screen (Admins / Owners)
+                  </label>
+
+                  <label className="flex items-center gap-2 text-xs font-semibold text-slate-800 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={broadcastForm.channels.includes('EMAIL')}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        setBroadcastForm((prev) => ({
+                          ...prev,
+                          channels: checked
+                            ? [...prev.channels, 'EMAIL']
+                            : prev.channels.filter((c) => c !== 'EMAIL'),
+                        }));
+                      }}
+                      className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                    />
+                    ✉️ Email Broadcast
+                  </label>
+
+                  <label className="flex items-center gap-2 text-xs font-semibold text-slate-800 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={broadcastForm.channels.includes('WHATSAPP')}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        setBroadcastForm((prev) => ({
+                          ...prev,
+                          channels: checked
+                            ? [...prev.channels, 'WHATSAPP']
+                            : prev.channels.filter((c) => c !== 'WHATSAPP'),
+                        }));
+                      }}
+                      className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                    />
+                    💬 WhatsApp Message
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  Message Content
+                </label>
+                <textarea
+                  required
+                  rows={4}
+                  value={broadcastForm.content}
+                  onChange={(e) => setBroadcastForm({ ...broadcastForm, content: e.target.value })}
+                  placeholder="Write message content here..."
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 focus:outline-none focus:border-indigo-600"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow-md shadow-indigo-600/20 transition-all"
+              >
+                <Send className="w-4 h-4" /> Deliver Broadcast Message
+              </button>
+            </form>
+          </div>
+
+          {/* Past Broadcast History */}
+          <div className="lg:col-span-2 glass-panel p-6 rounded-2xl border border-slate-200 bg-white space-y-4">
+            <h3 className="text-base font-bold text-slate-900">Sent Broadcasts History</h3>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs text-slate-700">
+                <thead className="uppercase bg-slate-100 text-slate-600 border-b border-slate-200">
+                  <tr>
+                    <th className="py-2.5 px-3">Date</th>
+                    <th className="py-2.5 px-3">Title & Content</th>
+                    <th className="py-2.5 px-3">Target</th>
+                    <th className="py-2.5 px-3">Channels</th>
+                    <th className="py-2.5 px-3 text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200">
+                  {broadcasts.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="py-8 text-center text-slate-400">
+                        No broadcast messages sent yet.
+                      </td>
+                    </tr>
+                  ) : (
+                    broadcasts.map((b) => (
+                      <tr key={b.id} className="hover:bg-slate-50 transition-colors">
+                        <td className="py-3 px-3 whitespace-nowrap text-slate-500">
+                          {new Date(b.createdAt).toLocaleDateString()}
+                        </td>
+                        <td className="py-3 px-3 max-w-xs">
+                          <p className="font-bold text-slate-900">{b.title}</p>
+                          <p className="text-[11px] text-slate-500 truncate">{b.content}</p>
+                        </td>
+                        <td className="py-3 px-3">
+                          <span className="inline-block px-2 py-0.5 rounded-md font-bold bg-slate-100 text-slate-700 border border-slate-200 text-[10px]">
+                            {b.targetType} {b.business ? `(${b.business.name})` : ''}
+                          </span>
+                        </td>
+                        <td className="py-3 px-3">
+                          <div className="flex gap-1">
+                            {b.channels?.map((c: string) => (
+                              <span
+                                key={c}
+                                className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200"
+                              >
+                                {c}
+                              </span>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="py-3 px-3 text-center">
+                          <button
+                            onClick={() => handleDeleteBroadcast(b.id)}
+                            className="p-1 text-rose-600 hover:bg-rose-50 rounded-md transition-colors"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       )}
 

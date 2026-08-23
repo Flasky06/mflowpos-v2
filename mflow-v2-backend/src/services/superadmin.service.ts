@@ -1,6 +1,8 @@
 import { prisma } from '../config/db';
 import { PasswordUtil } from '../utils/password.util';
 import { Role, SubscriptionStatus } from '@prisma/client';
+import { EmailService } from './email.service';
+import { WhatsAppService } from './whatsapp.service';
 
 export class SuperAdminService {
   // 1. Platform Overview KPI Analytics
@@ -310,6 +312,100 @@ export class SuperAdminService {
         ...(status ? { status } : {}),
       },
       include: { plan: true, business: { select: { name: true } } },
+    });
+  }
+
+  // 7. Admin Broadcast Messaging & Announcements (In-App Screen, Email, WhatsApp)
+  static async sendBroadcastMessage(
+    senderUserId: string,
+    dto: {
+      title: string;
+      content: string;
+      targetType: 'ALL_BUSINESSES' | 'SPECIFIC_BUSINESS' | 'ACTIVE_ONLY' | 'TRIALING_ONLY';
+      businessId?: string;
+      channels?: string[];
+    }
+  ) {
+    const { title, content, targetType, businessId, channels = ['IN_APP'] } = dto;
+
+    let targetBusinesses: any[] = [];
+    if (targetType === 'SPECIFIC_BUSINESS' && businessId) {
+      const b = await prisma.business.findUnique({
+        where: { id: businessId },
+        include: { users: { where: { role: { in: [Role.ADMIN, Role.SHOP_ADMIN] } } } },
+      });
+      if (b) targetBusinesses = [b];
+    } else if (targetType === 'ACTIVE_ONLY') {
+      targetBusinesses = await prisma.business.findMany({
+        where: { subscription: { status: SubscriptionStatus.ACTIVE } },
+        include: { users: { where: { role: { in: [Role.ADMIN, Role.SHOP_ADMIN] } } } },
+      });
+    } else if (targetType === 'TRIALING_ONLY') {
+      targetBusinesses = await prisma.business.findMany({
+        where: { subscription: { status: SubscriptionStatus.TRIALING } },
+        include: { users: { where: { role: { in: [Role.ADMIN, Role.SHOP_ADMIN] } } } },
+      });
+    } else {
+      targetBusinesses = await prisma.business.findMany({
+        include: { users: { where: { role: { in: [Role.ADMIN, Role.SHOP_ADMIN] } } } },
+      });
+    }
+
+    const broadcast = await prisma.broadcastMessage.create({
+      data: {
+        title,
+        content,
+        targetType: targetType as any,
+        businessId: targetType === 'SPECIFIC_BUSINESS' ? businessId : null,
+        channels,
+        sentBy: senderUserId,
+      },
+    });
+
+    const isInApp = channels.includes('IN_APP');
+    const isEmail = channels.includes('EMAIL');
+    const isWhatsApp = channels.includes('WHATSAPP');
+
+    for (const b of targetBusinesses) {
+      if (isInApp) {
+        await prisma.businessNotification.create({
+          data: {
+            businessId: b.id,
+            broadcastMessageId: broadcast.id,
+            title,
+            content,
+          },
+        });
+      }
+
+      if (isEmail && b.email) {
+        EmailService.sendBroadcastEmail(b.email, title, content);
+      }
+
+      if (isWhatsApp && b.phone) {
+        WhatsAppService.sendMessage(b.phone, `*${title}*\n\n${content}`);
+      }
+    }
+
+    return {
+      broadcast,
+      recipientCount: targetBusinesses.length,
+      message: `Broadcast message sent to ${targetBusinesses.length} business(es)`,
+    };
+  }
+
+  static async getBroadcastMessages() {
+    return prisma.broadcastMessage.findMany({
+      include: {
+        business: { select: { name: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  static async deleteBroadcastMessage(id: string) {
+    return prisma.broadcastMessage.delete({
+      where: { id },
     });
   }
 }

@@ -75,4 +75,50 @@ export class WhatsAppService {
     // 3. Fallback to Server Console Mock Log
     console.log(`[WhatsApp Service Mock] Code for ${phone} (${fullName}): ${code}`);
   }
+
+  static async sendMessage(phone: string, text: string) {
+    const digitsOnly = this.getDigitsOnly(phone);
+
+    if (ENV.OPENWA_BASE_URL && ENV.OPENWA_API_KEY && ENV.OPENWA_SESSION_ID) {
+      const chatId = `${digitsOnly}@c.us`;
+      try {
+        const client = new OpenWAClient({
+          baseUrl: ENV.OPENWA_BASE_URL.replace(/\/+$/, ''),
+          apiKey: ENV.OPENWA_API_KEY,
+        });
+
+        const result = await client.messages.sendText(ENV.OPENWA_SESSION_ID, {
+          chatId,
+          text,
+        });
+        console.log(`[WhatsApp OpenWA SDK] Message sent to ${chatId}. ID:`, result.messageId);
+        return;
+      } catch (err: any) {
+        console.error(`[WhatsApp OpenWA SDK] Failed to send to ${chatId}:`, err.message || err);
+      }
+    }
+
+    if (ENV.ULTRAMSG_INSTANCE_ID && ENV.ULTRAMSG_TOKEN) {
+      const formattedPhone = `+${digitsOnly}`;
+      const url = `https://api.ultramsg.com/${ENV.ULTRAMSG_INSTANCE_ID}/messages/chat`;
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            token: ENV.ULTRAMSG_TOKEN,
+            to: formattedPhone,
+            body: text,
+          }),
+        });
+        const resData: any = await response.json();
+        console.log(`[WhatsApp UltraMsg] Message sent to ${formattedPhone}. Response:`, resData);
+        return;
+      } catch (err: any) {
+        console.error(`[WhatsApp UltraMsg] Failed to send to ${formattedPhone}:`, err.message || err);
+      }
+    }
+
+    console.log(`[WhatsApp Service Mock] Message to ${phone}: ${text}`);
+  }
 }

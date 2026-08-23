@@ -133,6 +133,8 @@ model Business {
   stockReturns   StockReturn[]
   subscription   BusinessSubscription?
   paymentAccounts PaymentAccount[]
+  broadcastMessages BroadcastMessage[]
+  notifications  BusinessNotification[]
 
   createdBy      String?   @map("created_by")
   updatedBy      String?   @map("updated_by")
@@ -657,4 +659,43 @@ model PaymentAccount {
   updatedAt     DateTime @updatedAt @map("updated_at")
 
   @@map("payment_accounts")
+}
+
+enum BroadcastTargetType {
+  ALL_BUSINESSES
+  SPECIFIC_BUSINESS
+  ACTIVE_ONLY
+  TRIALING_ONLY
+}
+
+model BroadcastMessage {
+  id           String                 @id @default(uuid())
+  title        String
+  content      String                 @db.Text
+  targetType   BroadcastTargetType    @default(ALL_BUSINESSES) @map("target_type")
+  businessId   String?                @map("business_id")
+  channels     String[]               @default(["IN_APP"])
+  sentBy       String?                @map("sent_by")
+  createdAt    DateTime               @default(now()) @map("created_at")
+
+  business      Business?              @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  notifications BusinessNotification[]
+
+  @@map("broadcast_messages")
+}
+
+model BusinessNotification {
+  id                 String            @id @default(uuid())
+  businessId         String            @map("business_id")
+  broadcastMessageId String?           @map("broadcast_message_id")
+  title              String
+  content            String            @db.Text
+  read               Boolean           @default(false)
+  readAt             DateTime?         @map("read_at")
+  createdAt          DateTime          @default(now()) @map("created_at")
+
+  business           Business          @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  broadcastMessage   BroadcastMessage? @relation(fields: [broadcastMessageId], references: [id], onDelete: SetNull)
+
+  @@map("business_notifications")
 }

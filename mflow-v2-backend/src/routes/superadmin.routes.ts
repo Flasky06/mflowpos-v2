@@ -52,4 +52,9 @@ router.put('/tenants/:businessId/custom-pricing', SuperAdminController.updateTen
 router.get('/payments', SuperAdminController.getAllPayments);
 router.get('/revenue', SuperAdminController.getAllPayments);
 
+// Broadcast Announcements & Messaging
+router.post('/broadcasts', SuperAdminController.sendBroadcastMessage);
+router.get('/broadcasts', SuperAdminController.getBroadcastMessages);
+router.delete('/broadcasts/:id', SuperAdminController.deleteBroadcastMessage);
+
 export default router;

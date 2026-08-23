@@ -196,4 +196,33 @@ export class SuperAdminController {
       return ApiResponse.error(res, err.message, 400);
     }
   }
+
+  static async sendBroadcastMessage(req: SuperAdminAuthenticatedRequest, res: Response) {
+    try {
+      const senderUserId = req.superAdmin?.userId || 'SUPERADMIN';
+      const result = await SuperAdminService.sendBroadcastMessage(senderUserId, req.body);
+      return ApiResponse.success(res, result, 'Broadcast message sent successfully', 201);
+    } catch (err: any) {
+      return ApiResponse.error(res, err.message, 400);
+    }
+  }
+
+  static async getBroadcastMessages(req: SuperAdminAuthenticatedRequest, res: Response) {
+    try {
+      const messages = await SuperAdminService.getBroadcastMessages();
+      return ApiResponse.success(res, messages, 'Broadcast messages retrieved');
+    } catch (err: any) {
+      return ApiResponse.error(res, err.message, 400);
+    }
+  }
+
+  static async deleteBroadcastMessage(req: SuperAdminAuthenticatedRequest, res: Response) {
+    try {
+      const { id } = req.params;
+      await SuperAdminService.deleteBroadcastMessage(id);
+      return ApiResponse.success(res, null, 'Broadcast message deleted successfully');
+    } catch (err: any) {
+      return ApiResponse.error(res, err.message, 400);
+    }
+  }
 }

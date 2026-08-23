@@ -57,4 +57,31 @@ export class EmailService {
       console.log(`[Email] Password reset email sent to ${to}. ID: ${data?.id}`);
     }
   }
+
+  static async sendBroadcastEmail(to: string, subject: string, content: string) {
+    if (!this.resend) {
+      console.log(`[Email Mock] Broadcast email to ${to}: ${subject}`);
+      return;
+    }
+
+    const { data, error } = await this.resend.emails.send({
+      from: `${ENV.FROM_NAME} <${ENV.FROM_EMAIL}>`,
+      to,
+      subject,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 580px; margin: 0 auto; padding: 32px; border: 1px solid #e4e4e7; border-radius: 12px; background: #ffffff;">
+          <h2 style="color: #09090b; font-size: 20px; font-weight: bold; margin-bottom: 16px;">${subject}</h2>
+          <div style="color: #3f3f46; font-size: 14px; line-height: 1.6; white-space: pre-wrap;">${content}</div>
+          <hr style="border: none; border-top: 1px solid #f4f4f5; margin: 24px 0;" />
+          <p style="color: #a1a1aa; font-size: 11px; margin: 0;">Sent by mFlow POS Platform Administration</p>
+        </div>
+      `,
+    });
+
+    if (error) {
+      console.error(`[Email] Failed to send broadcast to ${to}:`, JSON.stringify(error));
+    } else {
+      console.log(`[Email] Broadcast email sent to ${to}. ID: ${data?.id}`);
+    }
+  }
 }

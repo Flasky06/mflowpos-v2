@@ -21,17 +21,29 @@ export const AppLayout: React.FC = () => {
 
   const [shops, setShops] = useState<any[]>([]);
   const [pendingPOs, setPendingPOs] = useState<any[]>([]);
+  const [unreadCount, setUnreadCount] = useState<number>(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const isNotificationEligible = user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' || user?.role === 'SHOP_ADMIN';
 
   // Exclusive Accordion State (Only one group open at a time)
   const [openGroupTitle, setOpenGroupTitle] = useState<string | null>('Dashboard');
 
   const fetchLayoutData = async () => {
     try {
-      const [shopRes, poRes] = await Promise.all([
+      const promises: Promise<any>[] = [
         apiClient.get('/business/shops'),
         apiClient.get('/purchase-orders').catch(() => apiClient.get('/purchases/orders')),
-      ]);
+      ];
+
+      if (isNotificationEligible) {
+        promises.push(apiClient.get('/notifications/unread-count').catch(() => ({ data: { data: { unreadCount: 0 } } })));
+      }
+
+      const results = await Promise.all(promises);
+      const shopRes = results[0];
+      const poRes = results[1];
+      const notifRes = results[2];
 
       const shopList = shopRes.data?.data || [];
       setShops(shopList);
@@ -43,6 +55,10 @@ export const AppLayout: React.FC = () => {
       const allOrders = poRes.data?.data || [];
       const pendingList = allOrders.filter((po: any) => !po.status || po.status === 'PENDING');
       setPendingPOs(pendingList);
+
+      if (notifRes?.data?.data?.unreadCount !== undefined) {
+        setUnreadCount(notifRes.data.data.unreadCount);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -58,55 +74,45 @@ export const AppLayout: React.FC = () => {
   };
 
   const activeShop = shops.find((s) => s.id === activeShopId);
-  const shopType = activeShop?.shopType || user?.shop?.shopType || 'BOTH';
-
-  const isProductsAllowed = shopType === 'PRODUCTS_ONLY' || shopType === 'BOTH';
-  const isServicesAllowed = shopType === 'SERVICES_ONLY' || shopType === 'BOTH';
 
   // Grouped Navigation Tree Structure (Aligned with original mflowpos)
   const menuGroups = [
     {
-      title: 'Dashboard',
+      title: 'Main',
       isCollapsible: false,
       items: [
-        { to: '/dashboard', label: 'Dashboard', show: true },
+        { to: '/dashboard', label: 'Dashboard Overview', show: true },
+        { to: '/pos', label: 'POS Terminal & Register', show: true },
       ],
     },
     {
       title: 'Sales',
       isCollapsible: true,
       items: [
-        { to: '/pos', label: 'POS Terminal / Checkout', show: true },
         { to: '/sales', label: 'Sales History', show: true },
-        { to: '/sales/products', label: 'Products Sales History', show: isProductsAllowed },
-        { to: '/sales/services', label: 'Services Sales History', show: isServicesAllowed },
-        { to: '/quotations', label: 'Estimates & Quotations', show: true },
+        { to: '/sales/products', label: 'Products Sales Log', show: true },
+        { to: '/sales/services', label: 'Services Sales Log', show: true },
+        { to: '/quotations', label: 'Quotations & Invoices', show: true },
+        { to: '/customers', label: 'Customers Database', show: true },
       ],
     },
     {
       title: 'Products & Inventory',
       isCollapsible: true,
       items: [
-        { to: '/products', label: 'Master Catalog', show: isProductsAllowed },
-        { to: '/categories', label: 'Product Categories', show: isProductsAllowed },
-        { to: '/services', label: 'Services & Job Cards', show: isServicesAllowed },
-        { to: '/service-categories', label: 'Service Categories', show: isServicesAllowed },
-        { to: '/transfers', label: 'Stock Operations & Taking', show: isProductsAllowed },
-        { to: '/returns', label: 'Stock Returns & Damaged', show: isProductsAllowed },
+        { to: '/products', label: 'Products Catalog', show: true },
+        { to: '/categories', label: 'Product Categories', show: true },
+        { to: '/services', label: 'Services Catalog', show: true },
+        { to: '/service-categories', label: 'Service Categories', show: true },
+        { to: '/transfers', label: 'Stock Branch Transfers', show: true },
+        { to: '/returns', label: 'Customer Stock Returns', show: true },
       ],
     },
     {
       title: 'Suppliers',
       isCollapsible: true,
       items: [
-        { to: '/suppliers', label: 'All Suppliers & Purchase Orders', show: isProductsAllowed },
-      ],
-    },
-    {
-      title: 'Customers',
-      isCollapsible: false,
-      items: [
-        { to: '/customers', label: 'Customer Directory & Credit', show: true },
+        { to: '/suppliers', label: 'Suppliers & Purchase Orders', show: true },
       ],
     },
     {
@@ -124,6 +130,7 @@ export const AppLayout: React.FC = () => {
       isCollapsible: true,
       items: [
         { to: '/superadmin', label: 'SuperAdmin Control Panel', show: user?.role === 'SUPER_ADMIN' },
+        { to: '/notifications', label: 'Notifications Inbox', show: isNotificationEligible },
         { to: '/profile', label: 'Business Profile & Subscription', show: true },
         { to: '/settings/payment-accounts', label: 'Payment Accounts & Paybills', show: true },
         { to: '/settings/branches', label: 'Shops & Branch Locations', show: user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' },
@@ -312,6 +319,21 @@ export const AppLayout: React.FC = () => {
                 </p>
               </div>
             </Link>
+
+            {isNotificationEligible && (
+              <Link
+                to="/notifications"
+                className="p-2 text-slate-400 hover:text-indigo-400 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer shrink-0 relative"
+                title="System Notifications Desk"
+              >
+                <Bell className="w-4 h-4" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-rose-600 text-white rounded-full text-[9px] font-black w-4 h-4 flex items-center justify-center">
+                    {unreadCount}
+                  </span>
+                )}
+              </Link>
+            )}
 
             <button
               onClick={handleLogout}
