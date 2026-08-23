@@ -123,6 +123,7 @@ export const AppLayout: React.FC = () => {
       title: 'Admin',
       isCollapsible: true,
       items: [
+        { to: '/superadmin', label: 'SuperAdmin Control Panel', show: user?.role === 'SUPER_ADMIN' },
         { to: '/profile', label: 'Business Profile & Subscription', show: true },
         { to: '/settings/payment-accounts', label: 'Payment Accounts & Paybills', show: true },
         { to: '/settings/branches', label: 'Shops & Branch Locations', show: user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' },

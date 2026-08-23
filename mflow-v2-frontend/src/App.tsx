@@ -60,6 +60,8 @@ export const App: React.FC = () => {
           {/* Public Landing & Auth Routes */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/admin" element={<LoginPage />} />
+          <Route path="/admin/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/verify-email" element={<VerifyEmailPage />} />
 
