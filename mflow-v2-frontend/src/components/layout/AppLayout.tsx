@@ -81,8 +81,7 @@ export const AppLayout: React.FC = () => {
       title: 'Main',
       isCollapsible: false,
       items: [
-        { to: '/dashboard', label: 'Dashboard Overview', show: true },
-        { to: '/pos', label: 'POS Terminal & Register', show: true },
+        { to: '/dashboard', label: 'POS Terminal & Register', show: true },
       ],
     },
     {
