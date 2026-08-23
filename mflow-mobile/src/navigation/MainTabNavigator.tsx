@@ -1,19 +1,19 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { DashboardScreen } from '../screens/dashboard/DashboardScreen';
 import { POSScreen } from '../screens/pos/POSScreen';
+import { DashboardScreen } from '../screens/dashboard/DashboardScreen';
 import { ProductsScreen } from '../screens/products/ProductsScreen';
 import { ExpensesScreen } from '../screens/expenses/ExpensesScreen';
 import { SalesHistoryScreen } from '../screens/sales/SalesHistoryScreen';
 import { ProfileScreen } from '../screens/profile/ProfileScreen';
-import { LayoutDashboard, ShoppingBag, Package, TrendingDown, Receipt, User } from 'lucide-react-native';
+import { ShoppingBag, LayoutDashboard, Package, TrendingDown, Receipt, User } from 'lucide-react-native';
 
 const Tab = createBottomTabNavigator();
 
 export const MainTabNavigator: React.FC = () => {
   return (
     <Tab.Navigator
-      initialRouteName="Dashboard"
+      initialRouteName="POSRegister"
       screenOptions={{
         headerStyle: {
           backgroundColor: '#0F172A',
@@ -34,15 +34,7 @@ export const MainTabNavigator: React.FC = () => {
         tabBarInactiveTintColor: '#64748B',
       }}
     >
-      <Tab.Screen
-        name="Dashboard"
-        component={DashboardScreen}
-        options={{
-          title: 'Home',
-          headerTitle: 'MFlow Mobile Dashboard',
-          tabBarIcon: ({ color, size }) => <LayoutDashboard color={color} size={size} />,
-        }}
-      />
+      {/* 1st Tab: POS Register (Selling is the primary app purpose) */}
       <Tab.Screen
         name="POSRegister"
         component={POSScreen}
@@ -52,6 +44,19 @@ export const MainTabNavigator: React.FC = () => {
           tabBarIcon: ({ color, size }) => <ShoppingBag color={color} size={size} />,
         }}
       />
+
+      {/* 2nd Tab: Dashboard Metrics */}
+      <Tab.Screen
+        name="Dashboard"
+        component={DashboardScreen}
+        options={{
+          title: 'Home',
+          headerTitle: 'MFlow Mobile Dashboard',
+          tabBarIcon: ({ color, size }) => <LayoutDashboard color={color} size={size} />,
+        }}
+      />
+
+      {/* 3rd Tab: Products & Inventory */}
       <Tab.Screen
         name="Products"
         component={ProductsScreen}
@@ -61,6 +66,8 @@ export const MainTabNavigator: React.FC = () => {
           tabBarIcon: ({ color, size }) => <Package color={color} size={size} />,
         }}
       />
+
+      {/* 4th Tab: Business Expenses */}
       <Tab.Screen
         name="Expenses"
         component={ExpensesScreen}
@@ -70,6 +77,8 @@ export const MainTabNavigator: React.FC = () => {
           tabBarIcon: ({ color, size }) => <TrendingDown color={color} size={size} />,
         }}
       />
+
+      {/* 5th Tab: Sales History */}
       <Tab.Screen
         name="SalesHistory"
         component={SalesHistoryScreen}
@@ -79,6 +88,8 @@ export const MainTabNavigator: React.FC = () => {
           tabBarIcon: ({ color, size }) => <Receipt color={color} size={size} />,
         }}
       />
+
+      {/* 6th Tab: Account & Branch */}
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
