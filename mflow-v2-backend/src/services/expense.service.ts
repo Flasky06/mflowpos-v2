@@ -3,11 +3,37 @@ import { prisma } from '../config/db';
 export class ExpenseService {
   // Category management
   static async getCategories(businessId: string) {
-    return prisma.expenseCategory.findMany({
+    let categories = await prisma.expenseCategory.findMany({
       where: { businessId },
       include: { _count: { select: { expenses: true } } },
       orderBy: { name: 'asc' },
     });
+
+    if (categories.length === 0) {
+      const defaultNames = [
+        'Utilities & Bills',
+        'Rent & Premises',
+        'Salaries & Wages',
+        'Transport & Logistics',
+        'Supplies & Goods',
+        'Marketing & Ads',
+        'Repairs & Maintenance',
+        'Miscellaneous Expenses',
+      ];
+
+      await prisma.expenseCategory.createMany({
+        data: defaultNames.map((name) => ({ name, businessId })),
+        skipDuplicates: true,
+      });
+
+      categories = await prisma.expenseCategory.findMany({
+        where: { businessId },
+        include: { _count: { select: { expenses: true } } },
+        orderBy: { name: 'asc' },
+      });
+    }
+
+    return categories;
   }
 
   static async createCategory(businessId: string, name: string) {

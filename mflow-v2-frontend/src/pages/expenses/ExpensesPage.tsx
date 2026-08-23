@@ -40,6 +40,37 @@ export const ExpensesPage: React.FC = () => {
   });
 
   const [newCategoryName, setNewCategoryName] = useState('');
+  const [isAddingQuickCategory, setIsAddingQuickCategory] = useState(false);
+  const [quickCategoryName, setQuickCategoryName] = useState('');
+  const [isQuickCategoryLoading, setIsQuickCategoryLoading] = useState(false);
+
+  const handleQuickAddCategory = async (e: React.MouseEvent | React.FormEvent) => {
+    e.preventDefault();
+    if (!quickCategoryName.trim()) return;
+
+    setIsQuickCategoryLoading(true);
+    try {
+      const res = await apiClient.post('/expenses/categories', { name: quickCategoryName.trim() });
+      const newCat = res.data.data;
+      setCategories((prev) => [...prev, newCat]);
+      setExpenseForm((prev) => ({ ...prev, categoryId: newCat.id }));
+      setQuickCategoryName('');
+      setIsAddingQuickCategory(false);
+      addToast({
+        type: 'success',
+        title: 'Category Created',
+        message: `'${newCat.name}' created and selected`,
+      });
+    } catch (err: any) {
+      addToast({
+        type: 'error',
+        title: 'Category Error',
+        message: err.response?.data?.message || 'Failed to add category',
+      });
+    } finally {
+      setIsQuickCategoryLoading(false);
+    }
+  };
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -331,20 +362,60 @@ export const ExpensesPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-700 uppercase block mb-1">Expense Category *</label>
-                <select
-                  required
-                  value={expenseForm.categoryId}
-                  onChange={(e) => setExpenseForm({ ...expenseForm, categoryId: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 text-xs font-semibold focus:outline-none focus:border-indigo-600"
-                >
-                  <option value="">Select Expense Category</option>
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs font-bold text-slate-700 uppercase">Expense Category *</label>
+                  {!isAddingQuickCategory ? (
+                    <button
+                      type="button"
+                      onClick={() => setIsAddingQuickCategory(true)}
+                      className="text-xs font-bold text-indigo-600 hover:text-indigo-700 cursor-pointer"
+                    >
+                      + Add New Category
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setIsAddingQuickCategory(false)}
+                      className="text-xs font-bold text-slate-500 hover:text-slate-700 cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
+
+                {isAddingQuickCategory ? (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={quickCategoryName}
+                      onChange={(e) => setQuickCategoryName(e.target.value)}
+                      placeholder="e.g. Licensing & Taxes"
+                      className="flex-1 bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 text-xs font-semibold focus:outline-none focus:border-indigo-600"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleQuickAddCategory}
+                      disabled={isQuickCategoryLoading || !quickCategoryName.trim()}
+                      className="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs disabled:opacity-50 cursor-pointer"
+                    >
+                      Add
+                    </button>
+                  </div>
+                ) : (
+                  <select
+                    required
+                    value={expenseForm.categoryId}
+                    onChange={(e) => setExpenseForm({ ...expenseForm, categoryId: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 text-xs font-semibold focus:outline-none focus:border-indigo-600"
+                  >
+                    <option value="">Select Expense Category</option>
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               <div>
