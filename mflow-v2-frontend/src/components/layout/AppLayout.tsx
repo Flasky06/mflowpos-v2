@@ -64,67 +64,70 @@ export const AppLayout: React.FC = () => {
   const isProductsAllowed = shopType === 'PRODUCTS_ONLY' || shopType === 'BOTH';
   const isServicesAllowed = shopType === 'SERVICES_ONLY' || shopType === 'BOTH';
 
-  // Grouped Navigation Tree Structure
+  // Grouped Navigation Tree Structure (Aligned with original mflowpos)
   const menuGroups = [
     {
-      title: 'Dashboard',
+      title: 'Main',
       isCollapsible: false,
-      items: [{ to: '/dashboard', label: 'Point of Sale Desk', show: true }],
+      items: [
+        { to: '/dashboard', label: 'Dashboard', show: true },
+        { to: '/pos', label: 'POS Terminal', show: true },
+      ],
     },
     {
       title: 'Sales',
       isCollapsible: true,
       items: [
+        { to: '/sales', label: 'Sales History', show: true },
         { to: '/sales/products', label: 'Products Sales History', show: isProductsAllowed },
         { to: '/sales/services', label: 'Services Sales History', show: isServicesAllowed },
-        { to: '/sales', label: 'All Transactions Log', show: true },
-      ],
-    },
-    {
-      title: 'Catalog',
-      isCollapsible: true,
-      items: [
-        { to: '/products', label: 'Products Inventory', show: isProductsAllowed },
-        { to: '/categories', label: 'Product Categories', show: isProductsAllowed },
-        { to: '/services', label: 'Services & Job Cards', show: isServicesAllowed },
-        { to: '/service-categories', label: 'Service Categories', show: isServicesAllowed },
-      ],
-    },
-    {
-      title: 'Stock Operations',
-      isCollapsible: true,
-      items: [
-        { to: '/transfers', label: 'Stock Taking & Adjustments', show: isProductsAllowed },
-        { to: '/returns', label: 'Customer Stock Returns', show: isProductsAllowed },
-      ],
-    },
-    {
-      title: 'Partners & Outflows',
-      isCollapsible: true,
-      items: [
-        { to: '/customers', label: 'Customer Directory', show: true },
-        { to: '/suppliers', label: 'Suppliers & POs', show: isProductsAllowed },
-        { to: '/expenses', label: 'Expense Tracker', show: true },
         { to: '/quotations', label: 'Estimates & Quotations', show: true },
       ],
     },
     {
-      title: 'Financial Reports',
+      title: 'Products & Inventory',
       isCollapsible: true,
       items: [
+        { to: '/products', label: 'Master Catalog', show: isProductsAllowed },
+        { to: '/categories', label: 'Product Categories', show: isProductsAllowed },
+        { to: '/services', label: 'Services & Job Cards', show: isServicesAllowed },
+        { to: '/service-categories', label: 'Service Categories', show: isServicesAllowed },
+        { to: '/transfers', label: 'Stock Operations & Taking', show: isProductsAllowed },
+        { to: '/returns', label: 'Stock Returns & Damaged', show: isProductsAllowed },
+      ],
+    },
+    {
+      title: 'Suppliers',
+      isCollapsible: true,
+      items: [
+        { to: '/suppliers', label: 'All Suppliers & Purchase Orders', show: isProductsAllowed },
+      ],
+    },
+    {
+      title: 'Customers',
+      isCollapsible: false,
+      items: [
+        { to: '/customers', label: 'Customer Directory & Credit', show: true },
+      ],
+    },
+    {
+      title: 'Finance',
+      isCollapsible: true,
+      items: [
+        { to: '/expenses', label: 'Operating Expenses', show: true },
         { to: '/finance/reports/profit-and-loss', label: 'Statement of Profit & Loss', show: true },
         { to: '/finance/reports/general-ledger', label: 'General Ledger', show: true },
         { to: '/finance/reports/balance-sheet', label: 'Statement of Balance Sheet', show: true },
       ],
     },
     {
-      title: 'Settings',
+      title: 'Admin',
       isCollapsible: true,
       items: [
         { to: '/profile', label: 'Business Profile & Subscription', show: true },
         { to: '/settings/payment-accounts', label: 'Payment Accounts & Paybills', show: true },
-        { to: '/settings/branches', label: 'Branch Locations', show: user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' },
-        { to: '/settings/staff', label: 'Staff Permissions', show: user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' },
+        { to: '/settings/branches', label: 'Shops & Branch Locations', show: user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' },
+        { to: '/settings/staff', label: 'Team Management & Permissions', show: user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' },
         { to: '/settings/audit-trail', label: 'System Audit Trail', show: true },
       ],
     },
