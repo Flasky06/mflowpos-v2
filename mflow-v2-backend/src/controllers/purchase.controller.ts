@@ -1,5 +1,6 @@
 import { Response } from 'express';
 import { z } from 'zod';
+import { prisma } from '../config/db';
 import { PurchaseService } from '../services/purchase.service';
 import { ApiResponse } from '../utils/response.util';
 import { AuthenticatedRequest } from '../middlewares/auth.middleware';
@@ -108,11 +109,24 @@ export class PurchaseController {
   static async createPurchaseOrder(req: AuthenticatedRequest, res: Response) {
     try {
       const businessId = req.user?.businessId;
-      const shopId = req.body.shopId || req.user?.shopId;
+      let shopId = req.body.shopId || req.user?.shopId;
       const userId = req.user?.userId;
 
-      if (!businessId || !shopId || !userId) {
-        return ApiResponse.error(res, 'Branch/Shop context missing (ensure an active branch is selected)', 400);
+      if (!businessId || !userId) {
+        return ApiResponse.error(res, 'Authentication context missing', 400);
+      }
+
+      if (!shopId) {
+        const defaultShop = await prisma.shop.findFirst({
+          where: { businessId },
+        });
+        if (defaultShop) {
+          shopId = defaultShop.id;
+        }
+      }
+
+      if (!shopId) {
+        return ApiResponse.error(res, 'Branch/Shop context missing. Please create a shop branch first.', 400);
       }
 
       const order = await PurchaseService.createPurchaseOrder(businessId, shopId, userId, req.body);

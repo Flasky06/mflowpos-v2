@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import {
   PurchaseController,
   createSupplierSchema,
@@ -13,10 +13,8 @@ const router = Router();
 
 router.use(authenticateJWT);
 
-// Direct & Alias Routes for Suppliers
+// Specific Named Routes
 router.get('/suppliers', PurchaseController.getSuppliers);
-router.get('/', PurchaseController.getSuppliers);
-
 router.post(
   '/suppliers',
   checkSubscriptionPaywall,
@@ -24,14 +22,6 @@ router.post(
   validateBody(createSupplierSchema),
   PurchaseController.createSupplier
 );
-router.post(
-  '/',
-  checkSubscriptionPaywall,
-  authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN),
-  validateBody(createSupplierSchema),
-  PurchaseController.createSupplier
-);
-
 router.put(
   '/suppliers/:id',
   checkSubscriptionPaywall,
@@ -39,31 +29,17 @@ router.put(
   validateBody(createSupplierSchema.partial()),
   PurchaseController.updateSupplier
 );
-router.put(
-  '/:id',
-  checkSubscriptionPaywall,
-  authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN),
-  validateBody(createSupplierSchema.partial()),
-  PurchaseController.updateSupplier
-);
-
 router.delete(
   '/suppliers/:id',
   checkSubscriptionPaywall,
   authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN),
   PurchaseController.deleteSupplier
 );
-router.delete(
-  '/:id',
-  checkSubscriptionPaywall,
-  authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN),
-  PurchaseController.deleteSupplier
-);
 
-// Direct & Alias Routes for Purchase Orders
 router.get('/orders', PurchaseController.getPurchaseOrders);
 router.get('/purchase-orders', PurchaseController.getPurchaseOrders);
 router.get('/orders/:id', PurchaseController.getPurchaseOrderById);
+router.get('/purchase-orders/:id', PurchaseController.getPurchaseOrderById);
 
 router.post(
   '/orders',
@@ -80,46 +56,59 @@ router.post(
   PurchaseController.createPurchaseOrder
 );
 
+router.post('/orders/:id/receive', checkSubscriptionPaywall, authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN), PurchaseController.receivePurchaseOrder);
+router.put('/orders/:id/receive', checkSubscriptionPaywall, authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN), PurchaseController.receivePurchaseOrder);
+router.post('/purchase-orders/:id/receive', checkSubscriptionPaywall, authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN), PurchaseController.receivePurchaseOrder);
+router.put('/purchase-orders/:id/receive', checkSubscriptionPaywall, authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN), PurchaseController.receivePurchaseOrder);
+
+// Root `/` Dynamic Handlers based on Mount Point (e.g., /suppliers vs /purchase-orders vs /purchases)
+router.get('/', (req: Request, res: Response, next: NextFunction) => {
+  if (req.baseUrl.includes('purchase-orders')) {
+    return PurchaseController.getPurchaseOrders(req as any, res);
+  }
+  return PurchaseController.getSuppliers(req as any, res);
+});
+
 router.post(
-  '/orders/:id/receive',
+  '/',
   checkSubscriptionPaywall,
   authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN),
-  PurchaseController.receivePurchaseOrder
+  (req: Request, res: Response, next: NextFunction) => {
+    if (req.baseUrl.includes('purchase-orders')) {
+      return validateBody(createPurchaseOrderSchema)(req, res, () =>
+        PurchaseController.createPurchaseOrder(req as any, res)
+      );
+    }
+    return validateBody(createSupplierSchema)(req, res, () =>
+      PurchaseController.createSupplier(req as any, res)
+    );
+  }
 );
 
 router.put(
-  '/orders/:id/receive',
+  '/:id',
   checkSubscriptionPaywall,
   authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN),
-  PurchaseController.receivePurchaseOrder
+  (req: Request, res: Response, next: NextFunction) => {
+    if (req.baseUrl.includes('purchase-orders')) {
+      return PurchaseController.getPurchaseOrderById(req as any, res);
+    }
+    return validateBody(createSupplierSchema.partial())(req, res, () =>
+      PurchaseController.updateSupplier(req as any, res)
+    );
+  }
 );
 
-router.post(
-  '/purchase-orders/:id/receive',
+router.delete(
+  '/:id',
   checkSubscriptionPaywall,
-  authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN),
-  PurchaseController.receivePurchaseOrder
+  authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN),
+  (req: Request, res: Response, next: NextFunction) => {
+    return PurchaseController.deleteSupplier(req as any, res);
+  }
 );
 
-router.put(
-  '/purchase-orders/:id/receive',
-  checkSubscriptionPaywall,
-  authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN),
-  PurchaseController.receivePurchaseOrder
-);
-
-router.post(
-  '/:id/receive',
-  checkSubscriptionPaywall,
-  authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN),
-  PurchaseController.receivePurchaseOrder
-);
-
-router.put(
-  '/:id/receive',
-  checkSubscriptionPaywall,
-  authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN),
-  PurchaseController.receivePurchaseOrder
-);
+router.put('/:id/receive', checkSubscriptionPaywall, authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN), PurchaseController.receivePurchaseOrder);
+router.post('/:id/receive', checkSubscriptionPaywall, authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN), PurchaseController.receivePurchaseOrder);
 
 export default router;
