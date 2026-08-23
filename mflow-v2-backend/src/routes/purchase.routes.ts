@@ -87,4 +87,39 @@ router.post(
   PurchaseController.receivePurchaseOrder
 );
 
+router.put(
+  '/orders/:id/receive',
+  checkSubscriptionPaywall,
+  authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN),
+  PurchaseController.receivePurchaseOrder
+);
+
+router.post(
+  '/purchase-orders/:id/receive',
+  checkSubscriptionPaywall,
+  authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN),
+  PurchaseController.receivePurchaseOrder
+);
+
+router.put(
+  '/purchase-orders/:id/receive',
+  checkSubscriptionPaywall,
+  authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN),
+  PurchaseController.receivePurchaseOrder
+);
+
+router.post(
+  '/:id/receive',
+  checkSubscriptionPaywall,
+  authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN),
+  PurchaseController.receivePurchaseOrder
+);
+
+router.put(
+  '/:id/receive',
+  checkSubscriptionPaywall,
+  authorizeRoles(Role.SUPER_ADMIN, Role.ADMIN, Role.SHOP_ADMIN),
+  PurchaseController.receivePurchaseOrder
+);
+
 export default router;

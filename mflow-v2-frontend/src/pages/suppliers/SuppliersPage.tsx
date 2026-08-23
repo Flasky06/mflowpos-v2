@@ -133,10 +133,12 @@ export const SuppliersPage: React.FC = () => {
 
     try {
       await apiClient.post('/purchase-orders', {
+        shopId: activeShopId || undefined,
         supplierId: poSupplierId,
         items: poItems,
         notes: poNotes,
       }).catch(() => apiClient.post('/purchases/orders', {
+        shopId: activeShopId || undefined,
         supplierId: poSupplierId,
         items: poItems,
         notes: poNotes,
