@@ -82,13 +82,6 @@ export const ProfilePage: React.FC = () => {
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-6">
-      <div className="pb-4 border-b border-slate-200">
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-          <User className="w-6 h-6 text-indigo-600" />
-          User Profile & Operation Mode Preferences
-        </h1>
-        <p className="text-sm text-slate-500 mt-1">Manage user account details and configure branch operation modes</p>
-      </div>
 
       {/* Account Info Card */}
       <div className="glass-panel p-6 rounded-2xl border border-slate-200 bg-white shadow-xs space-y-4">

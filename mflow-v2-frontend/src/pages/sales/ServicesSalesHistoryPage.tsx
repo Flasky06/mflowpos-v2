@@ -68,16 +68,8 @@ export const ServicesSalesHistoryPage: React.FC = () => {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-[1800px] w-full mx-auto space-y-6">
-      {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <Wrench className="w-6 h-6 text-violet-600" />
-            Services Sales History
-          </h1>
-          <p className="text-sm text-slate-500">Non-inventory service job transactions and total service revenue</p>
-        </div>
-
+      {/* Date Filter Bar */}
+      <div className="flex justify-end pb-4 border-b border-slate-200">
         {/* Date Filter */}
         <div className="flex items-center bg-white border border-slate-200 p-1.5 rounded-xl shadow-xs">
           <span className="text-xs font-semibold text-slate-500 px-2 flex items-center gap-1">

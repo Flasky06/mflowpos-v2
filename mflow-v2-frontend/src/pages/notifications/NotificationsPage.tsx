@@ -89,18 +89,7 @@ export const NotificationsPage: React.FC = () => {
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
-            <Bell className="w-6 h-6 text-indigo-600" />
-            Notifications & System Announcements
-          </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Platform updates, subscription notices, and direct communications from Administration
-          </p>
-        </div>
-
+      <div className="flex justify-end pb-4 border-b border-slate-200">
         {unreadCount > 0 && (
           <button
             onClick={handleMarkAllAsRead}
