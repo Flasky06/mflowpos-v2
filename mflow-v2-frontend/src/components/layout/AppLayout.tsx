@@ -264,11 +264,12 @@ export const AppLayout: React.FC = () => {
                       </button>
 
                       {isOpen && (
-                        <div className="space-y-1 pl-1">
+                        <div className="pl-3 space-y-1 mt-1 border-l-2 border-slate-800 ml-3">
                           {visibleItems.map((item) => (
                             <NavLink
                               key={item.to}
                               to={item.to}
+                              end
                               onClick={() => setIsMobileMenuOpen(false)}
                               className={({ isActive }) =>
                                 `block px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
@@ -290,6 +291,7 @@ export const AppLayout: React.FC = () => {
                         <NavLink
                           key={item.to}
                           to={item.to}
+                          end
                           onClick={() => setIsMobileMenuOpen(false)}
                           className={({ isActive }) =>
                             `block px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
