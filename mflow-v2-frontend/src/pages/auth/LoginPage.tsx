@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { apiClient } from '../../api/client';
 import { useAuthStore } from '../../store/authStore';
 import { useToastStore } from '../../store/toastStore';
-import { LogIn, Lock, Mail, Eye, EyeOff, PhoneCall } from 'lucide-react';
+import { LogIn, Lock, Mail, Eye, EyeOff } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -109,15 +109,12 @@ export const LoginPage: React.FC = () => {
           </button>
         </form>
 
-        <div className="mt-8 text-center pt-6 border-t border-slate-200 space-y-2">
+        <div className="mt-8 text-center pt-6 border-t border-slate-200">
           <p className="text-xs text-slate-500">
             Don't have a business account yet?{' '}
             <Link to="/register" className="text-indigo-600 font-semibold hover:underline">
               Register Business
             </Link>
-          </p>
-          <p className="text-xs font-bold text-slate-600 flex items-center justify-center gap-1.5 pt-1">
-            <PhoneCall className="w-3.5 h-3.5 text-emerald-600" /> Calls & WhatsApp: <a href="https://wa.me/254717299106" target="_blank" rel="noopener noreferrer" className="text-emerald-600 hover:underline font-mono">0717299106</a>
           </p>
         </div>
       </div>

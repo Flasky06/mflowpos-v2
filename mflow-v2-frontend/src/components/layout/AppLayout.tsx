@@ -13,7 +13,6 @@ import {
   User,
   Bell,
   PackageCheck,
-  PhoneCall,
 } from 'lucide-react';
 
 export const AppLayout: React.FC = () => {
@@ -292,22 +291,6 @@ export const AppLayout: React.FC = () => {
               );
             })}
           </nav>
-
-          {/* SUPPORT CONTACT BADGE */}
-          <div className="px-3.5 py-2 border-t border-slate-800 bg-slate-950/60 text-slate-400 text-[11px] flex items-center justify-between">
-            <span className="flex items-center gap-1.5 font-semibold">
-              <PhoneCall className="w-3.5 h-3.5 text-emerald-400" /> Calls & WhatsApp:
-            </span>
-            <a
-              href="https://wa.me/254717299106"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-bold text-emerald-400 hover:text-emerald-300 transition-colors font-mono"
-              title="Click to WhatsApp or Call 0717299106"
-            >
-              0717299106
-            </a>
-          </div>
 
           {/* USER FOOTER BAR */}
           <div className="p-3.5 border-t border-slate-800 bg-slate-950/40 flex items-center justify-between gap-2">
