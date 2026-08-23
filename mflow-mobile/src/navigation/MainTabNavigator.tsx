@@ -6,6 +6,7 @@ import { ProductsScreen } from '../screens/products/ProductsScreen';
 import { ExpensesScreen } from '../screens/expenses/ExpensesScreen';
 import { SalesHistoryScreen } from '../screens/sales/SalesHistoryScreen';
 import { ProfileScreen } from '../screens/profile/ProfileScreen';
+import { MobileTopHeader } from '../components/MobileTopHeader';
 import { ShoppingBag, LayoutDashboard, Package, TrendingDown, Receipt, User } from 'lucide-react-native';
 
 const Tab = createBottomTabNavigator();
@@ -15,14 +16,7 @@ export const MainTabNavigator: React.FC = () => {
     <Tab.Navigator
       initialRouteName="POSRegister"
       screenOptions={{
-        headerStyle: {
-          backgroundColor: '#0F172A',
-        },
-        headerTitleStyle: {
-          color: '#FFFFFF',
-          fontWeight: '800',
-          fontSize: 16,
-        },
+        header: () => <MobileTopHeader />,
         tabBarStyle: {
           backgroundColor: '#0F172A',
           borderTopColor: '#1E293B',
