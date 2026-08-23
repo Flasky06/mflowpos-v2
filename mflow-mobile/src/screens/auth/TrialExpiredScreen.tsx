@@ -1,10 +1,13 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView } from 'react-native';
 import { useAuthStore } from '../../store/authStore';
-import { Lock, LogOut, MailCheck } from 'lucide-react-native';
+import { Lock, LogOut, MailCheck, AlertTriangle } from 'lucide-react-native';
 
 export const TrialExpiredScreen: React.FC = () => {
-  const { user, logout } = useAuthStore();
+  const { user, logout, getSubscriptionInfo } = useAuthStore();
+  const subInfo = getSubscriptionInfo();
+
+  const isTrial = subInfo.isTrial;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -15,17 +18,26 @@ export const TrialExpiredScreen: React.FC = () => {
         </View>
 
         {/* Lockout Headline */}
-        <Text style={styles.title}>7-Day Free Trial Expired</Text>
-
-        <Text style={styles.subtitle}>
-          The 7-day free trial period for <Text style={styles.bold}>{user?.businessName || 'your workspace'}</Text> has ended.
+        <Text style={styles.title}>
+          {isTrial ? '7-Day Free Trial Ended' : 'Subscription Expired'}
         </Text>
 
-        {/* Informational Box - No Purchase Buttons to comply with Play Store rules */}
+        <Text style={styles.subtitle}>
+          The {isTrial ? '7-day free trial' : 'subscription'} for{' '}
+          <Text style={styles.bold}>{user?.businessName || user?.business?.name || 'your workspace'}</Text>{' '}
+          is no longer active.
+        </Text>
+
+        {/* Informational Box - Strict Google Play & App Store Compliance (Zero Purchase Prompts) */}
         <View style={styles.infoBox}>
-          <MailCheck size={24} color="#818CF8" style={{ marginBottom: 10 }} />
+          {isTrial ? (
+            <MailCheck size={26} color="#818CF8" style={{ marginBottom: 12 }} />
+          ) : (
+            <AlertTriangle size={26} color="#F59E0B" style={{ marginBottom: 12 }} />
+          )}
           <Text style={styles.infoText}>
-            We have sent an email with instructions. Please check your inbox or log into the MFlow web portal from your computer to select a plan.
+            {subInfo.message ||
+              'Please log into the MFlow web portal from your web browser to renew your workspace.'}
           </Text>
         </View>
 
@@ -93,7 +105,7 @@ const styles = StyleSheet.create({
     color: '#CBD5E1',
     fontSize: 13,
     textAlign: 'center',
-    lineHeight: 19,
+    lineHeight: 20,
   },
   logoutBtn: {
     flexDirection: 'row',

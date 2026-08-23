@@ -22,6 +22,7 @@ interface User {
 
 interface SubscriptionInfo {
   isExpired: boolean;
+  isTrial: boolean;
   statusText: string;
   planName: string;
   message: string | null;
@@ -54,23 +55,34 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   getSubscriptionInfo: () => {
     const user = get().user;
     const sub = user?.business?.subscription;
-    if (!sub) return { isExpired: false, statusText: 'ACTIVE', planName: 'Standard Plan', message: null };
+    if (!sub) return { isExpired: false, isTrial: false, statusText: 'ACTIVE', planName: 'Standard Plan', message: null };
 
+    const isTrial = Boolean(sub.status === 'TRIALING' || (sub.plan?.name ? sub.plan.name.toLowerCase().includes('trial') : false));
     const isExpired =
       sub.status === 'EXPIRED' ||
       sub.status === 'CANCELED' ||
       (sub.endDate ? new Date(sub.endDate).getTime() < Date.now() : false);
 
-    const statusText = isExpired ? 'EXPIRED' : (sub.status || 'ACTIVE');
-    const planName = sub.plan?.name || '7-Day Free Trial';
+    const statusText = isExpired
+      ? isTrial
+        ? 'TRIAL ENDED'
+        : 'SUBSCRIPTION EXPIRED'
+      : (sub.status || 'ACTIVE');
+
+    const planName = sub.plan?.name || (isTrial ? '7-Day Free Trial' : 'Business Subscription');
+
+    const message = isExpired
+      ? isTrial
+        ? 'Your 7-day free trial has ended. Please check your email or log into the MFlow web portal to select a subscription plan.'
+        : 'Your business subscription has expired. Please log into the MFlow web portal from your web browser to renew.'
+      : null;
 
     return {
       isExpired,
+      isTrial,
       statusText,
       planName,
-      message: isExpired
-        ? 'Your 7-day free trial has expired. Check your email or log into the MFlow web portal to activate a subscription plan.'
-        : null,
+      message,
     };
   },
 
@@ -139,7 +151,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         phoneNumber: dto.phoneNumber?.trim() || undefined,
       });
 
-      // Auto login after registration to activate 7-day free trial
+      // Auto login after registration
       await get().login(dto.email, dto.password);
     } catch (error: any) {
       set({ isLoading: false });
