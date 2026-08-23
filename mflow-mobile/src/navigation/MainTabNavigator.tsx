@@ -1,15 +1,19 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { DashboardScreen } from '../screens/dashboard/DashboardScreen';
 import { POSScreen } from '../screens/pos/POSScreen';
+import { ProductsScreen } from '../screens/products/ProductsScreen';
+import { ExpensesScreen } from '../screens/expenses/ExpensesScreen';
 import { SalesHistoryScreen } from '../screens/sales/SalesHistoryScreen';
 import { ProfileScreen } from '../screens/profile/ProfileScreen';
-import { ShoppingBag, Receipt, User } from 'lucide-react-native';
+import { LayoutDashboard, ShoppingBag, Package, TrendingDown, Receipt, User } from 'lucide-react-native';
 
 const Tab = createBottomTabNavigator();
 
 export const MainTabNavigator: React.FC = () => {
   return (
     <Tab.Navigator
+      initialRouteName="Dashboard"
       screenOptions={{
         headerStyle: {
           backgroundColor: '#0F172A',
@@ -22,7 +26,7 @@ export const MainTabNavigator: React.FC = () => {
         tabBarStyle: {
           backgroundColor: '#0F172A',
           borderTopColor: '#1E293B',
-          height: 60,
+          height: 62,
           paddingBottom: 8,
           paddingTop: 6,
         },
@@ -31,12 +35,39 @@ export const MainTabNavigator: React.FC = () => {
       }}
     >
       <Tab.Screen
+        name="Dashboard"
+        component={DashboardScreen}
+        options={{
+          title: 'Home',
+          headerTitle: 'MFlow Mobile Dashboard',
+          tabBarIcon: ({ color, size }) => <LayoutDashboard color={color} size={size} />,
+        }}
+      />
+      <Tab.Screen
         name="POSRegister"
         component={POSScreen}
         options={{
           title: 'Register',
           headerTitle: 'POS Register',
           tabBarIcon: ({ color, size }) => <ShoppingBag color={color} size={size} />,
+        }}
+      />
+      <Tab.Screen
+        name="Products"
+        component={ProductsScreen}
+        options={{
+          title: 'Inventory',
+          headerTitle: 'Products & Stock',
+          tabBarIcon: ({ color, size }) => <Package color={color} size={size} />,
+        }}
+      />
+      <Tab.Screen
+        name="Expenses"
+        component={ExpensesScreen}
+        options={{
+          title: 'Expenses',
+          headerTitle: 'Business Outflows',
+          tabBarIcon: ({ color, size }) => <TrendingDown color={color} size={size} />,
         }}
       />
       <Tab.Screen
