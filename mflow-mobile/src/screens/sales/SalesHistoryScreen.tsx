@@ -14,7 +14,8 @@ import {
 } from 'react-native';
 import { apiClient } from '../../api/client';
 import { useAuthStore } from '../../store/authStore';
-import { Search, Receipt, Printer, X, CheckCircle2 } from 'lucide-react-native';
+import { printThermalReceipt, shareReceiptPdf } from '../../utils/mobilePrint';
+import { Search, Receipt, Printer, X, CheckCircle2, Share2 } from 'lucide-react-native';
 
 export const SalesHistoryScreen: React.FC = () => {
   const { activeShopId } = useAuthStore();
@@ -152,6 +153,47 @@ export const SalesHistoryScreen: React.FC = () => {
                 <Text style={styles.receiptMono}>================================</Text>
               </ScrollView>
             ) : null}
+
+            {/* Print & Share PDF Action Row */}
+            <View style={{ flexDirection: 'row', gap: 10, marginTop: 14 }}>
+              <TouchableOpacity
+                style={{
+                  flex: 1,
+                  backgroundColor: '#EEF2FF',
+                  paddingVertical: 12,
+                  borderRadius: 14,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexDirection: 'row',
+                  gap: 6,
+                  borderWidth: 1,
+                  borderColor: '#C7D2FE',
+                }}
+                onPress={() => selectedSale && printThermalReceipt(selectedSale)}
+              >
+                <Printer size={18} color="#4F46E5" />
+                <Text style={{ color: '#4F46E5', fontSize: 13, fontWeight: '800' }}>Print Thermal</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={{
+                  flex: 1,
+                  backgroundColor: '#ECFDF5',
+                  paddingVertical: 12,
+                  borderRadius: 14,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexDirection: 'row',
+                  gap: 6,
+                  borderWidth: 1,
+                  borderColor: '#A7F3D0',
+                }}
+                onPress={() => selectedSale && shareReceiptPdf(selectedSale)}
+              >
+                <Share2 size={18} color="#059669" />
+                <Text style={{ color: '#059669', fontSize: 13, fontWeight: '800' }}>Share PDF</Text>
+              </TouchableOpacity>
+            </View>
 
             <TouchableOpacity style={styles.closeBtn} onPress={() => setSelectedSale(null)}>
               <Text style={styles.closeBtnText}>Close Preview</Text>

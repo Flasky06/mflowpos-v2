@@ -13,7 +13,8 @@ import {
 } from 'react-native';
 import { apiClient } from '../../api/client';
 import { useAuthStore } from '../../store/authStore';
-import { Search, ShoppingCart, Plus, Minus, Trash2, CheckCircle2, X, DollarSign, Smartphone, AlertTriangle } from 'lucide-react-native';
+import { printThermalReceipt, shareReceiptPdf } from '../../utils/mobilePrint';
+import { Search, ShoppingCart, Plus, Minus, Trash2, CheckCircle2, X, DollarSign, Smartphone, AlertTriangle, Printer, Share2 } from 'lucide-react-native';
 
 interface CartItem {
   id: string;
@@ -358,6 +359,47 @@ export const POSScreen: React.FC = () => {
               <Text style={styles.successAmount}>
                 KES {Number(completedSale?.totalAmount || 0).toLocaleString()}
               </Text>
+            </View>
+
+            {/* Print & Share PDF Action Row */}
+            <View style={{ flexDirection: 'row', gap: 10, marginBottom: 12 }}>
+              <TouchableOpacity
+                style={{
+                  flex: 1,
+                  backgroundColor: '#EEF2FF',
+                  paddingVertical: 12,
+                  borderRadius: 14,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexDirection: 'row',
+                  gap: 6,
+                  borderWidth: 1,
+                  borderColor: '#C7D2FE',
+                }}
+                onPress={() => completedSale && printThermalReceipt(completedSale)}
+              >
+                <Printer size={18} color="#4F46E5" />
+                <Text style={{ color: '#4F46E5', fontSize: 13, fontWeight: '800' }}>Print Receipt</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={{
+                  flex: 1,
+                  backgroundColor: '#ECFDF5',
+                  paddingVertical: 12,
+                  borderRadius: 14,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexDirection: 'row',
+                  gap: 6,
+                  borderWidth: 1,
+                  borderColor: '#A7F3D0',
+                }}
+                onPress={() => completedSale && shareReceiptPdf(completedSale)}
+              >
+                <Share2 size={18} color="#059669" />
+                <Text style={{ color: '#059669', fontSize: 13, fontWeight: '800' }}>Share PDF</Text>
+              </TouchableOpacity>
             </View>
 
             <TouchableOpacity
