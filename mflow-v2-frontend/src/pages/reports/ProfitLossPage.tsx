@@ -53,20 +53,20 @@ export const ProfitLossPage: React.FC = () => {
   const fetchProfitLoss = async () => {
     setIsLoading(true);
     try {
-      const shopQuery = activeShopId ? `?shopId=${activeShopId}` : '';
+      const dateQuery = `startDate=${startDate}&endDate=${endDate}`;
+      const shopQuery = activeShopId ? `&shopId=${activeShopId}` : '';
       const [dashRes, expRes, catRes] = await Promise.all([
-        apiClient.get(`/reports/dashboard${shopQuery}`),
-        apiClient.get(`/expenses${shopQuery}`),
+        apiClient.get(`/reports/dashboard?${dateQuery}${shopQuery}`),
+        apiClient.get(`/expenses?${dateQuery}${shopQuery}`),
         apiClient.get(`/expenses/categories`),
       ]);
 
-      setSummaryData(dashRes.data.data);
-      const expArr = expRes.data.data?.expenses || expRes.data.data || [];
-      setExpenses(Array.isArray(expArr) ? expArr : []);
+      setSummaryData(dashRes.data.data || null);
+      setExpenses(expRes.data.data || []);
       setCategories(catRes.data.data || []);
     } catch (err: any) {
       console.error(err);
-      addToast({ type: 'error', title: 'Error', message: 'Failed to load Profit & Loss statement' });
+      addToast({ type: 'error', title: 'Report Error', message: 'Failed to generate Statement of Profit & Loss' });
     } finally {
       setIsLoading(false);
     }

@@ -26,6 +26,8 @@ export const ExpensesPage: React.FC = () => {
   const [categories, setCategories] = useState<any[]>([]);
   const [totalExpenseAmount, setTotalExpenseAmount] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
+  const [startDate, setStartDate] = useState<string>(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
+  const [endDate, setEndDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [categoryFilter, setCategoryFilter] = useState('ALL');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -77,9 +79,10 @@ export const ExpensesPage: React.FC = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const shopQuery = activeShopId ? `?shopId=${activeShopId}` : '';
+      const dateQuery = `startDate=${startDate}&endDate=${endDate}`;
+      const shopQuery = activeShopId ? `&shopId=${activeShopId}` : '';
       const [expRes, catRes] = await Promise.all([
-        apiClient.get(`/expenses${shopQuery}`),
+        apiClient.get(`/expenses?${dateQuery}${shopQuery}`),
         apiClient.get('/expenses/categories'),
       ]);
 
@@ -104,7 +107,7 @@ export const ExpensesPage: React.FC = () => {
 
   useEffect(() => {
     fetchData();
-  }, [activeShopId]);
+  }, [activeShopId, startDate, endDate]);
 
   const [selectedExpense, setSelectedExpense] = useState<any | null>(null);
 
@@ -275,20 +278,50 @@ export const ExpensesPage: React.FC = () => {
 
       {/* Expense Table & Filters */}
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pb-3 border-b border-slate-200">
-          <div className="relative flex-1 max-w-md">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search expenses by title, notes, or category..."
-              className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2.5 px-4 pl-10 text-slate-900 text-xs font-semibold focus:outline-none focus:border-indigo-600"
-            />
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+        {/* Unified Search & Date Filter Toolbar */}
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 pb-3 border-b border-slate-200">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
+            {/* Search Input */}
+            <div className="relative flex-1 max-w-md">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search expenses by title, notes, or category..."
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 pl-9 text-xs font-semibold focus:outline-none focus:border-indigo-600"
+              />
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+            </div>
+
+            {/* Date Range Picker */}
+            <div className="flex items-center bg-slate-50 border border-slate-300 p-1 rounded-xl shrink-0">
+              <span className="text-xs font-semibold text-slate-500 px-2 flex items-center gap-1">
+                <Calendar className="w-3.5 h-3.5 text-indigo-600" />
+              </span>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="text-xs font-bold text-slate-800 bg-transparent py-1 px-1 focus:outline-none"
+              />
+              <span className="text-slate-300">-</span>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="text-xs font-bold text-slate-800 bg-transparent py-1 px-1 focus:outline-none"
+              />
+              <button
+                onClick={fetchData}
+                className="ml-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-xs rounded-lg transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
+              >
+                <Search className="w-3.5 h-3.5" />
+                Filter
+              </button>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <label className="text-xs font-bold text-slate-600">Category Filter:</label>
+          <div className="flex items-center justify-between sm:justify-end gap-3">
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
@@ -301,6 +334,9 @@ export const ExpensesPage: React.FC = () => {
                 </option>
               ))}
             </select>
+            <span className="text-xs font-bold text-slate-500 shrink-0">
+              {filteredExpenses.length} Outflows
+            </span>
           </div>
         </div>
 
