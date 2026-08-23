@@ -3,6 +3,7 @@ import { apiClient } from '../../api/client';
 import { useAuthStore } from '../../store/authStore';
 import { useToastStore } from '../../store/toastStore';
 import { ThermalReceiptModal } from '../../components/sales/ThermalReceiptModal';
+import { generateThermalReceipt } from '../../utils/thermalReceipt';
 import { VoidSaleModal } from '../../components/sales/VoidSaleModal';
 import { PageHeader } from '../../components/common/PageHeader';
 import { SearchInput } from '../../components/common/SearchInput';
@@ -136,7 +137,7 @@ export const SalesHistoryPage: React.FC = () => {
                       <td className="py-3.5 px-4 text-center">
                         <div className="flex items-center justify-center gap-2">
                           <button
-                            onClick={() => setSelectedReceipt(sale.receiptNumber)}
+                            onClick={() => setSelectedReceipt(generateThermalReceipt(sale))}
                             title="Re-Print Thermal Receipt"
                             className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors border border-slate-200"
                           >

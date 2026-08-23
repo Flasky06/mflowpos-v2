@@ -7,9 +7,6 @@ import { CartModal, CartItem } from '../sales/CartModal';
 import {
   ShoppingCart,
   Search,
-  Barcode,
-  List,
-  LayoutGrid,
   Maximize2,
   Minimize2,
 } from 'lucide-react';
@@ -46,7 +43,6 @@ export const POSWorkspace: React.FC = () => {
   const [customers, setCustomers] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState<'PRODUCTS' | 'SERVICES'>('PRODUCTS');
-  const [viewStyle, setViewStyle] = useState<'TABLE' | 'GRID'>('TABLE');
 
   // Multi-Step Modal State
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -312,184 +308,91 @@ export const POSWorkspace: React.FC = () => {
 
       {/* Main Catalog Workspace Container */}
       <div className="w-full bg-white p-4 md:p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col min-h-[calc(100vh-12rem)]">
-        {/* Table / Grid Layout View Toggle */}
+        {/* Catalog Table Header */}
         <div className="flex items-center justify-between gap-2 mb-4">
           <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
             {activeTab === 'PRODUCTS' ? `Products Catalog (${filteredProducts.length})` : `Services Catalog (${filteredServices.length})`}
           </div>
-
-          <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
-            <button
-              onClick={() => setViewStyle('TABLE')}
-              className={`p-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 ${
-                viewStyle === 'TABLE' ? 'bg-white text-indigo-600 shadow-xs' : 'text-slate-500 hover:text-slate-900'
-              }`}
-              title="Table View (v1 Style)"
-            >
-              <List className="w-4 h-4" />
-              Table
-            </button>
-            <button
-              onClick={() => setViewStyle('GRID')}
-              className={`p-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 ${
-                viewStyle === 'GRID' ? 'bg-white text-indigo-600 shadow-xs' : 'text-slate-500 hover:text-slate-900'
-              }`}
-              title="Grid Cards View"
-            >
-              <LayoutGrid className="w-4 h-4" />
-              Grid
-            </button>
-          </div>
         </div>
 
         {/* Full-Width Table View */}
-        {viewStyle === 'TABLE' ? (
-          <div className="flex-1 overflow-y-auto border border-slate-200 rounded-xl overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-700">
-              <thead className="text-xs uppercase bg-slate-100 text-slate-600 border-b border-slate-200 sticky top-0">
-                {activeTab === 'PRODUCTS' ? (
-                  <tr>
-                    <th className="py-3.5 px-4">Product Name</th>
-                    <th className="py-3.5 px-4">Buying Price</th>
-                    <th className="py-3.5 px-4 text-right">Selling Price</th>
-                    <th className="py-3.5 px-4 text-center">Available Stock</th>
-                    <th className="py-3.5 px-4 text-center">Action</th>
-                  </tr>
-                ) : (
-                  <tr>
-                    <th className="py-3.5 px-4">Service Title</th>
-                    <th className="py-3.5 px-4 text-right">Selling Price</th>
-                    <th className="py-3.5 px-4 text-center">Inventory Type</th>
-                    <th className="py-3.5 px-4 text-center">Action</th>
-                  </tr>
-                )}
-              </thead>
-              <tbody className="divide-y divide-slate-200 bg-white">
-                {activeTab === 'PRODUCTS' &&
-                  filteredProducts.map((p) => {
-                    const stock = p.stocks?.find((s: any) => s.shopId === activeShopId);
-                    const qty = stock ? stock.quantity : 0;
-                    const isOut = qty <= 0;
+        <div className="flex-1 overflow-y-auto border border-slate-200 rounded-xl overflow-x-auto">
+          <table className="w-full text-left text-sm text-slate-700">
+            <thead className="text-xs uppercase bg-slate-100 text-slate-600 border-b border-slate-200 sticky top-0">
+              {activeTab === 'PRODUCTS' ? (
+                <tr>
+                  <th className="py-3.5 px-4">Product Name</th>
+                  <th className="py-3.5 px-4">Buying Price</th>
+                  <th className="py-3.5 px-4 text-right">Selling Price</th>
+                  <th className="py-3.5 px-4 text-center">Available Stock</th>
+                  <th className="py-3.5 px-4 text-center">Action</th>
+                </tr>
+              ) : (
+                <tr>
+                  <th className="py-3.5 px-4">Service Title</th>
+                  <th className="py-3.5 px-4 text-right">Selling Price</th>
+                  <th className="py-3.5 px-4 text-center">Inventory Type</th>
+                  <th className="py-3.5 px-4 text-center">Action</th>
+                </tr>
+              )}
+            </thead>
+            <tbody className="divide-y divide-slate-200 bg-white">
+              {activeTab === 'PRODUCTS' &&
+                filteredProducts.map((p) => {
+                  const stock = p.stocks?.find((s: any) => s.shopId === activeShopId);
+                  const qty = stock ? stock.quantity : 0;
+                  const isOut = qty <= 0;
 
-                    return (
-                      <tr key={p.id} className="hover:bg-indigo-50/50 transition-colors">
-                        <td className="py-3.5 px-4 font-semibold text-slate-900">{p.name}</td>
-                        <td className="py-3.5 px-4 text-xs text-slate-500">
-                          {p.costPrice ? `KSh ${Number(p.costPrice).toLocaleString()}` : '-'}
-                        </td>
-                        <td className="py-3.5 px-4 text-right font-bold text-slate-900">
-                          KSh {Number(p.sellingPrice).toLocaleString()}
-                        </td>
-                        <td className="py-3.5 px-4 text-center font-bold text-slate-700">
-                          {isOut ? (
-                            <span className="text-rose-600 font-black">Out of Stock</span>
-                          ) : (
-                            `${qty} units`
-                          )}
-                        </td>
-                        <td className="py-3.5 px-4 text-center">
-                          <button
-                            disabled={isOut}
-                            onClick={() => addToCart(p, 'PRODUCT')}
-                            className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-lg text-xs font-bold shadow-xs transition-colors"
-                          >
-                            + Add
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-
-                {activeTab === 'SERVICES' &&
-                  filteredServices.map((s) => (
-                    <tr key={s.id} className="hover:bg-violet-50/50 transition-colors">
-                      <td className="py-3.5 px-4 font-semibold text-slate-900">{s.name}</td>
-                      <td className="py-3.5 px-4 text-right font-bold text-emerald-700">
-                        KSh {Number(s.price).toLocaleString()}
+                  return (
+                    <tr key={p.id} className="hover:bg-indigo-50/50 transition-colors">
+                      <td className="py-3.5 px-4 font-semibold text-slate-900">{p.name}</td>
+                      <td className="py-3.5 px-4 text-xs text-slate-500">
+                        {p.costPrice ? `KSh ${Number(p.costPrice).toLocaleString()}` : '-'}
                       </td>
-                      <td className="py-3.5 px-4 text-center text-xs text-slate-400 font-semibold">Non-Inventory Service</td>
+                      <td className="py-3.5 px-4 text-right font-bold text-slate-900">
+                        KSh {Number(p.sellingPrice).toLocaleString()}
+                      </td>
+                      <td className="py-3.5 px-4 text-center font-bold text-slate-700">
+                        {isOut ? (
+                          <span className="text-rose-600 font-black">Out of Stock</span>
+                        ) : (
+                          `${qty} units`
+                        )}
+                      </td>
                       <td className="py-3.5 px-4 text-center">
                         <button
-                          onClick={() => addToCart(s, 'SERVICE')}
-                          className="px-3.5 py-1.5 bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200 rounded-lg text-xs font-bold shadow-xs transition-colors"
+                          disabled={isOut}
+                          onClick={() => addToCart(p, 'PRODUCT')}
+                          className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-lg text-xs font-bold shadow-xs transition-colors"
                         >
                           + Add
                         </button>
                       </td>
                     </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          /* Grid View - Multi-breakpoint responsive grid (Mobile: 1-2, Tablet: 2-3, Laptop: 4-5, Large Screen: 6) */
-          <div className="flex-1 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 pr-1">
-            {activeTab === 'PRODUCTS' &&
-              filteredProducts.map((p) => {
-                const stock = p.stocks?.find((s: any) => s.shopId === activeShopId);
-                const qty = stock ? stock.quantity : 0;
-                const isOut = qty <= 0;
+                  );
+                })}
 
-                return (
-                  <div
-                    key={p.id}
-                    className={`bg-white p-3 rounded-xl border flex flex-col justify-between transition-all ${
-                      isOut ? 'opacity-50 border-rose-200 bg-rose-50/20' : 'border-slate-200 shadow-xs'
-                    }`}
-                  >
-                    <div>
-                      <span className="text-[10px] uppercase font-bold text-indigo-600 tracking-wider">Product</span>
-                      <h4 className="font-semibold text-sm text-slate-900 line-clamp-2 mt-0.5">{p.name}</h4>
-                    </div>
-
-                    <div className="mt-3 space-y-2">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-bold text-emerald-700">KSh {Number(p.sellingPrice).toLocaleString()}</span>
-                        <span className={`font-semibold ${isOut ? 'text-rose-600' : 'text-slate-500'}`}>
-                          Qty: {qty}
-                        </span>
-                      </div>
-
+              {activeTab === 'SERVICES' &&
+                filteredServices.map((s) => (
+                  <tr key={s.id} className="hover:bg-violet-50/50 transition-colors">
+                    <td className="py-3.5 px-4 font-semibold text-slate-900">{s.name}</td>
+                    <td className="py-3.5 px-4 text-right font-bold text-emerald-700">
+                      KSh {Number(s.price).toLocaleString()}
+                    </td>
+                    <td className="py-3.5 px-4 text-center text-xs text-slate-400 font-semibold">Non-Inventory Service</td>
+                    <td className="py-3.5 px-4 text-center">
                       <button
-                        onClick={() => addToCart(p, 'PRODUCT')}
-                        disabled={isOut}
-                        className="w-full py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold rounded-lg text-xs transition-colors disabled:opacity-40"
+                        onClick={() => addToCart(s, 'SERVICE')}
+                        className="px-3.5 py-1.5 bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200 rounded-lg text-xs font-bold shadow-xs transition-colors"
                       >
-                        + Add to Cart
+                        + Add
                       </button>
-                    </div>
-                  </div>
-                );
-              })}
-
-            {activeTab === 'SERVICES' &&
-              filteredServices.map((s) => (
-                <div
-                  key={s.id}
-                  className="bg-white p-3 rounded-xl border border-slate-200 flex flex-col justify-between shadow-xs"
-                >
-                  <div>
-                    <span className="text-[10px] uppercase font-bold text-violet-600 tracking-wider">Service</span>
-                    <h4 className="font-semibold text-sm text-slate-900 line-clamp-2 mt-0.5">{s.name}</h4>
-                  </div>
-
-                  <div className="mt-3 space-y-2">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold text-emerald-700">KSh {Number(s.price).toLocaleString()}</span>
-                      <span className="font-medium text-violet-600">Service</span>
-                    </div>
-
-                    <button
-                      onClick={() => addToCart(s, 'SERVICE')}
-                      className="w-full py-1.5 bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200 font-bold rounded-lg text-xs transition-colors"
-                    >
-                      + Add to Cart
-                    </button>
-                  </div>
-                </div>
-              ))}
-          </div>
-        )}
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Reusable Cart Modal */}

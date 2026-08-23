@@ -359,8 +359,8 @@ export class SaleService {
     }
 
     lines.push('--------------------------------');
-    lines.push(`TOTAL AMOUNT  : $${Number(sale.totalAmount).toFixed(2)}`);
-    lines.push(`PAID AMOUNT   : $${Number(sale.paidAmount).toFixed(2)}`);
+    lines.push(`TOTAL AMOUNT  : KSh ${Number(sale.totalAmount).toLocaleString()}`);
+    lines.push(`PAID AMOUNT   : KSh ${Number(sale.paidAmount).toLocaleString()}`);
     lines.push('--------------------------------');
     lines.push('Thank you for your business!');
     lines.push('================================\n');
