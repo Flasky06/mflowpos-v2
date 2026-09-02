@@ -6,11 +6,11 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Starting database seeding...');
 
-  // 1. Seed Single Standard Plan — KES 1,000/month, unlimited shops
+  // 1. Seed Single Standard Plan — KES 50,000/month, unlimited shops
   const standardPlan = {
     name: 'mflow POS',
     code: 'STANDARD',
-    price: 1000.0,
+    price: 50000.0,
     billingPeriod: BillingPeriod.MONTHLY,
     maxShops: 999, // effectively unlimited
   };
@@ -20,7 +20,7 @@ async function main() {
     update: standardPlan,
     create: standardPlan,
   });
-  console.log('Standard plan seeded: mflow POS — KES 1,000/month (unlimited shops).');
+  console.log('Standard plan seeded: mflow POS — KES 50,000/month (unlimited shops).');
 
   // 2. Seed Default Super Admin (admin@mflowpos.com / @071729106)
   const adminEmail = 'admin@mflowpos.com';

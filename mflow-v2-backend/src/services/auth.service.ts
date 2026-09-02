@@ -60,7 +60,7 @@ export class AuthService {
         },
       });
 
-      // 4. Attach 7-Day Free Trial Subscription for Single Standard Plan (KES 1,000 / mo)
+      // 4. Attach 7-Day Free Trial Subscription for Single Standard Plan (KES 50,000 / mo)
       let standardPlan = await tx.subscriptionPlan.findUnique({
         where: { code: 'STANDARD' },
       });
@@ -70,7 +70,7 @@ export class AuthService {
           data: {
             name: 'mflow POS',
             code: 'STANDARD',
-            price: 1000.0,
+            price: 50000.0,
             maxShops: 999,
           },
         });
