@@ -324,7 +324,7 @@ export const SuperAdminDashboardPage: React.FC = () => {
                 const sub = t.subscription;
                 const isSuspended = sub?.status === 'CANCELLED' || !t.active;
                 const hasCustomPrice = sub?.customPrice !== null && sub?.customPrice !== undefined;
-                const effectiveRate = hasCustomPrice ? Number(sub.customPrice) : Number(sub?.plan?.price || 1000);
+                const effectiveRate = hasCustomPrice ? Number(sub.customPrice) : Number(sub?.plan?.price || 50000);
 
                 return (
                   <tr key={t.id} className="hover:bg-slate-50 transition-colors">
@@ -857,10 +857,10 @@ export const SuperAdminDashboardPage: React.FC = () => {
             >
               <X className="w-5 h-5" />
             </button>
-            <div>
+            <div className="mb-6">
               <h3 className="text-lg font-bold text-slate-900">Custom Subscription Pricing</h3>
               <p className="text-xs text-slate-500 mt-0.5">
-                Set custom monthly rate for <span className="text-indigo-600 font-bold">{selectedTenant?.name}</span> (e.g. 1000 vs 1500 KES).
+                Set custom monthly rate for <span className="text-indigo-600 font-bold">{selectedTenant?.name}</span> (e.g. 50000 vs 55000 KES).
               </p>
             </div>
 
@@ -878,7 +878,7 @@ export const SuperAdminDashboardPage: React.FC = () => {
                   placeholder="e.g. 1500 (Leave empty for default plan rate)"
                   className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2.5 px-3 text-sm font-bold text-slate-900 focus:outline-none focus:border-indigo-600"
                 />
-                <p className="text-[11px] text-slate-400 mt-1">Default plan price: KES {selectedTenant?.subscription?.plan?.price || 1000}</p>
+                <p className="text-[11px] text-slate-400 mt-1">Default plan price: KES {selectedTenant?.subscription?.plan?.price || 50000}</p>
               </div>
 
               <div>
